@@ -14,12 +14,13 @@ export default {
   // gif images
 
   lottie: {
-    splash: require("../assets/lottie/lottie.json"),
+    splash: require('../assets/lottie/lottie.json'),
   },
   tab: {
-    homeIcon: require("../assets/icon/homeIcon/home.png"),
+    homeIcon: require('../assets/icon/homeIcon/home.png'),
   },
   general: {
-    topArrow: require("../assets/icon/topArrowCricle.png"),
-  }
+    topArrow: require('../assets/icon/topArrowCricle.png'),
+    addIcon: require('../assets/images/addIcon.png'),
+  },
 };

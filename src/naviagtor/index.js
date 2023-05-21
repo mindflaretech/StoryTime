@@ -1,33 +1,32 @@
-import { NavigationContainer } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
-import React from "react";
-import { Text, View } from "react-native";
-import { TestingScreen, TestingScreenTwo } from "../screens";
-import ContentPagesScreen from "../screens/ContentPagesScreen";
-import { NavigationService } from "../utils";
-import DrawerNavigator from "./drawer";
+import {NavigationContainer} from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
+import React from 'react';
+import {Text, View} from 'react-native';
+import {TestingScreen, TestingScreenTwo} from '../screens';
+import ContentPagesScreen from '../screens/ContentPagesScreen';
+import {NavigationService} from '../utils';
+import DrawerNavigator from './drawer';
+import Reminders from '../screens/Reminders/index';
+import RemindersAddUpdate from '../screens/RemindersAddUpdate/index';
 
 const Stack = createStackNavigator();
-
+export const ScreeNames = {
+  Reminders: 'Reminders',
+  RemindersAddUpdate: 'RemindersAddUpdate',
+};
 function StackScreens() {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator initialRouteName="Reminders">
       <Stack.Screen
-        name="ContentPagesScreen"
-        component={ContentPagesScreen}
-        options={{ title: "ContentPagesScreen" }}
+        name="Reminders"
+        component={Reminders}
+        options={{title: 'Reminders'}}
       />
       <Stack.Screen
-        name="TestingScreen"
-        component={TestingScreen}
-        options={{ title: "TestingScreen" }}
+        name="RemindersAddUpdate"
+        component={RemindersAddUpdate}
+        options={{title: 'Add/Update'}}
       />
-      <Stack.Screen
-        name="Home"
-        component={DrawerNavigator}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen name="TestingScreenTwo" component={TestingScreenTwo} />
     </Stack.Navigator>
   );
 }

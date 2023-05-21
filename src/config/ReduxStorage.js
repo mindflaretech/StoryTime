@@ -1,1 +1,1 @@
-export const whiteList = [];
+export const whiteList = ['testPost'];

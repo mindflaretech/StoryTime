@@ -1,13 +1,13 @@
-import { makeRequesActions, makeAction } from "../ActionTypes";
-import { createReducer } from "@reduxjs/toolkit";
-import { Util } from "../../utils";
+import {makeRequesActions, makeAction} from '../ActionTypes';
+import {createReducer} from '@reduxjs/toolkit';
+import {Util} from '../../utils';
 
 // action creators
-export const updateCountTest = makeAction("UPDATE_COUNT_TEST");
-export const testScroll = makeRequesActions("TEST_SCROLL");
-export const testList = makeRequesActions("TEST_LIST");
-
-export const getList = makeRequesActions("GET_LIST");
+export const updateCountTest = makeAction('UPDATE_COUNT_TEST');
+export const testScroll = makeRequesActions('TEST_SCROLL');
+export const testList = makeRequesActions('TEST_LIST');
+export const getList = makeRequesActions('GET_LIST');
+export const test = makeAction('Test');
 
 // init state
 const initalState = {
@@ -17,20 +17,21 @@ const initalState = {
   scrollViewData: [],
   gitUsers: [],
   page: {},
+  test: {},
 };
 
 // init reducer
-export default createReducer(initalState, (builder) => {
+export default createReducer(initalState, builder => {
   // Git user list
   builder.addCase(getList.success, (state, action) => {
     // Util.concatDataArray(state, action, 'list');
-    console.log("========== INITIAL STATE OF GET UERS LIST ========");
+    console.log('========== INITIAL STATE OF GET UERS LIST ========');
     console.log(state);
     console.log(action);
     state = {
       ...state,
-      gitUsers: Util.concatDataArray(state, action, "gitUsers"),
-      page: action.payload.page
+      gitUsers: Util.concatDataArray(state, action, 'gitUsers'),
+      page: action.payload.page,
     };
     // state.gitUsers = Util.concatDataArray(state, action, 'gitUsers');
     // state.gitUsers = action.payload.data
@@ -42,9 +43,9 @@ export default createReducer(initalState, (builder) => {
 
   // reset data on first load list
   builder.addCase(testList.request, (state, action) => {
-    const { resetReducerData, identifier } = action.payload;
+    const {resetReducerData, identifier} = action.payload;
     if (resetReducerData) {
-      const reducerKey = identifier || "list";
+      const reducerKey = identifier || 'list';
       state[reducerKey] = [];
     }
   });
@@ -62,9 +63,9 @@ export default createReducer(initalState, (builder) => {
 
   // reset data on first load scrollview
   builder.addCase(testScroll.request, (state, action) => {
-    const { resetReducerData, identifier } = action.payload;
+    const {resetReducerData, identifier} = action.payload;
     if (resetReducerData) {
-      const reducerKey = identifier || "scrollViewData";
+      const reducerKey = identifier || 'scrollViewData';
       state[reducerKey] = [];
     }
   });
@@ -82,18 +83,25 @@ export default createReducer(initalState, (builder) => {
   builder.addCase(updateCountTest, (state, action) => {
     state.data = action.payload.count;
   });
+
+  builder.addCase(test, (state, action) => {
+    console.log(action);
+    state.test = action.payload;
+  });
 });
 
 // selectors
-export const getTestList = (state) => state.testPost.list;
+export const getTestList = state => state.testPost.list;
 // with identifier
 const defaultData = [];
 const defaultObj = {};
-export const getTestListIdentifier = (identifier) => (state) =>
+export const getTestListIdentifier = identifier => state =>
   state.testPost?.[identifier] ?? defaultData;
-export const getData = (state) => state.testPost?.data ?? defaultObj;
+export const getData = state => state.testPost?.data ?? defaultObj;
 
 // for scroll view
-export const getScrollData = (state) => state.testPost?.scrollViewData ?? [];
-export const getScrollDataIdentifer = (identifier) => (state) =>
+export const getScrollData = state => state.testPost?.scrollViewData ?? [];
+export const getScrollDataIdentifer = identifier => state =>
   state.testPost?.[identifier] ?? defaultData;
+
+export const getTest = state => state.testPost?.test ?? defaultObj;
