@@ -6,47 +6,35 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import {FlatList} from 'react-native-gesture-handler';
 import styles from '../Reminders/styles';
 import {SwipeListView} from 'react-native-swipe-list-view';
-import {Images} from '../../theme';
+import {Shadow} from 'react-native-shadow';
+import {Colors, Images} from '../../theme';
 import {useNavigation} from '@react-navigation/native';
 import {ScreeNames} from '../../naviagtor';
 import {transform} from 'lodash';
+import {RemindersData} from '../../utils/Data/RemindersData';
 
-const Data = [
-  {
-    id: 0,
-    txt: 'highWay',
-  },
-  {
-    id: 1,
-    txt: 'streetView',
-  },
-  {
-    id: 2,
-    txt: 'mainRoad',
-  },
-  {
-    id: 3,
-    txt: 'streetCorner',
-  },
-];
-const Index = () => {
+const Index = ({route}) => {
   //===================== useState ============================//
-  const [data, setData] = useState(Data);
+  const [data, setData] = useState();
   const [swipeRow, setSwipeRow] = useState({});
+  const viewref = useRef(null);
   const navigation = useNavigation();
+  const SavedData = route?.params?.myName;
   const dispatch = useDispatch();
   const getRemindersData = useSelector(getTest);
-  // useEffect(() => {
-  //   // const arr = [];
-  //   // arr.push()
-  //   setData(getRemindersData);
-  //   // console.log(getRemindersData);
-  // }, [getRemindersData]);
+  // console.log(data, '========== getRemindvsddsersData');
+  useEffect(() => {
+    setData(getRemindersData);
+  }, [getRemindersData]);
   const removeItem = itemToRemove => {
     setData(prevData => prevData.filter(item => item !== itemToRemove));
   };
+  const handleViewId = () => {
+    const viewId = viewref.current?.id;
+    // console.log(viewId, '============viewId');
+  };
   const renderItem = ({item}) => {
-    console.log(item.id, '============ data');
+    // console.log(item.id, '============ data');
     const uniqueId = item.id;
     return (
       <View
@@ -55,28 +43,44 @@ const Index = () => {
           styles.frontRowView,
           // {transform: [{translateX: swipeRow[item.id] || 0}]},
         ]}>
-        <Text style={styles.frontRowtxt}>{item.txt}</Text>
+        <Text style={[styles.frontRowtxt, {color: Colors.teal}]}>
+          {item.name}
+        </Text>
+        <Text style={[styles.frontRowtxt, {color: Colors.black}]}>
+          {item.radius} km
+        </Text>
       </View>
     );
   };
-  const renderHiddenItem = ({item}) => (
-    <View style={styles.backRowView}>
-      <TouchableOpacity activeOpacity={0.85} style={styles.backRowEditView}>
-        <Text style={styles.backRowEditTxt}>Edit</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        activeOpacity={0.85}
-        style={styles.backRowDeleteView}
-        onPress={() => {
-          {
-            removeItem(item);
-            //  setSwipeRow(item.key);
-          }
-        }}>
-        <Text style={styles.backRowDeleteTxt}>Delete</Text>
-      </TouchableOpacity>
-    </View>
-  );
+  const renderHiddenItem = ({item}) => {
+    // const uniqueId = viewref;
+    // console.log(uniqueId);
+    return (
+      <View ref={viewref} style={styles.backRowView}>
+        <TouchableOpacity
+          activeOpacity={0.85}
+          style={styles.backRowEditView}
+          onPress={() =>
+            navigation.navigate(ScreeNames.RemindersAddUpdate, {
+              // itemId: handleViewId,
+              items: item,
+            })
+          }>
+          <Text style={styles.backRowEditTxt}>Edit</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          activeOpacity={0.85}
+          style={styles.backRowDeleteView}
+          onPress={() => {
+            {
+              removeItem(item);
+            }
+          }}>
+          <Text style={styles.backRowDeleteTxt}>Delete</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
   const ListEmptyComponent = () => (
     <View style={styles.emptytxtView}>
       <Text style={styles.emptyTxt}>Reminders will appear here</Text>
@@ -86,7 +90,7 @@ const Index = () => {
   return (
     <SafeAreaView style={styles.container}>
       <SwipeListView
-        style={{marginVertical: 20}}
+        style={{marginTop: 20}}
         data={data}
         keyExtractor={(item, index) => index.toString()}
         renderItem={renderItem}
@@ -94,28 +98,12 @@ const Index = () => {
         leftOpenValue={75}
         rightOpenValue={-75}
         ListEmptyComponent={ListEmptyComponent}
-        // onSwipeValueChange={swipeData => {
-        //   const {key, value} = swipeData;
-        //   setSwipeRow(prevState => ({
-        //     ...prevState,
-        //     [key]: value,
-        //   }));
-        // }}
-        // onSwipeValueChange={swipweData => setSwipeRow(swipweData.value)}
-        // onRowOpen={rowKey => setSwipeRow(rowKey)}
-        // onRowClose={() => setSwipeRow(null)}
+        showsVerticalScrollIndicator={false}
       />
       <TouchableOpacity
         activeOpacity={0.85}
         style={styles.addIconViewStyles}
-        onPress={() => navigation.navigate(ScreeNames.RemindersAddUpdate)}
-        // onPress={() =>
-        //   dispatch(
-        //     test({name: 'streetView'}),
-        //     console.log(getRemindersData, '========== newRemindersdata'),
-        //   )
-        // }
-      >
+        onPress={() => navigation.navigate(ScreeNames.RemindersAddUpdate)}>
         <Image style={styles.addIconStyles} source={Images.general.addIcon} />
       </TouchableOpacity>
     </SafeAreaView>
@@ -123,16 +111,3 @@ const Index = () => {
 };
 
 export default Index;
-
-{
-  /* <TouchableOpacity onPress={() => dispatch(info({name: 'syed'}))}>
-<Text style={{padding: 40}}>index</Text>
-</TouchableOpacity>
-<View
-style={{
-  marginTop: 10,
-}}
-onPress={() => dispatch(info({name: 'shah'}))}>
-<Text style={{padding: 40}}>{getInfoData?.name}</Text>
-</View> */
-}

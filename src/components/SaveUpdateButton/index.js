@@ -2,11 +2,22 @@ import {StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {Colors} from '../../theme';
+import {useDispatch} from 'react-redux';
+import {useNavigation} from '@react-navigation/native';
+import {ScreeNames} from '../../naviagtor';
 
-const SaveUpdateButton = () => {
+const SaveUpdateButton = getRemindersData => {
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
   return (
     <View style={styles.container}>
-      <TouchableOpacity activeOpacity={0.85} style={styles.button}>
+      <TouchableOpacity
+        activeOpacity={0.85}
+        style={styles.button}
+        onPress={() => {
+          navigation.navigate(ScreeNames.Reminders),
+            dispatch(test({getRemindersData}));
+        }}>
         <Text style={styles.buttonTxt}>Save</Text>
       </TouchableOpacity>
     </View>
@@ -28,7 +39,7 @@ const styles = StyleSheet.create({
     padding: 12,
     marginHorizontal: 12,
     borderRadius: 10,
-    elevation: 0.5,
+    elevation: 1,
     shadowColor: Colors.teal,
   },
   buttonTxt: {

@@ -17,15 +17,15 @@ const initalState = {
   scrollViewData: [],
   gitUsers: [],
   page: {},
-  test: {},
+  test: [],
 };
-
+// console.log(test);
 // init reducer
 export default createReducer(initalState, builder => {
   // Git user list
   builder.addCase(getList.success, (state, action) => {
     // Util.concatDataArray(state, action, 'list');
-    console.log('========== INITIAL STATE OF GET UERS LIST ========');
+    console.log('========== INITIAL STATE OF GET USERS LIST ========');
     console.log(state);
     console.log(action);
     state = {
@@ -87,6 +87,7 @@ export default createReducer(initalState, builder => {
   builder.addCase(test, (state, action) => {
     console.log(action);
     state.test = action.payload;
+    // console.log(test, '================ test');
   });
 });
 

@@ -17,9 +17,12 @@ export default StyleSheet.create({
     marginVertical: 5,
     marginHorizontal: 10,
     borderRadius: 8,
+    elevation: 4,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
   },
   frontRowtxt: {
-    color: Colors.teal,
     textAlign: 'center',
     fontSize: 20,
     padding: 10,
@@ -39,6 +42,7 @@ export default StyleSheet.create({
     borderBottomLeftRadius: 10,
     borderTopLeftRadius: 10,
     paddingLeft: 20,
+    elevation: 2,
   },
   backRowEditTxt: {
     color: Colors.white,
@@ -52,6 +56,7 @@ export default StyleSheet.create({
     borderTopRightRadius: 10,
     height: 47,
     paddingRight: 20,
+    elevation: 2,
   },
   backRowDeleteTxt: {
     color: Colors.white,
@@ -59,16 +64,27 @@ export default StyleSheet.create({
     textAlign: 'right',
   },
   addIconViewStyles: {
-    alignSelf: 'flex-end',
-    padding: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: Colors.powderBlue,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 6,
+    borderRadius: 60,
+    backgroundColor: Colors.powderBlue,
     position: 'absolute',
-    bottom: 0,
+    bottom: 15,
+    right: 15,
   },
   addIconStyles: {
     resizeMode: 'contain',
     tintColor: Colors.teal,
-    width: 60,
-    height: 60,
+    width: 65,
+    height: 65,
   },
   emptytxtView: {
     flex: 1,
@@ -79,5 +95,14 @@ export default StyleSheet.create({
   emptyTxt: {
     color: 'grey',
     fontSize: 16,
+  },
+  shadowStyle: {
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.8,
+    shadowRadius: 4,
   },
 });
