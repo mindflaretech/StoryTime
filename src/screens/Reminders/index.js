@@ -12,6 +12,7 @@ import {useNavigation} from '@react-navigation/native';
 import {ScreeNames} from '../../naviagtor';
 import {transform} from 'lodash';
 import {RemindersData} from '../../utils/Data/RemindersData';
+import StatusBar from '../../components/StatusBar';
 
 const Index = ({route}) => {
   //===================== useState ============================//
@@ -27,7 +28,8 @@ const Index = ({route}) => {
     setData(getRemindersData);
   }, [getRemindersData]);
   const removeItem = itemToRemove => {
-    setData(prevData => prevData.filter(item => item !== itemToRemove));
+    getRemindersData.filter(item => item !== itemToRemove);
+    // setData(prevData => prevData.filter(item => item !== itemToRemove));
   };
   const handleViewId = () => {
     const viewId = viewref.current?.id;
@@ -89,9 +91,10 @@ const Index = ({route}) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar />
       <SwipeListView
         style={{marginTop: 20}}
-        data={data}
+        data={getRemindersData}
         keyExtractor={(item, index) => index.toString()}
         renderItem={renderItem}
         renderHiddenItem={renderHiddenItem}

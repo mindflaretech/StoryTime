@@ -2,7 +2,7 @@ import {View, Text, SafeAreaView, TextInput, FlatList} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import styles from '../RemindersAddUpdate/styles';
 import SaveUpdateButton from '../../components/SaveUpdateButton';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import {ScrollView, TouchableOpacity} from 'react-native-gesture-handler';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import {useDispatch, useSelector} from 'react-redux';
 import {getTest, test} from '../../ducks/testPost';
@@ -11,11 +11,13 @@ import {useNavigation} from '@react-navigation/native';
 import {Colors} from '../../theme';
 import {locationData} from '../../utils/Data/LocationData';
 import {RemindersData} from '../../utils/Data/RemindersData';
+import StatusBar from '../../components/StatusBar';
 
 const Index = ({route}) => {
   // ================ useState =====================//
   const [name, setName] = useState('');
   const [radius, setRadius] = useState('');
+  const [showLocation, setShowLocation] = useState();
   const rbSheetRef = useRef(null);
   const getRemindersData = useSelector(getTest);
   const navigation = useNavigation();
@@ -24,6 +26,7 @@ const Index = ({route}) => {
   console.log(itemId?.name, '=================== itemsId');
   useEffect(() => {
     console.log(getRemindersData, '============== getRemindersData');
+    rbSheetRef.current.open();
   }, []);
   console.log(name, '=============name');
   console.log(radius, '=============radius');
@@ -49,13 +52,24 @@ const Index = ({route}) => {
       <TouchableOpacity
         key={uniqueId}
         style={[styles.renderItemFlatlist]}
-        activeOpacity={0.85}>
+        activeOpacity={0.1}
+        onPress={() => {
+          setShowLocation(item.loc);
+          let location = [...getRemindersData];
+          let obj = {
+            location: item,
+          };
+          location.push(obj);
+          dispatch(test(location));
+          console.log('pressed');
+        }}>
         <Text style={styles.flatListTxt}>{item.loc}</Text>
       </TouchableOpacity>
     );
   };
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar />
       <View style={styles.textInputsView}>
         <TextInput
           style={styles.textInputStyle}
@@ -68,7 +82,11 @@ const Index = ({route}) => {
           activeOpacity={0.85}
           style={styles.locationFieldButton}
           onPress={() => rbSheetRef.current.open()}>
-          <Text>Location</Text>
+          {showLocation === true ? (
+            <Text>{showLocation}</Text>
+          ) : (
+            <Text>Location</Text>
+          )}
         </TouchableOpacity>
         <TextInput
           style={styles.textInputStyle}
@@ -76,6 +94,7 @@ const Index = ({route}) => {
           // value={valueRadius()}
           value={radius}
           placeholder="Radius"
+          keyboardType="numeric"
         />
       </View>
       <View style={styles.saveButtoncontainer}>
@@ -100,7 +119,7 @@ const Index = ({route}) => {
       <RBSheet
         ref={rbSheetRef}
         height={300}
-        openDuration={250}
+        openDuration={100}
         closeOnDragDown={true}
         closeOnPressMask={true}
         animationType="slide"
@@ -109,13 +128,11 @@ const Index = ({route}) => {
           <TouchableOpacity activeOpacity={0.85} style={styles.addButton}>
             <Text style={styles.addtxt}>Add</Text>
           </TouchableOpacity>
-          <View style={{flex: 1}}>
-            <FlatList
-              data={locationData}
-              renderItem={renderItem}
-              keyExtractor={(item, index) => index.toString()}
-            />
-          </View>
+          <FlatList
+            data={locationData}
+            renderItem={renderItem}
+            keyExtractor={(item, index) => index.toString()}
+          />
         </View>
       </RBSheet>
     </SafeAreaView>

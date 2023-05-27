@@ -7,6 +7,7 @@ import {Colors, Images} from '../../theme';
 import styles from './styles';
 import SplashScreen from 'react-native-splash-screen';
 import VersionInfo from 'react-native-version-info';
+import StatusBar from '../../components/StatusBar';
 
 export default function CustomSplashScreen() {
   const animationProgress = useRef(new Animated.Value(0));
@@ -23,6 +24,7 @@ export default function CustomSplashScreen() {
 
   return (
     <View style={styles.container}>
+      <StatusBar/>
       <Lottie
         style={styles.lottieStyle}
         source={Images.lottie.splash}
