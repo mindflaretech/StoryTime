@@ -22,14 +22,61 @@ const Index = ({route}) => {
   const getRemindersData = useSelector(getTest);
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const itemId = route?.params?.items.name;
-  console.log(itemId?.name, '=================== itemsId');
+  const item = route?.params?.items;
+  const itemId = route?.params?.items?.name;
+  const itemName = route?.params?.items?.name;
+  const isEdit = route?.params?.isEdit;
+  const itemRadius = route?.params?.items?.radius;
+
+  // console.log(item, '=================== itemsname');
+  // console.log(isEdit, '=================== isEdit');
+
   useEffect(() => {
-    console.log(getRemindersData, '============== getRemindersData');
-    rbSheetRef.current.open();
+    if (isEdit) {
+      setName(itemName);
+      setRadius(itemRadius);
+    }
+    // rbSheetRef.current.open();
   }, []);
-  console.log(name, '=============name');
-  console.log(radius, '=============radius');
+  //================== creating random ID =====================//
+  const updatedData = () => {
+    var myData = [...getRemindersData];
+    const obj = item;
+    const index = getRemindersData.indexOf(obj);
+    const newObj = {
+      id: generateString(8),
+      name: name,
+      radius: radius,
+    };
+    // console.log(getRemindersData, '============== getRemindersData');
+    // console.log(item, '=========------obj');
+    // console.log(index, '=========---------index');
+    // console.log(newObj, '=========-------Newobj');
+    myData.splice(index, 1, newObj);
+    dispatch(test(myData));
+  };
+  const savedData = () => {
+    let savedData = [...getRemindersData];
+    let obj = {
+      id: generateString(8),
+      name: name,
+      radius: radius,
+    };
+    savedData.push(obj);
+    dispatch(test(savedData));
+  };
+  function generateString(length) {
+    let result = '';
+    const characters =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const charactersLength = characters.length;
+    let counter = 0;
+    while (counter < length) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+      counter += 1;
+    }
+    return result;
+  }
   const handleNameChange = value => {
     setName(value);
   };
@@ -40,13 +87,13 @@ const Index = ({route}) => {
     Alert.alert('You entered: ' + name);
   };
   const valueName = () => {
-    return route?.params === null ? name : itemId.name;
+    isEdit === true ? itemName : name;
   };
   const valueRadius = () => {
-    return route?.params === null ? radius : itemId.radius;
+    isEdit === true ? itemName : radius;
   };
+
   const renderItem = ({item}) => {
-    // console.log(item.id, '============ bottomSheet locations');
     const uniqueId = item.id;
     return (
       <TouchableOpacity
@@ -74,7 +121,6 @@ const Index = ({route}) => {
         <TextInput
           style={styles.textInputStyle}
           onChangeText={handleNameChange}
-          // value={valueName()}
           value={name}
           placeholder="Name"
         />
@@ -91,7 +137,6 @@ const Index = ({route}) => {
         <TextInput
           style={styles.textInputStyle}
           onChangeText={handleRadiusChange}
-          // value={valueRadius()}
           value={radius}
           placeholder="Radius"
           keyboardType="numeric"
@@ -102,18 +147,10 @@ const Index = ({route}) => {
           activeOpacity={0.85}
           style={styles.button}
           onPress={() => {
-            navigation.navigate(ScreeNames.Reminders, {
-              // savedData: RemindersData,
-            });
-            let savedData = [...getRemindersData];
-            let obj = {
-              name: name,
-              radius: radius,
-            };
-            savedData.push(obj);
-            dispatch(test(savedData));
+            navigation.navigate(ScreeNames.Reminders);
+            isEdit ? updatedData() : savedData();
           }}>
-          <Text style={styles.buttonTxt}>Save</Text>
+          <Text style={styles.buttonTxt}>{isEdit ? 'Update' : 'Save'}</Text>
         </TouchableOpacity>
       </View>
       <RBSheet
@@ -125,14 +162,17 @@ const Index = ({route}) => {
         animationType="slide"
         customStyles={styles.rbSheetStyles}>
         <View style={styles.rbSheetContainer}>
-          <TouchableOpacity activeOpacity={0.85} style={styles.addButton}>
+          <TouchableOpacity
+            activeOpacity={0.85}
+            style={styles.addButton}
+            onPress={() => {}}>
             <Text style={styles.addtxt}>Add</Text>
           </TouchableOpacity>
-          <FlatList
-            data={locationData}
+          {/* <FlatList
+            data={locationData}s
             renderItem={renderItem}
             keyExtractor={(item, index) => index.toString()}
-          />
+          /> */}
         </View>
       </RBSheet>
     </SafeAreaView>

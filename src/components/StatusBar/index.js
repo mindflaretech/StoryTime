@@ -2,7 +2,7 @@ import {StatusBar, StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 import {Colors} from '../../theme';
 
-const Index = () => {
+const StatusBr = () => {
   return (
     <>
       <StatusBar backgroundColor={Colors.teal} barStyle="light-content" />
@@ -10,6 +10,6 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default StatusBr;
 
 const styles = StyleSheet.create({});

@@ -8,6 +8,7 @@ import {NavigationService} from '../utils';
 import DrawerNavigator from './drawer';
 import Reminders from '../screens/Reminders/index';
 import RemindersAddUpdate from '../screens/RemindersAddUpdate/index';
+import MapView from '../screens/MapView';
 
 const Stack = createStackNavigator();
 export const ScreeNames = {
@@ -16,8 +17,8 @@ export const ScreeNames = {
 };
 function StackScreens() {
   return (
-    <Stack.Navigator initialRouteName="Reminders">
-      <Stack.Screen
+    <Stack.Navigator initialRouteName="MapScreen">
+      {/* <Stack.Screen
         name="Reminders"
         component={Reminders}
         options={{title: 'Reminders'}}
@@ -26,6 +27,11 @@ function StackScreens() {
         name="RemindersAddUpdate"
         component={RemindersAddUpdate}
         options={{title: 'Add/Update'}}
+      /> */}
+      <Stack.Screen
+        name="MapScreen"
+        component={MapView}
+        options={{headerShown: false}}
       />
     </Stack.Navigator>
   );

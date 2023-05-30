@@ -21,16 +21,26 @@ const Index = ({route}) => {
   const viewref = useRef(null);
   const navigation = useNavigation();
   const SavedData = route?.params?.myName;
+  const edit = true;
   const dispatch = useDispatch();
   const getRemindersData = useSelector(getTest);
-  // console.log(data, '========== getRemindvsddsersData');
+  const openRowRef = useRef(null);
+
+  // console.log(
+  //   getRemindersData.indexOf(getRemindersData[2]),
+  //   '========== ===mouse',
+  // );
   useEffect(() => {
     setData(getRemindersData);
   }, [getRemindersData]);
   const removeItem = itemToRemove => {
-    getRemindersData.filter(item => item !== itemToRemove);
+    // getRemindersData.filter(item => item !== itemToRemove);
+    const updatedData = getRemindersData.filter(item => item !== itemToRemove);
+    // setData(updatedData);
+    dispatch(test(updatedData));
     // setData(prevData => prevData.filter(item => item !== itemToRemove));
   };
+
   const handleViewId = () => {
     const viewId = viewref.current?.id;
     // console.log(viewId, '============viewId');
@@ -54,7 +64,7 @@ const Index = ({route}) => {
       </View>
     );
   };
-  const renderHiddenItem = ({item}) => {
+  const renderHiddenItem = (rowData, rowMap, item) => {
     // const uniqueId = viewref;
     // console.log(uniqueId);
     return (
@@ -62,21 +72,40 @@ const Index = ({route}) => {
         <TouchableOpacity
           activeOpacity={0.85}
           style={styles.backRowEditView}
-          onPress={() =>
+          onPress={() => {
+            // const key = item.item.key
+            rowMap[rowData.item.id].closeRow();
+            // console.log(rowData.item, 'item');
+
+            // console.log(rowMap[0], 'rowMap');
             navigation.navigate(ScreeNames.RemindersAddUpdate, {
-              // itemId: handleViewId,
-              items: item,
-            })
-          }>
+              items: rowData.item,
+              isEdit: edit,
+            });
+          }}>
           <Text style={styles.backRowEditTxt}>Edit</Text>
         </TouchableOpacity>
         <TouchableOpacity
           activeOpacity={0.85}
           style={styles.backRowDeleteView}
           onPress={() => {
-            {
-              removeItem(item);
-            }
+            Alert.alert(
+              'Delete Reminder',
+              'Are you sure you want to delete this reminder ?',
+              [
+                {
+                  text: 'No',
+                  onPress: () => rowMap[rowData.item.id].closeRow(),
+                  style: 'default',
+                },
+                {
+                  text: 'Yes',
+                  onPress: () => removeItem(rowData.item),
+                  style: 'cancel',
+                },
+              ],
+              {cancelable: false},
+            );
           }}>
           <Text style={styles.backRowDeleteTxt}>Delete</Text>
         </TouchableOpacity>
@@ -89,19 +118,25 @@ const Index = ({route}) => {
     </View>
   );
 
+  const onRowDidOpen = (rowKey, rowMap) => {
+    console.log(rowKey, 'rowKey');
+    openRowRef.current = rowMap[rowKey];
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar />
       <SwipeListView
         style={{marginTop: 20}}
         data={getRemindersData}
-        keyExtractor={(item, index) => index.toString()}
+        keyExtractor={(item, index) => item.id}
         renderItem={renderItem}
         renderHiddenItem={renderHiddenItem}
         leftOpenValue={75}
         rightOpenValue={-75}
         ListEmptyComponent={ListEmptyComponent}
         showsVerticalScrollIndicator={false}
+        onRowDidOpen={onRowDidOpen}
       />
       <TouchableOpacity
         activeOpacity={0.85}
