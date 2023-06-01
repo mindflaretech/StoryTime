@@ -21,6 +21,7 @@ const Index = ({route}) => {
   const viewref = useRef(null);
   const navigation = useNavigation();
   const SavedData = route?.params?.myName;
+  const showLocation = route?.params?.showLocation;
   const edit = true;
   const dispatch = useDispatch();
   const getRemindersData = useSelector(getTest);
@@ -31,8 +32,10 @@ const Index = ({route}) => {
   //   '========== ===mouse',
   // );
   useEffect(() => {
-    setData(getRemindersData);
-  }, [getRemindersData]);
+    // setData(getRemindersData);
+    console.log(getRemindersData, '============== get complete reminders data');
+    console.log(showLocation, '=================== showLocation');
+  }, []);
   const removeItem = itemToRemove => {
     // getRemindersData.filter(item => item !== itemToRemove);
     const updatedData = getRemindersData.filter(item => item !== itemToRemove);
@@ -45,39 +48,30 @@ const Index = ({route}) => {
     const viewId = viewref.current?.id;
     // console.log(viewId, '============viewId');
   };
-  const renderItem = ({item}) => {
-    // console.log(item.id, '============ data');
-    const uniqueId = item.id;
+  const renderItem = rowData => {
+    // console.log(item.loc, '================= description');
     return (
-      <View
-        key={uniqueId}
-        style={[
-          styles.frontRowView,
-          // {transform: [{translateX: swipeRow[item.id] || 0}]},
-        ]}>
+      <View style={[styles.frontRowView]}>
         <Text style={[styles.frontRowtxt, {color: Colors.teal}]}>
-          {item.name}
+          {rowData.item.name}
+        </Text>
+        <Text style={[styles.frontRowDestxt, {color: Colors.black}]}>
+          {rowData.item.loc}
         </Text>
         <Text style={[styles.frontRowtxt, {color: Colors.black}]}>
-          {item.radius} km
+          {rowData.item.radius} km
         </Text>
       </View>
     );
   };
   const renderHiddenItem = (rowData, rowMap, item) => {
-    // const uniqueId = viewref;
-    // console.log(uniqueId);
     return (
       <View ref={viewref} style={styles.backRowView}>
         <TouchableOpacity
           activeOpacity={0.85}
           style={styles.backRowEditView}
           onPress={() => {
-            // const key = item.item.key
             rowMap[rowData.item.id].closeRow();
-            // console.log(rowData.item, 'item');
-
-            // console.log(rowMap[0], 'rowMap');
             navigation.navigate(ScreeNames.RemindersAddUpdate, {
               items: rowData.item,
               isEdit: edit,

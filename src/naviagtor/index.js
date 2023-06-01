@@ -14,11 +14,12 @@ const Stack = createStackNavigator();
 export const ScreeNames = {
   Reminders: 'Reminders',
   RemindersAddUpdate: 'RemindersAddUpdate',
+  MapScreen: 'MapScreen',
 };
 function StackScreens() {
   return (
-    <Stack.Navigator initialRouteName="MapScreen">
-      {/* <Stack.Screen
+    <Stack.Navigator initialRouteName="Reminders">
+      <Stack.Screen
         name="Reminders"
         component={Reminders}
         options={{title: 'Reminders'}}
@@ -27,7 +28,7 @@ function StackScreens() {
         name="RemindersAddUpdate"
         component={RemindersAddUpdate}
         options={{title: 'Add/Update'}}
-      /> */}
+      />
       <Stack.Screen
         name="MapScreen"
         component={MapView}

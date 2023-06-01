@@ -1,14 +1,84 @@
 import {View, Text} from 'react-native';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import StatusBr from '../../components/StatusBar';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import styles from './styles';
-import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
+// import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
+import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete';
+import {Colors} from '../../theme';
+import {useDispatch, useSelector} from 'react-redux';
+import {getTest, test} from '../../ducks/testPost';
+import {useNavigation} from '@react-navigation/native';
+import {ScreeNames} from '../../naviagtor';
 
 const MapScreen = () => {
+  // ======================== useState ========================= //
+  const [des, setDes] = useState();
+  const [lat, setLat] = useState();
+  const [lng, setLng] = useState();
+  const getRemindersData = useSelector(getTest);
+  const dispatch = useDispatch();
+  const navigation = useNavigation();
+  const searchData = true;
+  useEffect(() => {
+    console.log(
+      getRemindersData,
+      '=================== getRemindersData of mapView',
+    );
+  }, []);
+  const HandleSearchPlaces = (data, detail) => {
+    const {geometry} = detail;
+    const {location} = geometry;
+    const latitude = location.lat;
+    const longitude = location.lng;
+    const description = data.description;
+    console.log('Latitude:', latitude);
+    console.log('Longitude:', longitude);
+    console.log('Description:', description);
+    setDes(description);
+    setLat(latitude);
+    setLng(longitude);
+    navigation.navigate(
+      ScreeNames.RemindersAddUpdate,
+      //   {
+      //   lati: latitude,
+      //   long: lng,
+      //   descr: des,
+      // }
+    );
+
+    const loc = [...getRemindersData];
+    let obj = {
+      myLocation: {
+        latitude: latitude,
+        longitude: longitude,
+        description: description,
+      },
+    };
+    loc.push(obj);
+    dispatch(test(loc));
+  };
   return (
     <SafeAreaView style={styles.container}>
       <StatusBr />
+      <GooglePlacesAutocomplete
+        GooglePlacesDetailsQuery={{fields: 'geometry'}}
+        fetchDetails={true}
+        styles={{
+          textInputContainer: styles.textInputContainer,
+          textInput: styles.textInput,
+        }}
+        placeholder="Search your location here"
+        textInputProps={{
+          placeholderTextColor: Colors.teal,
+        }}
+        onPress={HandleSearchPlaces}
+        query={{
+          key: 'AIzaSyDnXL-HCi6BSVMWCtKk8Bl3TiPfX9H57sU',
+          language: 'en',
+          type: 'geocode',
+        }}
+      />
       {/* <View style={styles.mapViewContainer}>
         <MapView
           provider={PROVIDER_GOOGLE}

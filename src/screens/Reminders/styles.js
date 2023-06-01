@@ -27,6 +27,11 @@ export default StyleSheet.create({
     fontSize: 20,
     padding: 10,
   },
+  frontRowDestxt:{
+    textAlign: 'center',
+    fontSize: 14,
+    padding: 10,
+  },
   backRowView: {
     flexDirection: 'row',
     justifyContent: 'space-between',
