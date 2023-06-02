@@ -32,31 +32,29 @@ const MapScreen = () => {
     const latitude = location.lat;
     const longitude = location.lng;
     const description = data.description;
+    const placeId = data.place_id;
     console.log('Latitude:', latitude);
     console.log('Longitude:', longitude);
     console.log('Description:', description);
-    setDes(description);
-    setLat(latitude);
-    setLng(longitude);
-    navigation.navigate(
-      ScreeNames.RemindersAddUpdate,
-      //   {
-      //   lati: latitude,
-      //   long: lng,
-      //   descr: des,
-      // }
-    );
-
-    const loc = [...getRemindersData];
-    let obj = {
-      myLocation: {
-        latitude: latitude,
-        longitude: longitude,
-        description: description,
-      },
+    console.log('PlaceId:', placeId);
+    // setDes(description);
+    // setLat(latitude);
+    // setLng(longitude);
+    navigation.navigate(ScreeNames.RemindersAddUpdate, {
+      savedLocation: description,
+      location: true,
+    });
+    const arr = [];
+    const a = [...getRemindersData];
+    const obj = {
+      placeId: placeId,
+      description: description,
+      latitude: latitude,
+      longitude: longitude,
     };
-    loc.push(obj);
-    dispatch(test(loc));
+    arr.push(obj);
+    a.push(...arr);
+    dispatch(test(a));
   };
   return (
     <SafeAreaView style={styles.container}>

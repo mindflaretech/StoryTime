@@ -23,6 +23,8 @@ const Index = ({route}) => {
   // ================ useState =====================//
   const [name, setName] = useState('');
   const [radius, setRadius] = useState('');
+  const [loc, setLoc] = useState('');
+  const [locationData, setLocationData] = useState([]);
   const [showLocation, setShowLocation] = useState();
   const [SelectedLoc, setSelectedLoc] = useState();
   const rbSheetRef = useRef(null);
@@ -30,23 +32,24 @@ const Index = ({route}) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const item = route?.params?.items;
-  const lati = route?.params?.lati;
-  // const {lati, long, descr} = route?.params;
   const itemName = route?.params?.items?.name;
   const isEdit = route?.params?.isEdit;
   const itemRadius = route?.params?.items?.radius;
-  // console.log(lati, '=================== latitude');
-  const [myLocation] = getRemindersData;
+  const itemLocation = route?.params?.items?.loc;
+  const savedLocation = route?.params?.savedLocation;
+  const location = route?.params?.location;
+  const [description] = getRemindersData;
   useEffect(() => {
-    console.log(
-      myLocation,
-      '============== getRemindersData on add/update screen',
-    );
+    setShowLocation(savedLocation);
+    setLocationData(description);
+    console.log(locationData, ' getRemindersData on add/update screen ');
     if (isEdit) {
       setName(itemName);
       setRadius(itemRadius);
+      setLoc(itemLocation);
     }
-  }, []);
+  }, [getRemindersData]);
+ 
   //================== creating random ID =====================//
   const updatedData = () => {
     var myData = [...getRemindersData];
@@ -56,7 +59,7 @@ const Index = ({route}) => {
       id: generateString(8),
       name: name,
       radius: radius,
-      loc: showLocation,
+      loc: savedLocation || showLocation || loc,
     };
 
     myData.splice(index, 1, newObj);
@@ -68,7 +71,7 @@ const Index = ({route}) => {
       id: generateString(8),
       name: name,
       radius: radius,
-      loc: showLocation,
+      loc: savedLocation || showLocation || loc,
     };
     savedData.push(obj);
     dispatch(test(savedData));
@@ -92,18 +95,16 @@ const Index = ({route}) => {
     setRadius(value);
   };
   const renderItem = ({item}) => {
-    // const description = item.myLocation.description;
-    // console.log(description, '======================= item.description');
     return (
       <TouchableOpacity
         style={[styles.renderItemFlatlist]}
         activeOpacity={0.85}
         onPress={() => {
-          setShowLocation(item.myLocation.description);
+          setShowLocation(item.description);
           setSelectedLoc(true);
           rbSheetRef.current.close();
         }}>
-        <Text style={styles.flatListTxt}>{item.myLocation.description}</Text>
+        <Text style={styles.flatListTxt}>{item.description}</Text>
       </TouchableOpacity>
     );
   };
@@ -121,7 +122,15 @@ const Index = ({route}) => {
           activeOpacity={0.85}
           style={styles.locationFieldButton}
           onPress={() => rbSheetRef.current.open()}>
-          <Text>{SelectedLoc ? showLocation : 'Location'}</Text>
+          <Text>
+            {SelectedLoc
+              ? showLocation
+              : location
+              ? savedLocation
+              : isEdit
+              ? itemLocation
+              : 'Location'}
+          </Text>
         </TouchableOpacity>
         <TextInput
           style={styles.textInputStyle}
@@ -163,7 +172,7 @@ const Index = ({route}) => {
             <Text style={styles.addtxt}>Add</Text>
           </TouchableOpacity>
           <FlatList
-            data={myLocation}
+            data={[locationData]}
             renderItem={renderItem}
             keyExtractor={(item, index) => index.toString()}
           />

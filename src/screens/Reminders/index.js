@@ -26,7 +26,6 @@ const Index = ({route}) => {
   const dispatch = useDispatch();
   const getRemindersData = useSelector(getTest);
   const openRowRef = useRef(null);
-
   // console.log(
   //   getRemindersData.indexOf(getRemindersData[2]),
   //   '========== ===mouse',
@@ -34,7 +33,7 @@ const Index = ({route}) => {
   useEffect(() => {
     // setData(getRemindersData);
     console.log(getRemindersData, '============== get complete reminders data');
-    console.log(showLocation, '=================== showLocation');
+    // console.log(showLocation, '=================== showLocation');
   }, []);
   const removeItem = itemToRemove => {
     // getRemindersData.filter(item => item !== itemToRemove);
