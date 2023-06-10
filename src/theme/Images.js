@@ -22,5 +22,6 @@ export default {
   general: {
     topArrow: require('../assets/icon/topArrowCricle.png'),
     addIcon: require('../assets/images/addIcon.png'),
+    reminderIcon: require('../assets/images/reminderIcon.png'),
   },
 };

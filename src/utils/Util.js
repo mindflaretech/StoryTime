@@ -176,11 +176,11 @@ function checkAppStoreVersion() {
         country: "jp", // default value is 'jp'
       });
 
-      console.log("=========== Check App Version =======");
-      console.log("=========== Platform ==================");
-      console.log(getPlatform());
+      // console.log("=========== Check App Version =======");
+      // console.log("=========== Platform ==================");
+      // console.log(getPlatform());
 
-      console.log(check);
+      // console.log(check);
       if (check.result === "new") {
         // if app store version is new
         Alert.alert("Update App", "New version available on store");
@@ -188,7 +188,7 @@ function checkAppStoreVersion() {
 
       // setAndroidVersion(check.result);
     } catch (e) {
-      console.log(e);
+      // console.log(e);
     }
   };
 

@@ -7,7 +7,8 @@ export const updateCountTest = makeAction('UPDATE_COUNT_TEST');
 export const testScroll = makeRequesActions('TEST_SCROLL');
 export const testList = makeRequesActions('TEST_LIST');
 export const getList = makeRequesActions('GET_LIST');
-export const test = makeAction('Test');
+export const locations = makeAction('LOCATIONS');
+export const reminders = makeAction('REMINDERS');
 
 // init state
 const initalState = {
@@ -18,6 +19,8 @@ const initalState = {
   gitUsers: [],
   page: {},
   test: [],
+  locations: [],
+  reminders: [],
 };
 // console.log(test);
 // init reducer
@@ -25,9 +28,9 @@ export default createReducer(initalState, builder => {
   // Git user list
   builder.addCase(getList.success, (state, action) => {
     // Util.concatDataArray(state, action, 'list');
-    console.log('========== INITIAL STATE OF GET USERS LIST ========');
-    console.log(state);
-    console.log(action);
+    // console.log('========== INITIAL STATE OF GET USERS LIST ========');
+    // console.log(state);
+    // console.log(action);
     state = {
       ...state,
       gitUsers: Util.concatDataArray(state, action, 'gitUsers'),
@@ -84,10 +87,13 @@ export default createReducer(initalState, builder => {
     state.data = action.payload.count;
   });
 
-  builder.addCase(test, (state, action) => {
-    console.log(action);
-    state.test = action.payload;
-    // console.log(test, '================ test');
+  builder.addCase(locations, (state, action) => {
+    console.log(action, 'locations action ..........');
+    state.locations = action.payload;
+  });
+  builder.addCase(reminders, (state, action) => {
+    console.log(action, 'reminders action  ..........');
+    state.reminders = action.payload;
   });
 });
 
@@ -105,4 +111,5 @@ export const getScrollData = state => state.testPost?.scrollViewData ?? [];
 export const getScrollDataIdentifer = identifier => state =>
   state.testPost?.[identifier] ?? defaultData;
 
-export const getTest = state => state.testPost?.test ?? defaultObj;
+export const getLocation = state => state.testPost?.locations ?? defaultData;
+export const getReminder = state => state.testPost?.reminders ?? defaultData;

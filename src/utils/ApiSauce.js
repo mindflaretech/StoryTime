@@ -17,14 +17,14 @@ const api = create({
 async function callRequest(url, payload, headers = {}, parameter = '') {
   // get attributes from url
 
-  console.log('========== URL ========');
-  console.log(url);
+  // console.log('========== URL ========');
+  // console.log(url);
 
-  console.log('========== Payload ========');
-  console.log(payload);
+  // console.log('========== Payload ========');
+  // console.log(payload);
 
-  console.log('========== Headers ========');
-  console.log(headers);
+  // console.log('========== Headers ========');
+  // console.log(headers);
 
   const { type, access_token_required } = url;
   // set X-API-TOKEN
@@ -73,11 +73,11 @@ async function callRequest(url, payload, headers = {}, parameter = '') {
 
   // log web service response
   if (__DEV__ && API_LOG) {
-    console.log('url', url);
-    console.log('response', response);
-    console.log('payload', payload);
-    console.log('headers', headers);
-    console.log('route', route);
+    // console.log('url', url);
+    // console.log('response', response);
+    // console.log('payload', payload);
+    // console.log('headers', headers);
+    // console.log('route', route);
   }
 
   return handleResponse(response, headers);
@@ -85,8 +85,8 @@ async function callRequest(url, payload, headers = {}, parameter = '') {
 
 function handleResponse(response, headers) {
   return new Promise((resolve, reject) => {
-    console.log('====== response.status ======');
-    console.log(response.status);
+    // console.log('====== response.status ======');
+    // console.log(response.status);
     // network error  internet not working
     const isNetWorkError = response.problem === 'NETWORK_ERROR';
     // network error  internet not working

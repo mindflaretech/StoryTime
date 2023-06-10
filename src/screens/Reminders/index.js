@@ -1,7 +1,13 @@
 import {View, Text, TouchableOpacity, Image, Alert} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {getTest, info, test} from '../../ducks/testPost';
+import {
+  getReminder,
+  getTest,
+  info,
+  reminders,
+  test,
+} from '../../ducks/testPost';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {FlatList} from 'react-native-gesture-handler';
 import styles from '../Reminders/styles';
@@ -13,6 +19,8 @@ import {ScreeNames} from '../../naviagtor';
 import {transform} from 'lodash';
 import {RemindersData} from '../../utils/Data/RemindersData';
 import StatusBar from '../../components/StatusBar';
+import {images} from '../../utils/Images/images';
+// import PushNotification from 'react-native-push-notification';
 
 const Index = ({route}) => {
   //===================== useState ============================//
@@ -22,40 +30,36 @@ const Index = ({route}) => {
   const navigation = useNavigation();
   const SavedData = route?.params?.myName;
   const showLocation = route?.params?.showLocation;
-  const edit = true;
   const dispatch = useDispatch();
-  const getRemindersData = useSelector(getTest);
+  const getRemindersData = useSelector(getReminder);
   const openRowRef = useRef(null);
   // console.log(
   //   getRemindersData.indexOf(getRemindersData[2]),
   //   '========== ===mouse',
   // );
   useEffect(() => {
-    // setData(getRemindersData);
+    // createChannel();
     console.log(getRemindersData, '============== get complete reminders data');
-    // console.log(showLocation, '=================== showLocation');
   }, []);
   const removeItem = itemToRemove => {
-    // getRemindersData.filter(item => item !== itemToRemove);
     const updatedData = getRemindersData.filter(item => item !== itemToRemove);
-    // setData(updatedData);
-    dispatch(test(updatedData));
-    // setData(prevData => prevData.filter(item => item !== itemToRemove));
+    dispatch(reminders(updatedData));
   };
-
-  const handleViewId = () => {
-    const viewId = viewref.current?.id;
-    // console.log(viewId, '============viewId');
-  };
+  // const createChannel = () => {
+  //   PushNotification.createChannel({
+  //     channelId: 'test-channel',
+  //     channelName: 'Test Channel',
+  //   });
+  // };
   const renderItem = rowData => {
-    // console.log(item.loc, '================= description');
+    // console.log(rowData.item, '================= description');
     return (
-      <View style={[styles.frontRowView]}>
+      <View key={rowData.item.id} style={[styles.frontRowView]}>
         <Text style={[styles.frontRowtxt, {color: Colors.teal}]}>
           {rowData.item.name}
         </Text>
         <Text style={[styles.frontRowDestxt, {color: Colors.black}]}>
-          {rowData.item.loc}
+          {rowData.item.location}
         </Text>
         <Text style={[styles.frontRowtxt, {color: Colors.black}]}>
           {rowData.item.radius} km
@@ -65,7 +69,7 @@ const Index = ({route}) => {
   };
   const renderHiddenItem = (rowData, rowMap, item) => {
     return (
-      <View ref={viewref} style={styles.backRowView}>
+      <View key={rowData.item.id} ref={viewref} style={styles.backRowView}>
         <TouchableOpacity
           activeOpacity={0.85}
           style={styles.backRowEditView}
@@ -73,7 +77,7 @@ const Index = ({route}) => {
             rowMap[rowData.item.id].closeRow();
             navigation.navigate(ScreeNames.RemindersAddUpdate, {
               items: rowData.item,
-              isEdit: edit,
+              isEdit: true,
             });
           }}>
           <Text style={styles.backRowEditTxt}>Edit</Text>
@@ -107,12 +111,12 @@ const Index = ({route}) => {
   };
   const ListEmptyComponent = () => (
     <View style={styles.emptytxtView}>
+      <Image style={styles.reminderIcon} source={Images.general.reminderIcon} />
       <Text style={styles.emptyTxt}>Reminders will appear here</Text>
     </View>
   );
 
   const onRowDidOpen = (rowKey, rowMap) => {
-    console.log(rowKey, 'rowKey');
     openRowRef.current = rowMap[rowKey];
   };
 
@@ -120,7 +124,7 @@ const Index = ({route}) => {
     <SafeAreaView style={styles.container}>
       <StatusBar />
       <SwipeListView
-        style={{marginTop: 20}}
+        style={{marginTop: 20,}}
         data={getRemindersData}
         keyExtractor={(item, index) => item.id}
         renderItem={renderItem}

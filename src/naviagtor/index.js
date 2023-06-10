@@ -27,7 +27,7 @@ function StackScreens() {
       <Stack.Screen
         name="RemindersAddUpdate"
         component={RemindersAddUpdate}
-        options={{title: 'Add/Update'}}
+        // options={{title: 'Add Reminder'}}
       />
       <Stack.Screen
         name="MapScreen"

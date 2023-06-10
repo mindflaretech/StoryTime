@@ -189,7 +189,7 @@ class FlatListApi extends React.Component {
   };
 
   componentDidMount() {
-    console.log("_sendRequestFirstTime");
+    // console.log("_sendRequestFirstTime");
     if (this.props.sendRequestOnMount) {
       this._sendRequestFirstTime();
     }
@@ -304,7 +304,7 @@ class FlatListApi extends React.Component {
     const { requestFlags, data, disableLoadMore, limit } = this.props;
     const { page, loading, lastRecordsLength, failure } = requestFlags;
     const dataLength = data.length;
-    console.log(this.props, "this.props");
+    // console.log(this.props, "this.props");
     const recordsFinished = lastRecordsLength < limit;
     const { totalRecords } = page;
     const sendRequestOnEnd =
@@ -325,7 +325,7 @@ class FlatListApi extends React.Component {
   };
 
   _sendRequestLoadMore = () => {
-    console.log(this.nextPage, "next page");
+    // console.log(this.nextPage, "next page");
     this._sendRequest(false, false, this.nextPage);
   };
 
@@ -494,8 +494,8 @@ class FlatListApi extends React.Component {
   _renderEmptyView = () => {
     
     const { emptyView, showOnly, requestFlags, isAnimated, data } = this.props;
-    console.log('============ Data =======');
-    console.log(data);
+    // console.log('============ Data =======');
+    // console.log(data);
     const { loading, failure, isPullToRefresh } = requestFlags;
 
     const showLoading = loading && !isPullToRefresh && data?.length === 0;

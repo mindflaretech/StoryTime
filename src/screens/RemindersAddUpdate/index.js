@@ -11,72 +11,60 @@ import styles from '../RemindersAddUpdate/styles';
 import SaveUpdateButton from '../../components/SaveUpdateButton';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import {useDispatch, useSelector} from 'react-redux';
-import {getTest, test} from '../../ducks/testPost';
+import {getLocation, getReminder, reminders} from '../../ducks/testPost';
 import {ScreeNames} from '../../naviagtor';
 import {useNavigation} from '@react-navigation/native';
 import {Colors} from '../../theme';
 import {locationData} from '../../utils/Data/LocationData';
 import {RemindersData} from '../../utils/Data/RemindersData';
 import StatusBar from '../../components/StatusBar';
+// import PushNotification from 'react-native-push-notification';
 
 const Index = ({route}) => {
   // ================ useState =====================//
   const [name, setName] = useState('');
   const [radius, setRadius] = useState('');
-  const [loc, setLoc] = useState('');
+  const [myLocationObj, setMyLocationObj] = useState();
   const [locationData, setLocationData] = useState([]);
   const [showLocation, setShowLocation] = useState();
   const [SelectedLoc, setSelectedLoc] = useState();
   const rbSheetRef = useRef(null);
-  const getRemindersData = useSelector(getTest);
+  const getLocationData = useSelector(getLocation);
+  const getRemindersData = useSelector(getReminder);
   const navigation = useNavigation();
   const dispatch = useDispatch();
+  const edit = route?.params?.edit;
+  const locationTrue = route?.params?.locationIsTrue;
   const item = route?.params?.items;
+  const itemId = route?.params?.items?.id;
   const itemName = route?.params?.items?.name;
-  const isEdit = route?.params?.isEdit;
   const itemRadius = route?.params?.items?.radius;
-  const itemLocation = route?.params?.items?.loc;
+  const isEdit = route?.params?.isEdit;
+  const itemLocation = route?.params?.items?.location;
   const savedLocation = route?.params?.savedLocation;
   const location = route?.params?.location;
-  const [description] = getRemindersData;
+
   useEffect(() => {
-    setShowLocation(savedLocation);
-    setLocationData(description);
-    console.log(locationData, ' getRemindersData on add/update screen ');
+    console.log(getLocationData, ' getLocationData on add/update screen ');
+    // console.log(getRemindersData, ' getRemindersData on add/update screen ');
+    console.log(isEdit, '================ isEdit');
+    console.log(edit, '================ edit');
+    console.log(locationTrue, '================ locationTrue');
+    navigation.setOptions({
+      title: isEdit || edit ? 'Edit Reminder' : 'Add Reminder',
+    });
     if (isEdit) {
       setName(itemName);
       setRadius(itemRadius);
-      setLoc(itemLocation);
+      setMyLocationObj(itemLocation);
+    } else if (locationTrue) {
+      setMyLocationObj(savedLocation);
     }
-  }, [getRemindersData]);
- 
-  //================== creating random ID =====================//
-  const updatedData = () => {
-    var myData = [...getRemindersData];
-    const obj = item;
-    const index = getRemindersData.indexOf(obj);
-    const newObj = {
-      id: generateString(8),
-      name: name,
-      radius: radius,
-      loc: savedLocation || showLocation || loc,
-    };
+    console.log(myLocationObj, '========== myLocationObj');
+  }, [isEdit, edit, itemName, itemRadius, itemLocation, savedLocation]);
 
-    myData.splice(index, 1, newObj);
-    dispatch(test(myData));
-  };
-  const savedData = () => {
-    let savedData = [...getRemindersData];
-    let obj = {
-      id: generateString(8),
-      name: name,
-      radius: radius,
-      loc: savedLocation || showLocation || loc,
-    };
-    savedData.push(obj);
-    dispatch(test(savedData));
-  };
-  function generateString(length) {
+  //================== creating random ID =====================//
+  const generateString = length => {
     let result = '';
     const characters =
       'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -87,21 +75,57 @@ const Index = ({route}) => {
       counter += 1;
     }
     return result;
-  }
+  };
+  const updatedData = () => {
+    const updatedIndex = getRemindersData.findIndex(obj => obj.id === itemId);
+    if (updatedIndex !== -1) {
+      const updatedData = getRemindersData.map(obj => {
+        if (obj.id === itemId) {
+          return {
+            id: generateString(8),
+            name: name,
+            radius: radius,
+            location: myLocationObj,
+          };
+        }
+        return obj;
+      });
+      dispatch(reminders(updatedData));
+    }
+  };
+  const savedData = () => {
+    const newData = {
+      id: generateString(8),
+      name: name,
+      radius: radius,
+      location: myLocationObj,
+    };
+    const updatedData = [...getRemindersData, newData];
+    dispatch(reminders(updatedData));
+  };
   const handleNameChange = value => {
     setName(value);
   };
   const handleRadiusChange = value => {
     setRadius(value);
   };
+  // const handleNotification = item => {
+  //   PushNotification.localNotification({
+  //     channelId: 'test-channel',
+  //     title: 'you clicked on me' + item.description,
+  //     message: item.description,
+  //   });
+  // };
   const renderItem = ({item}) => {
     return (
       <TouchableOpacity
         style={[styles.renderItemFlatlist]}
         activeOpacity={0.85}
         onPress={() => {
-          setShowLocation(item.description);
-          setSelectedLoc(true);
+          // setShowLocation(item.description);
+          // setSelectedLoc(true);
+          setMyLocationObj(item.description);
+          // handleNotification(item.description);
           rbSheetRef.current.close();
         }}>
         <Text style={styles.flatListTxt}>{item.description}</Text>
@@ -122,14 +146,8 @@ const Index = ({route}) => {
           activeOpacity={0.85}
           style={styles.locationFieldButton}
           onPress={() => rbSheetRef.current.open()}>
-          <Text>
-            {SelectedLoc
-              ? showLocation
-              : location
-              ? savedLocation
-              : isEdit
-              ? itemLocation
-              : 'Location'}
+          <Text style={styles.locationTxt}>
+            {myLocationObj ? myLocationObj : 'Location'}
           </Text>
         </TouchableOpacity>
         <TextInput
@@ -148,9 +166,11 @@ const Index = ({route}) => {
             navigation.navigate(ScreeNames.Reminders, {
               showLocation: showLocation,
             });
-            isEdit ? updatedData() : savedData();
+            isEdit || edit ? updatedData() : savedData();
           }}>
-          <Text style={styles.buttonTxt}>{isEdit ? 'Update' : 'Save'}</Text>
+          <Text style={styles.buttonTxt}>
+            {isEdit || edit ? 'Update' : 'Save'}
+          </Text>
         </TouchableOpacity>
       </View>
       <RBSheet
@@ -166,13 +186,30 @@ const Index = ({route}) => {
             activeOpacity={0.85}
             style={styles.addButton}
             onPress={() => {
-              navigation.navigate(ScreeNames.MapScreen);
+              navigation.navigate(
+                isEdit
+                  ? ScreeNames.MapScreen
+                  : {
+                      name: ScreeNames.MapScreen,
+                      key: generateString(8),
+                    },
+                {edit: true},
+              );
               rbSheetRef.current.close();
-            }}>
+            }}
+            // onPress={() => {
+            //   navigation.navigate(
+            //     isEdit
+            //       ? (ScreeNames.MapScreen, {edit: isEdit})
+            //       : ScreeNames.MapScreen,
+            //   );
+            //   rbSheetRef.current.close();
+            // }}
+          >
             <Text style={styles.addtxt}>Add</Text>
           </TouchableOpacity>
           <FlatList
-            data={[locationData]}
+            data={getLocationData}
             renderItem={renderItem}
             keyExtractor={(item, index) => index.toString()}
           />

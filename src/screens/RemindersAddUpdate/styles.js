@@ -22,13 +22,18 @@ export default StyleSheet.create({
   locationFieldButton: {
     borderColor: Colors.teal,
     borderWidth: 1,
-    padding: 16,
+    paddingHorizontal:12,
+    paddingVertical:16,
     marginHorizontal: 12,
     marginVertical: 10,
     borderRadius: 10,
     elevation: 3,
     shadowColor: Colors.teal,
     backgroundColor: Colors.white,
+  },
+  locationTxt: {
+    color: Colors.black,
+    fontSize: 14,
   },
   textInputsView: {
     marginTop: 20,

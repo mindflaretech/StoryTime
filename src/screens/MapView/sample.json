@@ -1,0 +1,19 @@
+{
+  {
+    "description": "Gulshan-e-Iqbal, Karachi, Pakistan", 
+    "matched_substrings": [{"length": 15, "offset": 0}], 
+    "place_id": "ChIJsda_CLg4sz4RIghXwgIae5k", 
+    "reference": "ChIJsda_CLg4sz4RIghXwgIae5k",
+     "structured_formatting": {"main_text": "Gulshan-e-Iqbal", 
+     "main_text_matched_substrings": [{}],
+      "secondary_text": "Karachi, Pakistan"
+      },
+       "terms": 
+       [
+        {"offset": 0, "value": "Gulshan-e-Iqbal"},
+        {"offset": 17, "value": "Karachi"}, 
+        {"offset": 26, "value": "Pakistan"}
+    ],
+         "types":
+          ["sublocality_level_1", "sublocality", "political", "geocode"]}
+}

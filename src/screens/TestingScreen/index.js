@@ -32,7 +32,7 @@ const TestingScreen = () => {
 
   const submit = formObj.handleSubmit((values) => {
     NavigationService.navigate("Home");
-    console.log("values", values);
+    // console.log("values", values);
   });
 
   const [obj, setObject] = useState(null);
@@ -435,10 +435,10 @@ const TestingScreen = () => {
         onEndReached={() => {
           let limit = itemHeight * data.length;
           let height = Metrics.screenHeight - 40 - 180;
-          console.log(limit);
-          console.log(height);
+          // console.log(limit);
+          // console.log(height);
           if (limit > height) {
-            console.log("onEndReached");
+            // console.log("onEndReached");
             setLoadMore(true);
 
             // setTimeout(() => {

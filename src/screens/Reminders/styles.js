@@ -27,7 +27,7 @@ export default StyleSheet.create({
     fontSize: 20,
     padding: 10,
   },
-  frontRowDestxt:{
+  frontRowDestxt: {
     textAlign: 'center',
     fontSize: 14,
     padding: 10,
@@ -97,9 +97,15 @@ export default StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  reminderIcon: {
+    resizeMode: 'contain',
+    width: 75,
+    height: 75,
+  },
   emptyTxt: {
-    color: 'grey',
-    fontSize: 16,
+    fontSize: 18,
+    color: Colors.black,
+    marginVertical: 10,
   },
   shadowStyle: {
     width: 200,

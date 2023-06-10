@@ -7,24 +7,23 @@ import styles from './styles';
 import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete';
 import {Colors} from '../../theme';
 import {useDispatch, useSelector} from 'react-redux';
-import {getTest, test} from '../../ducks/testPost';
+import {getLocation, locations} from '../../ducks/testPost';
 import {useNavigation} from '@react-navigation/native';
 import {ScreeNames} from '../../naviagtor';
 
-const MapScreen = () => {
+const MapScreen = ({route}) => {
   // ======================== useState ========================= //
   const [des, setDes] = useState();
   const [lat, setLat] = useState();
   const [lng, setLng] = useState();
-  const getRemindersData = useSelector(getTest);
+  const isEdit = route?.params?.edit;
+  const getLocationData = useSelector(getLocation);
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const searchData = true;
   useEffect(() => {
-    console.log(
-      getRemindersData,
-      '=================== getRemindersData of mapView',
-    );
+    // console.log(getLocationData, '=============== getLocationData of mapView');
+    // console.log(isEdit, '================= isEditttt');
   }, []);
   const HandleSearchPlaces = (data, detail) => {
     const {geometry} = detail;
@@ -33,19 +32,20 @@ const MapScreen = () => {
     const longitude = location.lng;
     const description = data.description;
     const placeId = data.place_id;
-    console.log('Latitude:', latitude);
-    console.log('Longitude:', longitude);
-    console.log('Description:', description);
-    console.log('PlaceId:', placeId);
+    // console.log('Latitude:', latitude);
+    // console.log('Longitude:', longitude);
+    // console.log('Description:', description);
+    // console.log('PlaceId:', placeId);
     // setDes(description);
     // setLat(latitude);
     // setLng(longitude);
     navigation.navigate(ScreeNames.RemindersAddUpdate, {
       savedLocation: description,
-      location: true,
+      locationIsTrue: true,
+      edit: isEdit,
     });
-    const arr = [];
-    const a = [...getRemindersData];
+    // const arr = [];
+    const arr = [...getLocationData];
     const obj = {
       placeId: placeId,
       description: description,
@@ -53,8 +53,12 @@ const MapScreen = () => {
       longitude: longitude,
     };
     arr.push(obj);
-    a.push(...arr);
-    dispatch(test(a));
+    // a.push(...arr);
+    // let value = {
+    // locations: a,
+    // };
+    // console.log('MapView: value', value);
+    dispatch(locations(arr));
   };
   return (
     <SafeAreaView style={styles.container}>

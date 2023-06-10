@@ -185,7 +185,7 @@ export const Validation = {
       .nullable()
       .test("checkField", displayMsg(label), function (val) {
         const checkFieldValue = this.parent?.[checkFieldName] ?? "";
-        console.log("condition", checkFieldValue !== "" || val !== "");
+        // console.log("condition", checkFieldValue !== "" || val !== "");
         //return true;
         return checkFieldValue !== "" || val !== "";
       }),

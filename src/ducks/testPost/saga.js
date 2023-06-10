@@ -90,16 +90,16 @@ function* myGetData() {
     const { payloadApi, cb, identifier, reset } = payload;
     try {
       const response = yield call(callRequest, API_TEST_LISTING, payloadApi);
-      console.log("========== Git Users Response ========");
+      // console.log("========== Git Users Response ========");
       const data = response?.items;
-      console.log(data);
-      console.log('payloadApi.page');
-      console.log(payloadApi.page);
+      // console.log(data);
+      // console.log('payloadApi.page');
+      // console.log(payloadApi.page);
       const pl ={
         totalRecords: response?.total_count,
         nextPage: payloadApi.page + 1,
       }
-      console.log(pl);
+      // console.log(pl);
       yield put(
         getList.success({
           data: data,
@@ -109,8 +109,8 @@ function* myGetData() {
       );
       cb?.(data);
     } catch (error) {
-      console.log("========== Git Users Error ========");
-      console.log(error);
+      // console.log("========== Git Users Error ========");
+      // console.log(error);
       yield put(getList.failure({ errorMessage: error.message, identifier }));
       Util.showMessage(error.message);
     }

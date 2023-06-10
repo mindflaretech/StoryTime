@@ -257,7 +257,7 @@ const TextInputNative = (props) => {
     return (
       <TagView
         onPress={() => {
-          console.log(onPress);
+          // console.log(onPress);
           onPress(controlllerProps.onChange, controlllerProps.value);
         }}
         // pointerEvents={"none"}
