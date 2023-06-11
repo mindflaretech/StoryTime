@@ -19,6 +19,9 @@ export default {
   tab: {
     homeIcon: require('../assets/icon/homeIcon/home.png'),
   },
+  splash: {
+    iLocReminderLogo: require('../assets/images/iLocReminderLogo.png'),
+  },
   general: {
     topArrow: require('../assets/icon/topArrowCricle.png'),
     addIcon: require('../assets/images/addIcon.png'),

@@ -5,7 +5,7 @@ import {Colors, Fonts, Metrics} from '../../theme';
 
 export default StyleSheet.create({
   container: {
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.background,
     flex: 1,
   },
   swipeListView: {
@@ -13,45 +13,56 @@ export default StyleSheet.create({
     paddingHorizontal: 5,
   },
   frontRowView: {
-    backgroundColor: Colors.powderBlue,
     marginVertical: 5,
-    marginHorizontal: 10,
+    marginHorizontal: 20,
     borderRadius: 8,
-    elevation: 4,
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
+    elevation: 6,
+    shadowColor: Colors.teal,
+    shadowOpacity: 0.5,
+    shadowOffset: {width: 0, height: 2},
+    shadowRadius: 8,
+  },
+  nameLocationView: {
+    // backgroundColor: 'red',
+  },
+  icon: {
+    resizeMode: 'contain',
+    alignSelf: 'flex-end',
+    width: 30,
+    height: 30,
+  },
+  radiusView: {
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   frontRowtxt: {
-    textAlign: 'center',
     fontSize: 20,
-    padding: 10,
+    paddingTop: 10,
   },
   frontRowDestxt: {
     textAlign: 'center',
-    fontSize: 14,
-    padding: 10,
+    fontSize: 16,
+    paddingVertical: 12,
   },
   backRowView: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    // backgroundColor: Colors.primary,
     marginVertical: 5,
-    marginHorizontal: 10,
+    marginHorizontal: 20,
+    height:100
   },
   backRowEditView: {
     backgroundColor: 'blue',
     flex: 1,
     justifyContent: 'center',
-    height: 47,
+    height: 82,
     borderBottomLeftRadius: 10,
     borderTopLeftRadius: 10,
     paddingLeft: 20,
-    elevation: 2,
-  },
-  backRowEditTxt: {
-    color: Colors.white,
-    fontSize: 16,
+    elevation: 6,
   },
   backRowDeleteView: {
     backgroundColor: 'red',
@@ -59,9 +70,14 @@ export default StyleSheet.create({
     justifyContent: 'center',
     borderBottomRightRadius: 10,
     borderTopRightRadius: 10,
-    height: 47,
+    height: 82,
     paddingRight: 20,
-    elevation: 2,
+    elevation: 6,
+    shadowColor: Colors.teal,
+  },
+  backRowEditTxt: {
+    color: Colors.white,
+    fontSize: 16,
   },
   backRowDeleteTxt: {
     color: Colors.white,
@@ -83,7 +99,8 @@ export default StyleSheet.create({
     backgroundColor: Colors.powderBlue,
     position: 'absolute',
     bottom: 15,
-    right: 15,
+    // right: 15,
+    alignSelf: 'center',
   },
   addIconStyles: {
     resizeMode: 'contain',
@@ -92,15 +109,16 @@ export default StyleSheet.create({
     height: 65,
   },
   emptytxtView: {
-    flex: 1,
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.background,
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 200,
   },
   reminderIcon: {
     resizeMode: 'contain',
-    width: 75,
-    height: 75,
+    width: 90,
+    height: 90,
+    opacity:0.3
   },
   emptyTxt: {
     fontSize: 18,

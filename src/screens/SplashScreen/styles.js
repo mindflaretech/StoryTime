@@ -22,12 +22,18 @@ export default StyleSheet.create({
     alignItems: 'center',
   },
   lottieStyle: {
-    height: 150,
+    height: 200,
   },
   appNameTxt: {
     fontSize: 24,
     color: Colors.teal,
     fontStyle: 'italic',
     fontWeight: '700',
+  },
+  splashLogo: {
+    height: 150,
+    width: 150,
+    resizeMode: 'contain',
+    marginVertical: 15,
   },
 });

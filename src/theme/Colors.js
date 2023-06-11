@@ -9,4 +9,5 @@ export default {
   errorInput: '#FF0000',
   teal: '#008080',
   powderBlue: '#b0e0e6',
+  background: '#EAF2FA',
 };

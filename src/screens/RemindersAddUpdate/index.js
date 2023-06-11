@@ -18,7 +18,8 @@ import {Colors} from '../../theme';
 import {locationData} from '../../utils/Data/LocationData';
 import {RemindersData} from '../../utils/Data/RemindersData';
 import StatusBar from '../../components/StatusBar';
-// import PushNotification from 'react-native-push-notification';
+import CustomHeader from '../../components/Header/customHeader';
+import PushNotification from 'react-native-push-notification';
 
 const Index = ({route}) => {
   // ================ useState =====================//
@@ -46,7 +47,6 @@ const Index = ({route}) => {
 
   useEffect(() => {
     console.log(getLocationData, ' getLocationData on add/update screen ');
-    // console.log(getRemindersData, ' getRemindersData on add/update screen ');
     console.log(isEdit, '================ isEdit');
     console.log(edit, '================ edit');
     console.log(locationTrue, '================ locationTrue');
@@ -109,13 +109,13 @@ const Index = ({route}) => {
   const handleRadiusChange = value => {
     setRadius(value);
   };
-  // const handleNotification = item => {
-  //   PushNotification.localNotification({
-  //     channelId: 'test-channel',
-  //     title: 'you clicked on me' + item.description,
-  //     message: item.description,
-  //   });
-  // };
+  const handleNotification = item => {
+    PushNotification.localNotification({
+      channelId: 'test-channel',
+      title: 'you clicked on me' + item.description,
+      message: item.description,
+    });
+  };
   const renderItem = ({item}) => {
     return (
       <TouchableOpacity
@@ -125,7 +125,7 @@ const Index = ({route}) => {
           // setShowLocation(item.description);
           // setSelectedLoc(true);
           setMyLocationObj(item.description);
-          // handleNotification(item.description);
+          handleNotification(item.description);
           rbSheetRef.current.close();
         }}>
         <Text style={styles.flatListTxt}>{item.description}</Text>
@@ -135,6 +135,7 @@ const Index = ({route}) => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar />
+      <CustomHeader edit={edit} isEdit={isEdit} />
       <View style={styles.textInputsView}>
         <TextInput
           style={styles.textInputStyle}

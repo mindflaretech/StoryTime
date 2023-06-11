@@ -20,12 +20,14 @@ import {transform} from 'lodash';
 import {RemindersData} from '../../utils/Data/RemindersData';
 import StatusBar from '../../components/StatusBar';
 import {images} from '../../utils/Images/images';
-// import PushNotification from 'react-native-push-notification';
+import CustomHeader from '../../components/Header/customHeader';
+import PushNotification from 'react-native-push-notification';
 
 const Index = ({route}) => {
   //===================== useState ============================//
   const [data, setData] = useState();
   const [swipeRow, setSwipeRow] = useState({});
+  const [backgroundColor, setBackgroundColor] = useState();
   const viewref = useRef(null);
   const navigation = useNavigation();
   const SavedData = route?.params?.myName;
@@ -33,38 +35,89 @@ const Index = ({route}) => {
   const dispatch = useDispatch();
   const getRemindersData = useSelector(getReminder);
   const openRowRef = useRef(null);
-  // console.log(
-  //   getRemindersData.indexOf(getRemindersData[2]),
-  //   '========== ===mouse',
-  // );
   useEffect(() => {
-    // createChannel();
+    createChannel();
     console.log(getRemindersData, '============== get complete reminders data');
   }, []);
   const removeItem = itemToRemove => {
     const updatedData = getRemindersData.filter(item => item !== itemToRemove);
     dispatch(reminders(updatedData));
   };
-  // const createChannel = () => {
-  //   PushNotification.createChannel({
-  //     channelId: 'test-channel',
-  //     channelName: 'Test Channel',
-  //   });
-  // };
+  const createChannel = () => {
+    PushNotification.createChannel({
+      channelId: 'test-channel',
+      channelName: 'Test Channel',
+    });
+  };
   const renderItem = rowData => {
-    // console.log(rowData.item, '================= description');
     return (
-      <View key={rowData.item.id} style={[styles.frontRowView]}>
-        <Text style={[styles.frontRowtxt, {color: Colors.teal}]}>
-          {rowData.item.name}
-        </Text>
-        <Text style={[styles.frontRowDestxt, {color: Colors.black}]}>
-          {rowData.item.location}
-        </Text>
-        <Text style={[styles.frontRowtxt, {color: Colors.black}]}>
-          {rowData.item.radius} km
-        </Text>
-      </View>
+      <TouchableOpacity
+        key={rowData.item.id}
+        style={[
+          styles.frontRowView,
+          {
+            backgroundColor: backgroundColor ? Colors.teal : Colors.powderBlue,
+          },
+        ]}
+        onLongPress={() => {
+          backgroundColor === true
+            ? Alert.alert(
+                'Deactivate Reminder',
+                'Are you sure you want to deactivate this reminder ?',
+                [
+                  {
+                    text: 'No',
+                    style: 'default',
+                  },
+                  {
+                    text: 'Yes',
+                    onPress: () => {
+                      setBackgroundColor(false);
+                    },
+                    style: 'cancel',
+                  },
+                ],
+                {cancelable: false},
+              )
+            : Alert.alert(
+                'Activate Reminder',
+                'Are you sure you want to activate this reminder ?',
+                [
+                  {
+                    text: 'No',
+                    style: 'default',
+                  },
+                  {
+                    text: 'Yes',
+                    onPress: () => {
+                      setBackgroundColor(true);
+                    },
+                    style: 'cancel',
+                  },
+                ],
+                {cancelable: false},
+              );
+        }}
+        activeOpacity={1}>
+        <View style={styles.nameLocationView}>
+          <Text
+            style={[
+              styles.frontRowtxt,
+              {color: backgroundColor ? Colors.background : Colors.teal},
+            ]}>
+            {rowData.item.name}
+          </Text>
+          <Text style={[styles.frontRowDestxt, {color: Colors.black}]}>
+            {rowData.item.location}
+          </Text>
+        </View>
+        <View style={styles.radiusView}>
+          <Image style={styles.icon} source={Images.general.reminderIcon} />
+          <Text style={[styles.frontRowtxt, {color: Colors.black}]}>
+            {rowData.item.radius} km
+          </Text>
+        </View>
+      </TouchableOpacity>
     );
   };
   const renderHiddenItem = (rowData, rowMap, item) => {
@@ -123,18 +176,22 @@ const Index = ({route}) => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar />
-      <SwipeListView
-        style={{marginTop: 20,}}
-        data={getRemindersData}
-        keyExtractor={(item, index) => item.id}
-        renderItem={renderItem}
-        renderHiddenItem={renderHiddenItem}
-        leftOpenValue={75}
-        rightOpenValue={-75}
-        ListEmptyComponent={ListEmptyComponent}
-        showsVerticalScrollIndicator={false}
-        onRowDidOpen={onRowDidOpen}
-      />
+      <CustomHeader />
+      <View style={{flex: 1}}>
+        <SwipeListView
+          style={{marginTop: 20}}
+          data={getRemindersData}
+          keyExtractor={(item, index) => item.id}
+          renderItem={renderItem}
+          renderHiddenItem={renderHiddenItem}
+          leftOpenValue={75}
+          rightOpenValue={-75}
+          ListEmptyComponent={ListEmptyComponent}
+          showsVerticalScrollIndicator={false}
+          onRowDidOpen={onRowDidOpen}
+        />
+      </View>
+
       <TouchableOpacity
         activeOpacity={0.85}
         style={styles.addIconViewStyles}

@@ -1,7 +1,7 @@
 /** @format */
 
 import React, {useEffect, useRef} from 'react';
-import {Animated, Easing, View, Text} from 'react-native';
+import {Animated, Easing, Image, View, Text} from 'react-native';
 import Lottie from 'lottie-react-native';
 import {Colors, Images} from '../../theme';
 import styles from './styles';
@@ -24,11 +24,14 @@ export default function CustomSplashScreen() {
 
   return (
     <View style={styles.container}>
-      <StatusBar/>
-      <Lottie
+      <StatusBar />
+      {/* <Lottie
         style={styles.lottieStyle}
-        source={Images.lottie.splash}
         progress={animationProgress.current}
+        /> */}
+      <Image
+        style={styles.splashLogo}
+        source={Images.splash.iLocReminderLogo}
       />
       <Text style={styles.appNameTxt}>Remind Me</Text>
       <View style={styles.versionContainer}>

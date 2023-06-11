@@ -22,12 +22,12 @@ function StackScreens() {
       <Stack.Screen
         name="Reminders"
         component={Reminders}
-        options={{title: 'Reminders'}}
+        options={{headerShown: false}}
       />
       <Stack.Screen
         name="RemindersAddUpdate"
         component={RemindersAddUpdate}
-        // options={{title: 'Add Reminder'}}
+        options={{headerShown: false}}
       />
       <Stack.Screen
         name="MapScreen"
