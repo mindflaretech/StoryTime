@@ -10,6 +10,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {getLocation, locations} from '../../ducks/testPost';
 import {useNavigation} from '@react-navigation/native';
 import {ScreeNames} from '../../naviagtor';
+import Geolocation from 'react-native-geolocation-service';
 
 const MapScreen = ({route}) => {
   // ======================== useState ========================= //
@@ -21,10 +22,36 @@ const MapScreen = ({route}) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const searchData = true;
+  // useEffect(() => {
+  //   // console.log(getLocationData, '=============== getLocationData of mapView');
+  //   // console.log(isEdit, '================= isEditttt');
+  // }, []);
+
   useEffect(() => {
-    // console.log(getLocationData, '=============== getLocationData of mapView');
-    // console.log(isEdit, '================= isEditttt');
+    const fetchCurrentPosition = async () => {
+      try {
+        const position = await Geolocation.getCurrentPosition(
+          position => {
+            console.log(position, '================ possition');
+          },
+          error => {
+            // See error code charts below.
+            console.log(
+              error.code,
+              error.message,
+              '============== error Message',
+            );
+          },
+          {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+        );
+      } catch (error) {
+        console.log('Error fetching current position:', error);
+      }
+    };
+
+    fetchCurrentPosition();
   }, []);
+
   const HandleSearchPlaces = (data, detail) => {
     const {geometry} = detail;
     const {location} = geometry;
@@ -79,8 +106,14 @@ const MapScreen = ({route}) => {
           key: 'AIzaSyDnXL-HCi6BSVMWCtKk8Bl3TiPfX9H57sU',
           language: 'en',
           type: 'geocode',
+          components: 'country:pk',
         }}
+        currentLocation={true}
+        currentLocationLabel="Current Location"
+        enableHighAccuracyLocation={true}
+      
       />
+
       {/* <View style={styles.mapViewContainer}>
         <MapView
           provider={PROVIDER_GOOGLE}

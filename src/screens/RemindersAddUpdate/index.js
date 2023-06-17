@@ -138,7 +138,12 @@ const Index = ({route}) => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar />
-      <CustomHeader text={text} edit={edit} isEdit={isEdit} />
+      <CustomHeader
+        text={text}
+        edit={edit}
+        isEdit={isEdit}
+        locationIsTrue={locationTrue}
+      />
       <View style={styles.textInputsView}>
         <TextInput
           style={styles.textInputStyle}

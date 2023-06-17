@@ -5,18 +5,18 @@ import {Colors} from '../../theme';
 const CustomHeader = props => {
   const [headerTxt, setHeaderTxt] = useState('');
 
-  const {edit, isEdit, text} = props;
+  const {edit, isEdit, text, locationIsTrue} = props;
   useEffect(() => {
     if (text) {
       setHeaderTxt(text);
-    } else if (isEdit || edit) {
+    } else if (isEdit || edit || locationIsTrue) {
       setHeaderTxt('Edit Reminder');
     } else if (isEdit) {
       setHeaderTxt('Edit Reminder');
     } else {
       setHeaderTxt('');
     }
-  }, [text, isEdit, edit]);
+  }, [text, isEdit, edit, locationIsTrue]);
 
   return (
     <View style={styles.container}>
