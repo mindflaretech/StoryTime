@@ -19,7 +19,7 @@ import {locationData} from '../../utils/Data/LocationData';
 import {RemindersData} from '../../utils/Data/RemindersData';
 import StatusBar from '../../components/StatusBar';
 import CustomHeader from '../../components/Header/customHeader';
-import PushNotification from 'react-native-push-notification';
+// import PushNotification from 'react-native-push-notification';
 
 const Index = ({route}) => {
   // ================ useState =====================//
@@ -35,6 +35,7 @@ const Index = ({route}) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const edit = route?.params?.edit;
+  const text = route?.params?.text;
   const locationTrue = route?.params?.locationIsTrue;
   const item = route?.params?.items;
   const itemId = route?.params?.items?.id;
@@ -47,9 +48,9 @@ const Index = ({route}) => {
 
   useEffect(() => {
     console.log(getLocationData, ' getLocationData on add/update screen ');
-    console.log(isEdit, '================ isEdit');
-    console.log(edit, '================ edit');
-    console.log(locationTrue, '================ locationTrue');
+    // console.log(text, '================ text');
+    // console.log(edit, '================ edit');
+    // console.log(locationTrue, '================ locationTrue');
     navigation.setOptions({
       title: isEdit || edit ? 'Edit Reminder' : 'Add Reminder',
     });
@@ -60,7 +61,7 @@ const Index = ({route}) => {
     } else if (locationTrue) {
       setMyLocationObj(savedLocation);
     }
-    console.log(myLocationObj, '========== myLocationObj');
+    // console.log(myLocationObj, '========== myLocationObj');
   }, [isEdit, edit, itemName, itemRadius, itemLocation, savedLocation]);
 
   //================== creating random ID =====================//
@@ -86,6 +87,7 @@ const Index = ({route}) => {
             name: name,
             radius: radius,
             location: myLocationObj,
+            activate: false,
           };
         }
         return obj;
@@ -99,6 +101,7 @@ const Index = ({route}) => {
       name: name,
       radius: radius,
       location: myLocationObj,
+      activate: false,
     };
     const updatedData = [...getRemindersData, newData];
     dispatch(reminders(updatedData));
@@ -109,13 +112,13 @@ const Index = ({route}) => {
   const handleRadiusChange = value => {
     setRadius(value);
   };
-  const handleNotification = item => {
-    PushNotification.localNotification({
-      channelId: 'test-channel',
-      title: 'you clicked on me' + item.description,
-      message: item.description,
-    });
-  };
+  // const handleNotification = item => {
+  //   PushNotification.localNotification({
+  //     channelId: 'test-channel',
+  //     title: 'you clicked on me' + item.description,
+  //     message: item.description,
+  //   });
+  // };
   const renderItem = ({item}) => {
     return (
       <TouchableOpacity
@@ -125,7 +128,7 @@ const Index = ({route}) => {
           // setShowLocation(item.description);
           // setSelectedLoc(true);
           setMyLocationObj(item.description);
-          handleNotification(item.description);
+          // handleNotification(item.description);
           rbSheetRef.current.close();
         }}>
         <Text style={styles.flatListTxt}>{item.description}</Text>
@@ -135,19 +138,24 @@ const Index = ({route}) => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar />
-      <CustomHeader edit={edit} isEdit={isEdit} />
+      <CustomHeader text={text} edit={edit} isEdit={isEdit} />
       <View style={styles.textInputsView}>
         <TextInput
           style={styles.textInputStyle}
           onChangeText={handleNameChange}
           value={name}
           placeholder="Name"
+          placeholderTextColor="gray"
         />
         <TouchableOpacity
           activeOpacity={0.85}
           style={styles.locationFieldButton}
           onPress={() => rbSheetRef.current.open()}>
-          <Text style={styles.locationTxt}>
+          <Text
+            style={[
+              styles.locationTxt,
+              {color: myLocationObj ? Colors.black : 'gray'},
+            ]}>
             {myLocationObj ? myLocationObj : 'Location'}
           </Text>
         </TouchableOpacity>
@@ -157,6 +165,7 @@ const Index = ({route}) => {
           value={radius}
           placeholder="Radius"
           keyboardType="numeric"
+          placeholderTextColor="gray"
         />
       </View>
       <View style={styles.saveButtoncontainer}>

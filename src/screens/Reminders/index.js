@@ -21,7 +21,7 @@ import {RemindersData} from '../../utils/Data/RemindersData';
 import StatusBar from '../../components/StatusBar';
 import {images} from '../../utils/Images/images';
 import CustomHeader from '../../components/Header/customHeader';
-import PushNotification from 'react-native-push-notification';
+// import PushNotification from 'react-native-push-notification';
 
 const Index = ({route}) => {
   //===================== useState ============================//
@@ -36,31 +36,52 @@ const Index = ({route}) => {
   const getRemindersData = useSelector(getReminder);
   const openRowRef = useRef(null);
   useEffect(() => {
-    createChannel();
+    // createChannel();
     console.log(getRemindersData, '============== get complete reminders data');
   }, []);
   const removeItem = itemToRemove => {
     const updatedData = getRemindersData.filter(item => item !== itemToRemove);
     dispatch(reminders(updatedData));
   };
-  const createChannel = () => {
-    PushNotification.createChannel({
-      channelId: 'test-channel',
-      channelName: 'Test Channel',
+  const activeReminder = itemActivate => {
+    setBackgroundColor(true);
+    const updatedReminders = getRemindersData.map(item => {
+      if (item === itemActivate) {
+        return {...item, activate: true};
+      }
+      return item;
     });
+    dispatch(reminders(updatedReminders));
   };
+  const deActivateReminder = itemDeactivate => {
+    setBackgroundColor(false);
+    const updatedReminders = getRemindersData.map(item => {
+      if (item === itemDeactivate) {
+        return {...item, activate: false};
+      }
+      return item;
+    });
+    dispatch(reminders(updatedReminders));
+  };
+  // const createChannel = () => {
+  //   PushNotification.createChannel({
+  //     channelId: 'test-channel',
+  //     channelName: 'Test Channel',
+  //   });
+  // };
   const renderItem = rowData => {
+    const itemIsActivated = rowData.item.activate === true;
     return (
       <TouchableOpacity
         key={rowData.item.id}
         style={[
           styles.frontRowView,
           {
-            backgroundColor: backgroundColor ? Colors.teal : Colors.powderBlue,
+            backgroundColor: itemIsActivated ? Colors.teal : Colors.powderBlue,
           },
         ]}
         onLongPress={() => {
-          backgroundColor === true
+          backgroundColor
             ? Alert.alert(
                 'Deactivate Reminder',
                 'Are you sure you want to deactivate this reminder ?',
@@ -72,7 +93,7 @@ const Index = ({route}) => {
                   {
                     text: 'Yes',
                     onPress: () => {
-                      setBackgroundColor(false);
+                      deActivateReminder(rowData.item);
                     },
                     style: 'cancel',
                   },
@@ -90,7 +111,7 @@ const Index = ({route}) => {
                   {
                     text: 'Yes',
                     onPress: () => {
-                      setBackgroundColor(true);
+                      activeReminder(rowData.item);
                     },
                     style: 'cancel',
                   },
@@ -103,7 +124,7 @@ const Index = ({route}) => {
           <Text
             style={[
               styles.frontRowtxt,
-              {color: backgroundColor ? Colors.background : Colors.teal},
+              {color: itemIsActivated ? Colors.background : Colors.teal},
             ]}>
             {rowData.item.name}
           </Text>
@@ -168,15 +189,13 @@ const Index = ({route}) => {
       <Text style={styles.emptyTxt}>Reminders will appear here</Text>
     </View>
   );
-
   const onRowDidOpen = (rowKey, rowMap) => {
     openRowRef.current = rowMap[rowKey];
   };
-
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar />
-      <CustomHeader />
+      <CustomHeader text="Reminder" />
       <View style={{flex: 1}}>
         <SwipeListView
           style={{marginTop: 20}}
@@ -195,7 +214,11 @@ const Index = ({route}) => {
       <TouchableOpacity
         activeOpacity={0.85}
         style={styles.addIconViewStyles}
-        onPress={() => navigation.navigate(ScreeNames.RemindersAddUpdate)}>
+        onPress={() => {
+          navigation.navigate(ScreeNames.RemindersAddUpdate, {
+            text: 'Add Reminder',
+          });
+        }}>
         <Image style={styles.addIconStyles} source={Images.general.addIcon} />
       </TouchableOpacity>
     </SafeAreaView>

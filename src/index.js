@@ -6,6 +6,7 @@ import NetworkInfo from "./utils/NetworkInfo";
 import AppNavigator from "./naviagtor";
 import { Provider } from "react-redux";
 import { CustomSplashScreen } from "./screens";
+// import PushNotification from "react-native-push-notification";
 const App = () => {
   // set store state
   const [storeState, setStore] = useState(null);
@@ -35,7 +36,37 @@ const App = () => {
       NetworkInfo.removeNetInfoListener();
     };
   }, []);
-
+  // PushNotification.configure({
+  //   onRegister: function (token) {
+  //     console.log("TOKEN:", token);
+  //   },
+  
+  //   onNotification: function (notification) {
+  //     console.log("NOTIFICATION:", notification);
+  
+  //     // notification.finish(PushNotificationIOS.FetchResult.NoData);
+  //   },
+  
+  //   // onAction: function (notification) {
+  //   //   console.log("ACTION:", notification.action);
+  //   //   console.log("NOTIFICATION:", notification);
+  
+  //   // },
+  
+  //   // onRegistrationError: function(err) {
+  //   //   console.error(err.message, err);
+  //   // },
+  
+  //   permissions: {
+  //     alert: true,
+  //     badge: true,
+  //     sound: true,
+  //   },
+  
+  //   popInitialNotification: true,
+  
+  //   // requestPermissions: true,
+  // });
   if (storeState === null) {
     return <CustomSplashScreen />;
   }

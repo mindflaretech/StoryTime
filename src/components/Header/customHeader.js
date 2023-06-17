@@ -1,12 +1,26 @@
 import {StyleSheet, Text, View} from 'react-native';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {Colors} from '../../theme';
 
 const CustomHeader = props => {
-  const {edit, isEdit} = props;
+  const [headerTxt, setHeaderTxt] = useState('');
+
+  const {edit, isEdit, text} = props;
+  useEffect(() => {
+    if (text) {
+      setHeaderTxt(text);
+    } else if (isEdit || edit) {
+      setHeaderTxt('Edit Reminder');
+    } else if (isEdit) {
+      setHeaderTxt('Edit Reminder');
+    } else {
+      setHeaderTxt('');
+    }
+  }, [text, isEdit, edit]);
+
   return (
     <View style={styles.container}>
-      <Text style={styles.headerTxt}>Reminder</Text>
+      <Text style={styles.headerTxt}>{headerTxt}</Text>
     </View>
   );
 };

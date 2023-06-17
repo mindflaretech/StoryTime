@@ -32,7 +32,6 @@ export default StyleSheet.create({
     backgroundColor: Colors.white,
   },
   locationTxt: {
-    color: Colors.black,
     fontSize: 14,
   },
   textInputsView: {
