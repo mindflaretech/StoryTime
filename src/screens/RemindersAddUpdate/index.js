@@ -19,7 +19,6 @@ import {locationData} from '../../utils/Data/LocationData';
 import {RemindersData} from '../../utils/Data/RemindersData';
 import StatusBar from '../../components/StatusBar';
 import CustomHeader from '../../components/Header/customHeader';
-// import PushNotification from 'react-native-push-notification';
 
 const Index = ({route}) => {
   // ================ useState =====================//
@@ -112,13 +111,7 @@ const Index = ({route}) => {
   const handleRadiusChange = value => {
     setRadius(value);
   };
-  // const handleNotification = item => {
-  //   PushNotification.localNotification({
-  //     channelId: 'test-channel',
-  //     title: 'you clicked on me' + item.description,
-  //     message: item.description,
-  //   });
-  // };
+
   const renderItem = ({item}) => {
     return (
       <TouchableOpacity

@@ -69,6 +69,13 @@ const Index = ({route}) => {
   //     channelName: 'Test Channel',
   //   });
   // };
+  // const handleNotification = () => {
+  //   PushNotification.localNotification({
+  //     channelId: 'test-channel',
+  //     title: 'you clicked on me' + item.description,
+  //     message: 'New Reminder Added',
+  //   });
+  // };
   const renderItem = rowData => {
     const itemIsActivated = rowData.item.activate === true;
     return (
@@ -218,6 +225,7 @@ const Index = ({route}) => {
           navigation.navigate(ScreeNames.RemindersAddUpdate, {
             text: 'Add Reminder',
           });
+          // handleNotification();
         }}>
         <Image style={styles.addIconStyles} source={Images.general.addIcon} />
       </TouchableOpacity>

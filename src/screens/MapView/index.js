@@ -48,7 +48,6 @@ const MapScreen = ({route}) => {
         console.log('Error fetching current position:', error);
       }
     };
-
     fetchCurrentPosition();
   }, []);
 
@@ -111,7 +110,6 @@ const MapScreen = ({route}) => {
         currentLocation={true}
         currentLocationLabel="Current Location"
         enableHighAccuracyLocation={true}
-      
       />
 
       {/* <View style={styles.mapViewContainer}>
