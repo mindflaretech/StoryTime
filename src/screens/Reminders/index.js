@@ -21,8 +21,8 @@ import {RemindersData} from '../../utils/Data/RemindersData';
 import StatusBar from '../../components/StatusBar';
 import {images} from '../../utils/Images/images';
 import CustomHeader from '../../components/Header/customHeader';
-// import PushNotification from 'react-native-push-notification';
-
+import PushNotification from 'react-native-push-notification';
+import PushNotificationIOS from '@react-native-community/push-notification-ios';
 const Index = ({route}) => {
   //===================== useState ============================//
   const [data, setData] = useState();
@@ -36,13 +36,36 @@ const Index = ({route}) => {
   const getRemindersData = useSelector(getReminder);
   const openRowRef = useRef(null);
   useEffect(() => {
-    // createChannel();
+    
     console.log(getRemindersData, '============== get complete reminders data');
+
+    configurePushNotification();
+
+    createChannel();
   }, []);
   const removeItem = itemToRemove => {
     const updatedData = getRemindersData.filter(item => item !== itemToRemove);
     dispatch(reminders(updatedData));
   };
+
+  const configurePushNotification = () => {
+    PushNotification.configure({
+      onRegister: function (token) {},
+      onNotification: function (notification) {
+        notification.finish(PushNotificationIOS.FetchResult.NoData);
+      },
+      onAction: function (notification) {},
+      onRegistrationError: function (err) {},
+      permissions: {
+        alert: true,
+        badge: true,
+        sound: true,
+      },
+      popInitialNotification: true,
+      requestPermissions: true,
+    });
+  };
+
   const activeReminder = itemActivate => {
     setBackgroundColor(true);
     const updatedReminders = getRemindersData.map(item => {
@@ -63,19 +86,31 @@ const Index = ({route}) => {
     });
     dispatch(reminders(updatedReminders));
   };
-  // const createChannel = () => {
-  //   PushNotification.createChannel({
-  //     channelId: 'test-channel',
-  //     channelName: 'Test Channel',
-  //   });
-  // };
-  // const handleNotification = () => {
-  //   PushNotification.localNotification({
-  //     channelId: 'test-channel',
-  //     title: 'you clicked on me' + item.description,
-  //     message: 'New Reminder Added',
-  //   });
-  // };
+
+  const createChannel = () => {
+    PushNotification.createChannel({
+      channelId: 'test-channel',
+      channelName: 'Test Channel',
+    });
+  };
+
+  const handleNotification = () => {
+    // PushNotification.localNotification({
+    //   channelId: 'test-channel',
+    //   title: 'you clicked on me' + item.description,
+    //   message: 'New Reminder Added',
+    // });
+
+    PushNotification.localNotificationSchedule({
+      channelId: 'test-channel',
+      date: new Date(Date.now() + 5 * 1000),
+      title: 'Test Notification',
+      message: 'This is test notification from reminde me.',
+      playSound: true,
+      soundName: 'default',
+      allowWhileIdle: true,
+    });
+  };
   const renderItem = rowData => {
     const itemIsActivated = rowData.item.activate === true;
     return (
@@ -222,10 +257,10 @@ const Index = ({route}) => {
         activeOpacity={0.85}
         style={styles.addIconViewStyles}
         onPress={() => {
-          navigation.navigate(ScreeNames.RemindersAddUpdate, {
-            text: 'Add Reminder',
-          });
-          // handleNotification();
+          // navigation.navigate(ScreeNames.RemindersAddUpdate, {
+          //   text: 'Add Reminder',
+          // });
+          handleNotification();
         }}>
         <Image style={styles.addIconStyles} source={Images.general.addIcon} />
       </TouchableOpacity>

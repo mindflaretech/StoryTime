@@ -3,14 +3,14 @@ import React, {useEffect, useState} from 'react';
 import StatusBr from '../../components/StatusBar';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import styles from './styles';
-// import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
+import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete';
 import {Colors} from '../../theme';
 import {useDispatch, useSelector} from 'react-redux';
 import {getLocation, locations} from '../../ducks/testPost';
 import {useNavigation} from '@react-navigation/native';
 import {ScreeNames} from '../../naviagtor';
-import Geolocation from 'react-native-geolocation-service';
+// import Geolocation from 'react-native-geolocation-service';
 
 const MapScreen = ({route}) => {
   // ======================== useState ========================= //
@@ -28,27 +28,27 @@ const MapScreen = ({route}) => {
   // }, []);
 
   useEffect(() => {
-    const fetchCurrentPosition = async () => {
-      try {
-        const position = await Geolocation.getCurrentPosition(
-          position => {
-            console.log(position, '================ possition');
-          },
-          error => {
-            // See error code charts below.
-            console.log(
-              error.code,
-              error.message,
-              '============== error Message',
-            );
-          },
-          {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
-        );
-      } catch (error) {
-        console.log('Error fetching current position:', error);
-      }
-    };
-    fetchCurrentPosition();
+    // const fetchCurrentPosition = async () => {
+    //   try {
+    //     const position = await Geolocation.getCurrentPosition(
+    //       position => {
+    //         console.log(position, '================ possition');
+    //       },
+    //       error => {
+    //         // See error code charts below.
+    //         console.log(
+    //           error.code,
+    //           error.message,
+    //           '============== error Message',
+    //         );
+    //       },
+    //       {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+    //     );
+    //   } catch (error) {
+    //     console.log('Error fetching current position:', error);
+    //   }
+    // };
+    // fetchCurrentPosition();
   }, []);
 
   const HandleSearchPlaces = (data, detail) => {
@@ -89,7 +89,7 @@ const MapScreen = ({route}) => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBr />
-      <GooglePlacesAutocomplete
+      {/* <GooglePlacesAutocomplete
         GooglePlacesDetailsQuery={{fields: 'geometry'}}
         fetchDetails={true}
         styles={{
@@ -110,9 +110,9 @@ const MapScreen = ({route}) => {
         currentLocation={true}
         currentLocationLabel="Current Location"
         enableHighAccuracyLocation={true}
-      />
+      /> */}
 
-      {/* <View style={styles.mapViewContainer}>
+      <View style={styles.mapViewContainer}>
         <MapView
           provider={PROVIDER_GOOGLE}
           style={styles.map}
@@ -139,7 +139,7 @@ const MapScreen = ({route}) => {
             }}
           />
         </MapView>
-      </View> */}
+      </View>
     </SafeAreaView>
   );
 };

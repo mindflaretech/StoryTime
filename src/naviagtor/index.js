@@ -18,7 +18,7 @@ export const ScreeNames = {
 };
 function StackScreens() {
   return (
-    <Stack.Navigator initialRouteName="Reminders">
+    <Stack.Navigator initialRouteName="MapScreen">
       <Stack.Screen
         name="Reminders"
         component={Reminders}

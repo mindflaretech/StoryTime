@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "448738929432",
+    "project_id": "ilocreminder",
+    "storage_bucket": "ilocreminder.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:448738929432:android:dc4c1b9c00e5b7f9560c6d",
+        "android_client_info": {
+          "package_name": "com.remindme"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "448738929432-7k3fi981b2jpmimar014m2sr609e1v6q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBZIG7V0TlB-B1ntPfC6AQ84vGN2ACURHQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "448738929432-7k3fi981b2jpmimar014m2sr609e1v6q.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

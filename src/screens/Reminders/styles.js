@@ -118,7 +118,8 @@ export default StyleSheet.create({
     resizeMode: 'contain',
     width: 90,
     height: 90,
-    opacity:0.3
+    opacity:0.5,
+    tintColor: Colors.teal,
   },
   emptyTxt: {
     fontSize: 18,

@@ -6,7 +6,9 @@ import NetworkInfo from "./utils/NetworkInfo";
 import AppNavigator from "./naviagtor";
 import { Provider } from "react-redux";
 import { CustomSplashScreen } from "./screens";
-// import PushNotification from "react-native-push-notification";
+
+
+
 const App = () => {
   // set store state
   const [storeState, setStore] = useState(null);
