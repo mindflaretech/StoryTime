@@ -10,9 +10,9 @@ export default StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
   },
   mapViewContainer: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: 'center',
-    alignItems: 'center',
+    // ...StyleSheet.absoluteFillObject,
+    // justifyContent: 'center',
+    // alignItems: 'center',
   },
   textInputContainer: {
     backgroundColor: '#FFFFFF',
@@ -23,7 +23,6 @@ export default StyleSheet.create({
     marginVertical: 20,
     paddingVertical: 4,
     borderRadius: 20,
-   
   },
   textInput: {
     height: 40,

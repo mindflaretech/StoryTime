@@ -46,7 +46,7 @@ const Index = ({route}) => {
   const location = route?.params?.location;
 
   useEffect(() => {
-    console.log(getLocationData, ' getLocationData on add/update screen ');
+    // console.log(getLocationData, ' getLocationData on add/update screen ');
     // console.log(text, '================ text');
     // console.log(edit, '================ edit');
     // console.log(locationTrue, '================ locationTrue');
@@ -60,7 +60,6 @@ const Index = ({route}) => {
     } else if (locationTrue) {
       setMyLocationObj(savedLocation);
     }
-    // console.log(myLocationObj, '========== myLocationObj');
   }, [isEdit, edit, itemName, itemRadius, itemLocation, savedLocation]);
 
   //================== creating random ID =====================//
@@ -205,14 +204,6 @@ const Index = ({route}) => {
               );
               rbSheetRef.current.close();
             }}
-            // onPress={() => {
-            //   navigation.navigate(
-            //     isEdit
-            //       ? (ScreeNames.MapScreen, {edit: isEdit})
-            //       : ScreeNames.MapScreen,
-            //   );
-            //   rbSheetRef.current.close();
-            // }}
           >
             <Text style={styles.addtxt}>Add</Text>
           </TouchableOpacity>

@@ -1,5 +1,5 @@
-import {View, Text} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import {View, Text, Button} from 'react-native';
+import React, {useEffect, useRef, useState} from 'react';
 import StatusBr from '../../components/StatusBar';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import styles from './styles';
@@ -14,18 +14,18 @@ import {ScreeNames} from '../../naviagtor';
 
 const MapScreen = ({route}) => {
   // ======================== useState ========================= //
-  const [des, setDes] = useState();
-  const [lat, setLat] = useState();
-  const [lng, setLng] = useState();
+  const [MarkerCoordinates, setMarkerCoordinates] = useState();
+  const [textInputValue, setTextInputValue] = useState('');
   const isEdit = route?.params?.edit;
   const getLocationData = useSelector(getLocation);
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const searchData = true;
-  // useEffect(() => {
-  //   // console.log(getLocationData, '=============== getLocationData of mapView');
-  //   // console.log(isEdit, '================= isEditttt');
-  // }, []);
+  const mapRef = useRef(null);
+  useEffect(() => {
+    console.log(getLocationData, '=============== getLocationData of mapView');
+    console.log(textInputValue, '========textInputValue');
+  }, []);
 
   useEffect(() => {
     // const fetchCurrentPosition = async () => {
@@ -58,19 +58,12 @@ const MapScreen = ({route}) => {
     const longitude = location.lng;
     const description = data.description;
     const placeId = data.place_id;
-    // console.log('Latitude:', latitude);
-    // console.log('Longitude:', longitude);
-    // console.log('Description:', description);
-    // console.log('PlaceId:', placeId);
-    // setDes(description);
-    // setLat(latitude);
-    // setLng(longitude);
-    navigation.navigate(ScreeNames.RemindersAddUpdate, {
-      savedLocation: description,
-      locationIsTrue: true,
-      edit: isEdit,
-    });
-    // const arr = [];
+    // navigation.navigate(ScreeNames.RemindersAddUpdate, {
+    //   savedLocation: description,
+    //   locationIsTrue: true,
+    //   edit: isEdit,
+    // });
+    setMarkerCoordinates({latitude: latitude, longitude: longitude});
     const arr = [...getLocationData];
     const obj = {
       placeId: placeId,
@@ -79,26 +72,80 @@ const MapScreen = ({route}) => {
       longitude: longitude,
     };
     arr.push(obj);
-    // a.push(...arr);
-    // let value = {
-    // locations: a,
-    // };
-    // console.log('MapView: value', value);
     dispatch(locations(arr));
+    const region = {
+      latitude: latitude,
+      longitude: longitude,
+      latitudeDelta: 0.015,
+      longitudeDelta: 0.0121,
+    };
+    mapRef.current.animateToRegion(region, 1000);
+  };
+  const handleMarkerPress = () => {
+    if (mapRef.current && MarkerCoordinates) {
+      const region = {
+        latitude: MarkerCoordinates.latitude,
+        longitude: MarkerCoordinates.longitude,
+        latitudeDelta: 0.015,
+        longitudeDelta: 0.0121,
+      };
+
+      mapRef.current.animateToRegion(region, 1000); // Adjust the duration as per your preference
+    }
   };
   return (
     <SafeAreaView style={styles.container}>
       <StatusBr />
-      {/* <GooglePlacesAutocomplete
+      <MapView
+        ref={mapRef}
+        provider={PROVIDER_GOOGLE}
+        style={styles.map}
+        initialRegion={{
+          latitude: 24.9125026,
+          longitude: 67.0307375,
+          latitudeDelta: 0.015,
+          longitudeDelta: 0.0121,
+        }}
+        showsUserLocation={true}
+        showsMyLocationButton={true}
+        followsUserLocation={true}
+        showsCompass={true}
+        scrollEnabled={true}
+        zoomEnabled={true}
+        pitchEnabled={true}
+        rotateEnabled={true}
+        onPress={event => {
+          const {latitude, longitude} = event.nativeEvent.coordinate;
+          setMarkerCoordinates({
+            latitude: latitude,
+            longitude: longitude,
+          });
+          const coordinatesText = `latitude:${latitude.toFixed(
+            3,
+          )},longitude:${longitude.toFixed(3)}`;
+          setTextInputValue(coordinatesText);
+        }}>
+        {MarkerCoordinates && (
+          <Marker
+            pinColor={Colors.teal}
+            coordinate={MarkerCoordinates}
+            onPress={handleMarkerPress}
+          />
+        )}
+      </MapView>
+      <GooglePlacesAutocomplete
         GooglePlacesDetailsQuery={{fields: 'geometry'}}
         fetchDetails={true}
         styles={{
           textInputContainer: styles.textInputContainer,
           textInput: styles.textInput,
         }}
-        placeholder="Search your location here"
+        placeholder={
+          textInputValue ? textInputValue : 'Search your location here'
+        }
         textInputProps={{
           placeholderTextColor: Colors.teal,
+          defaultValue: textInputValue,
         }}
         onPress={HandleSearchPlaces}
         query={{
@@ -110,36 +157,7 @@ const MapScreen = ({route}) => {
         currentLocation={true}
         currentLocationLabel="Current Location"
         enableHighAccuracyLocation={true}
-      /> */}
-
-      <View style={styles.mapViewContainer}>
-        <MapView
-          provider={PROVIDER_GOOGLE}
-          style={styles.map}
-          initialRegion={{
-            latitude: 24.9125026,
-            longitude: 67.0307375,
-            latitudeDelta: 0.015,
-            longitudeDelta: 0.0121,
-          }}
-          showsUserLocation={true}
-          showsMyLocationButton={true}
-          followsUserLocation={true}
-          showsCompass={true}
-          scrollEnabled={true}
-          zoomEnabled={true}
-          pitchEnabled={true}
-          rotateEnabled={true}>
-          <Marker
-            coordinate={{
-              latitude: 24.9125026,
-              longitude: 67.0307375,
-              latitudeDelta: 0.015,
-              longitudeDelta: 0.0121,
-            }}
-          />
-        </MapView>
-      </View>
+      />
     </SafeAreaView>
   );
 };

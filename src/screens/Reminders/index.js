@@ -36,11 +36,8 @@ const Index = ({route}) => {
   const getRemindersData = useSelector(getReminder);
   const openRowRef = useRef(null);
   useEffect(() => {
-    
-    console.log(getRemindersData, '============== get complete reminders data');
-
+    // console.log(getRemindersData, '============== get complete reminders data');
     configurePushNotification();
-
     createChannel();
   }, []);
   const removeItem = itemToRemove => {
@@ -257,10 +254,10 @@ const Index = ({route}) => {
         activeOpacity={0.85}
         style={styles.addIconViewStyles}
         onPress={() => {
-          // navigation.navigate(ScreeNames.RemindersAddUpdate, {
-          //   text: 'Add Reminder',
-          // });
-          handleNotification();
+          navigation.navigate(ScreeNames.RemindersAddUpdate, {
+            text: 'Add Reminder',
+          });
+          // handleNotification();
         }}>
         <Image style={styles.addIconStyles} source={Images.general.addIcon} />
       </TouchableOpacity>
