@@ -10,47 +10,81 @@ import {useDispatch, useSelector} from 'react-redux';
 import {getLocation, locations} from '../../ducks/testPost';
 import {useNavigation} from '@react-navigation/native';
 import {ScreeNames} from '../../naviagtor';
-// import Geolocation from 'react-native-geolocation-service';
+import Geolocation from '@react-native-community/geolocation';
+import {check, PERMISSIONS, request} from 'react-native-permissions';
+import Geocoder from 'react-native-geocoding';
 
 const MapScreen = ({route}) => {
   // ======================== useState ========================= //
-  const [MarkerCoordinates, setMarkerCoordinates] = useState();
   const [textInputValue, setTextInputValue] = useState('');
+  const [locationDescription, setLocationDescription] = useState();
+  const [currentLocation, setCurrentLocation] = useState();
   const isEdit = route?.params?.edit;
   const getLocationData = useSelector(getLocation);
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const searchData = true;
   const mapRef = useRef(null);
+  // console.log(getLocationData, '=============== getLocationData of mapView');
   useEffect(() => {
-    console.log(getLocationData, '=============== getLocationData of mapView');
-    console.log(textInputValue, '========textInputValue');
+    checkPermission();
+    requestPermission();
+    getCurrentLocation();
+    handleMarkerPress();
+    fetchAddress();
+    console.log(locationDescription, '=============== locationDescription');
   }, []);
+  const checkPermission = async () => {
+    try {
+      const result = await check(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION);
+      if (result === 'granted') {
+        getCurrentLocation();
+      }
+    } catch (error) {
+      console.log('Permission check error:', error);
+    }
+  };
+  const requestPermission = async () => {
+    try {
+      const result = await request(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION);
+      if (result === 'granted') {
+        getCurrentLocation();
+      }
+    } catch (error) {
+      console.log('Permission request error:', error);
+    }
+  };
 
-  useEffect(() => {
-    // const fetchCurrentPosition = async () => {
-    //   try {
-    //     const position = await Geolocation.getCurrentPosition(
-    //       position => {
-    //         console.log(position, '================ possition');
-    //       },
-    //       error => {
-    //         // See error code charts below.
-    //         console.log(
-    //           error.code,
-    //           error.message,
-    //           '============== error Message',
-    //         );
-    //       },
-    //       {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
-    //     );
-    //   } catch (error) {
-    //     console.log('Error fetching current position:', error);
-    //   }
-    // };
-    // fetchCurrentPosition();
-  }, []);
+  Geocoder.init('AIzaSyDnXL-HCi6BSVMWCtKk8Bl3TiPfX9H57sU');
 
+  const getAddressFromLatLng = async (latitude, longitude) => {
+    try {
+      const response = await Geocoder.from(latitude, longitude);
+      const address = response.results[0].formatted_address;
+      console.log('Address:', address);
+      return address;
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  const fetchAddress = async () => {
+    const latitude = currentLocation?.latitude;
+    const longitude = currentLocation?.longitude;
+    const address = await getAddressFromLatLng(latitude, longitude);
+    console.log('Location Description:', address);
+    setLocationDescription(address);
+  };
+  const getCurrentLocation = () => {
+    Geolocation.getCurrentPosition(
+      position => {
+        const {latitude, longitude} = position.coords;
+        setCurrentLocation({latitude, longitude});
+      },
+      error => console.log('Error', error),
+      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+    );
+  };
   const HandleSearchPlaces = (data, detail) => {
     const {geometry} = detail;
     const {location} = geometry;
@@ -63,7 +97,7 @@ const MapScreen = ({route}) => {
     //   locationIsTrue: true,
     //   edit: isEdit,
     // });
-    setMarkerCoordinates({latitude: latitude, longitude: longitude});
+    setCurrentLocation({latitude, longitude});
     const arr = [...getLocationData];
     const obj = {
       placeId: placeId,
@@ -82,10 +116,10 @@ const MapScreen = ({route}) => {
     mapRef.current.animateToRegion(region, 1000);
   };
   const handleMarkerPress = () => {
-    if (mapRef.current && MarkerCoordinates) {
+    if (mapRef.current && currentLocation) {
       const region = {
-        latitude: MarkerCoordinates.latitude,
-        longitude: MarkerCoordinates.longitude,
+        latitude: currentLocation.latitude,
+        longitude: currentLocation.longitude,
         latitudeDelta: 0.015,
         longitudeDelta: 0.0121,
       };
@@ -100,11 +134,26 @@ const MapScreen = ({route}) => {
         ref={mapRef}
         provider={PROVIDER_GOOGLE}
         style={styles.map}
-        initialRegion={{
-          latitude: 24.9125026,
-          longitude: 67.0307375,
-          latitudeDelta: 0.015,
-          longitudeDelta: 0.0121,
+        initialRegion={
+          currentLocation
+            ? {
+                latitude: currentLocation?.latitude,
+                longitude: currentLocation?.longitude,
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421,
+              }
+            : null
+        }
+        onPress={event => {
+          const {latitude, longitude} = event.nativeEvent.coordinate;
+          setCurrentLocation({
+            latitude: latitude,
+            longitude: longitude,
+          });
+          // const coordinatesText = `latitude:${latitude.toFixed(
+          //   3,
+          // )},longitude:${longitude.toFixed(3)}`;
+          setTextInputValue(locationDescription);
         }}
         showsUserLocation={true}
         showsMyLocationButton={true}
@@ -113,22 +162,20 @@ const MapScreen = ({route}) => {
         scrollEnabled={true}
         zoomEnabled={true}
         pitchEnabled={true}
-        rotateEnabled={true}
-        onPress={event => {
-          const {latitude, longitude} = event.nativeEvent.coordinate;
-          setMarkerCoordinates({
-            latitude: latitude,
-            longitude: longitude,
-          });
-          const coordinatesText = `latitude:${latitude.toFixed(
-            3,
-          )},longitude:${longitude.toFixed(3)}`;
-          setTextInputValue(coordinatesText);
-        }}>
-        {MarkerCoordinates && (
+        rotateEnabled={true}>
+        {currentLocation && (
           <Marker
             pinColor={Colors.teal}
-            coordinate={MarkerCoordinates}
+            coordinate={
+              currentLocation
+                ? {
+                    latitude: currentLocation?.latitude,
+                    longitude: currentLocation?.longitude,
+                    latitudeDelta: 0.0922,
+                    longitudeDelta: 0.0421,
+                  }
+                : null
+            }
             onPress={handleMarkerPress}
           />
         )}
