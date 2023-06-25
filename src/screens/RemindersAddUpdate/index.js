@@ -43,13 +43,14 @@ const Index = ({route}) => {
   const isEdit = route?.params?.isEdit;
   const itemLocation = route?.params?.items?.location;
   const savedLocation = route?.params?.savedLocation;
+  const locationDescription = route?.params?.locationDescription;
   const location = route?.params?.location;
 
   useEffect(() => {
     // console.log(getLocationData, ' getLocationData on add/update screen ');
     // console.log(text, '================ text');
     // console.log(edit, '================ edit');
-    // console.log(locationTrue, '================ locationTrue');
+    console.log(locationDescription, '================ locationDescription');
     navigation.setOptions({
       title: isEdit || edit ? 'Edit Reminder' : 'Add Reminder',
     });
@@ -59,8 +60,18 @@ const Index = ({route}) => {
       setMyLocationObj(itemLocation);
     } else if (locationTrue) {
       setMyLocationObj(savedLocation);
+    } else if (locationTrue) {
+      setMyLocationObj(locationDescription);
     }
-  }, [isEdit, edit, itemName, itemRadius, itemLocation, savedLocation]);
+  }, [
+    isEdit,
+    edit,
+    itemName,
+    itemRadius,
+    itemLocation,
+    savedLocation,
+    locationDescription,
+  ]);
 
   //================== creating random ID =====================//
   const generateString = length => {
@@ -203,8 +214,7 @@ const Index = ({route}) => {
                 {edit: true},
               );
               rbSheetRef.current.close();
-            }}
-          >
+            }}>
             <Text style={styles.addtxt}>Add</Text>
           </TouchableOpacity>
           <FlatList

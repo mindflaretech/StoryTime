@@ -1,5 +1,5 @@
-import {View, Text, Button} from 'react-native';
-import React, {useEffect, useRef, useState} from 'react';
+import {View, Text, Button, TouchableOpacity} from 'react-native';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import StatusBr from '../../components/StatusBar';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import styles from './styles';
@@ -19,6 +19,7 @@ const MapScreen = ({route}) => {
   const [textInputValue, setTextInputValue] = useState('');
   const [locationDescription, setLocationDescription] = useState();
   const [currentLocation, setCurrentLocation] = useState();
+  const [previousLocation, setPreviousLocation] = useState({});
   const isEdit = route?.params?.edit;
   const getLocationData = useSelector(getLocation);
   const dispatch = useDispatch();
@@ -32,7 +33,7 @@ const MapScreen = ({route}) => {
     getCurrentLocation();
     handleMarkerPress();
     fetchAddress();
-    console.log(locationDescription, '=============== locationDescription');
+    console.log(textInputValue, '=============== locationDescription');
   }, []);
   const checkPermission = async () => {
     try {
@@ -68,13 +69,21 @@ const MapScreen = ({route}) => {
     }
   };
 
-  const fetchAddress = async () => {
+  const fetchAddress = useCallback(async () => {
     const latitude = currentLocation?.latitude;
     const longitude = currentLocation?.longitude;
-    const address = await getAddressFromLatLng(latitude, longitude);
-    console.log('Location Description:', address);
-    setLocationDescription(address);
-  };
+
+    if (
+      latitude !== previousLocation.latitude ||
+      longitude !== previousLocation.longitude
+    ) {
+      const address = await getAddressFromLatLng(latitude, longitude);
+      console.log('Location Description:', address);
+      setLocationDescription(address);
+      setPreviousLocation({latitude, longitude});
+    }
+  }, [currentLocation, previousLocation]);
+
   const getCurrentLocation = () => {
     Geolocation.getCurrentPosition(
       position => {
@@ -92,11 +101,11 @@ const MapScreen = ({route}) => {
     const longitude = location.lng;
     const description = data.description;
     const placeId = data.place_id;
-    // navigation.navigate(ScreeNames.RemindersAddUpdate, {
-    //   savedLocation: description,
-    //   locationIsTrue: true,
-    //   edit: isEdit,
-    // });
+    navigation.navigate(ScreeNames.RemindersAddUpdate, {
+      savedLocation: description,
+      locationIsTrue: true,
+      edit: isEdit,
+    });
     setCurrentLocation({latitude, longitude});
     const arr = [...getLocationData];
     const obj = {
@@ -104,6 +113,7 @@ const MapScreen = ({route}) => {
       description: description,
       latitude: latitude,
       longitude: longitude,
+      address: textInputValue,
     };
     arr.push(obj);
     dispatch(locations(arr));
@@ -113,7 +123,7 @@ const MapScreen = ({route}) => {
       latitudeDelta: 0.015,
       longitudeDelta: 0.0121,
     };
-    mapRef.current.animateToRegion(region, 1000);
+    mapRef.current.animateToRegion(region, 500);
   };
   const handleMarkerPress = () => {
     if (mapRef.current && currentLocation) {
@@ -124,7 +134,7 @@ const MapScreen = ({route}) => {
         longitudeDelta: 0.0121,
       };
 
-      mapRef.current.animateToRegion(region, 1000); // Adjust the duration as per your preference
+      mapRef.current.animateToRegion(region, 500); // Adjust the duration as per your preference
     }
   };
   return (
@@ -150,9 +160,6 @@ const MapScreen = ({route}) => {
             latitude: latitude,
             longitude: longitude,
           });
-          // const coordinatesText = `latitude:${latitude.toFixed(
-          //   3,
-          // )},longitude:${longitude.toFixed(3)}`;
           setTextInputValue(locationDescription);
         }}
         showsUserLocation={true}
@@ -180,6 +187,7 @@ const MapScreen = ({route}) => {
           />
         )}
       </MapView>
+
       <GooglePlacesAutocomplete
         GooglePlacesDetailsQuery={{fields: 'geometry'}}
         fetchDetails={true}
@@ -192,7 +200,7 @@ const MapScreen = ({route}) => {
         }
         textInputProps={{
           placeholderTextColor: Colors.teal,
-          defaultValue: textInputValue,
+          // defaultValue: textInputValue,
         }}
         onPress={HandleSearchPlaces}
         query={{
@@ -205,6 +213,26 @@ const MapScreen = ({route}) => {
         currentLocationLabel="Current Location"
         enableHighAccuracyLocation={true}
       />
+      <TouchableOpacity
+        style={{backgroundColor: Colors.teal}}
+        activeOpacity={0.85}
+        onPress={() =>
+          navigation.navigate(ScreeNames.RemindersAddUpdate, {
+            locationDescription: locationDescription,
+            locationIsTrue: true,
+            edit: isEdit,
+          })
+        }>
+        <Text
+          style={{
+            textAlign: 'center',
+            marginVertical: 20,
+            color: Colors.white,
+            fontSize: 18,
+          }}>
+          Location Selected
+        </Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 };

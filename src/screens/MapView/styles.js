@@ -25,7 +25,7 @@ export default StyleSheet.create({
     borderRadius: 20,
   },
   textInput: {
-    height: 40,
+    // height: 'auto',
     color: '#5d5d5d',
     fontSize: 16,
   },
