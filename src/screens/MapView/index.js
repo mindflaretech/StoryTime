@@ -14,6 +14,7 @@ import Geolocation from '@react-native-community/geolocation';
 import {check, PERMISSIONS, request} from 'react-native-permissions';
 import Geocoder from 'react-native-geocoding';
 
+navigator.geolocation = require('@react-native-community/geolocation');
 const MapScreen = ({route}) => {
   // ======================== useState ========================= //
   const [textInputValue, setTextInputValue] = useState('');
@@ -26,7 +27,6 @@ const MapScreen = ({route}) => {
   const navigation = useNavigation();
   const searchData = true;
   const mapRef = useRef(null);
-  // console.log(getLocationData, '=============== getLocationData of mapView');
   useEffect(() => {
     checkPermission();
     requestPermission();
@@ -55,9 +55,7 @@ const MapScreen = ({route}) => {
       console.log('Permission request error:', error);
     }
   };
-
   Geocoder.init('AIzaSyDnXL-HCi6BSVMWCtKk8Bl3TiPfX9H57sU');
-
   const getAddressFromLatLng = async (latitude, longitude) => {
     try {
       const response = await Geocoder.from(latitude, longitude);
@@ -68,7 +66,6 @@ const MapScreen = ({route}) => {
       console.error('Error:', error);
     }
   };
-
   const fetchAddress = useCallback(async () => {
     const latitude = currentLocation?.latitude;
     const longitude = currentLocation?.longitude;
@@ -83,7 +80,6 @@ const MapScreen = ({route}) => {
       setPreviousLocation({latitude, longitude});
     }
   }, [currentLocation, previousLocation]);
-
   const getCurrentLocation = () => {
     Geolocation.getCurrentPosition(
       position => {
@@ -134,7 +130,7 @@ const MapScreen = ({route}) => {
         longitudeDelta: 0.0121,
       };
 
-      mapRef.current.animateToRegion(region, 500); // Adjust the duration as per your preference
+      mapRef.current.animateToRegion(region, 500);
     }
   };
   return (
@@ -187,7 +183,6 @@ const MapScreen = ({route}) => {
           />
         )}
       </MapView>
-
       <GooglePlacesAutocomplete
         GooglePlacesDetailsQuery={{fields: 'geometry'}}
         fetchDetails={true}
@@ -200,7 +195,7 @@ const MapScreen = ({route}) => {
         }
         textInputProps={{
           placeholderTextColor: Colors.teal,
-          // defaultValue: textInputValue,
+          defaultValue: textInputValue,
         }}
         onPress={HandleSearchPlaces}
         query={{
