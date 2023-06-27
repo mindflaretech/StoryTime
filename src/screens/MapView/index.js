@@ -27,6 +27,7 @@ const MapScreen = ({route}) => {
   const navigation = useNavigation();
   const searchData = true;
   const mapRef = useRef(null);
+
   useEffect(() => {
     checkPermission();
     requestPermission();
@@ -35,6 +36,7 @@ const MapScreen = ({route}) => {
     fetchAddress();
     console.log(textInputValue, '=============== locationDescription');
   }, []);
+
   const checkPermission = async () => {
     try {
       const result = await check(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION);
@@ -45,6 +47,7 @@ const MapScreen = ({route}) => {
       console.log('Permission check error:', error);
     }
   };
+
   const requestPermission = async () => {
     try {
       const result = await request(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION);
@@ -55,7 +58,9 @@ const MapScreen = ({route}) => {
       console.log('Permission request error:', error);
     }
   };
+
   Geocoder.init('AIzaSyDnXL-HCi6BSVMWCtKk8Bl3TiPfX9H57sU');
+
   const getAddressFromLatLng = async (latitude, longitude) => {
     try {
       const response = await Geocoder.from(latitude, longitude);
@@ -66,6 +71,7 @@ const MapScreen = ({route}) => {
       console.error('Error:', error);
     }
   };
+
   const fetchAddress = useCallback(async () => {
     const latitude = currentLocation?.latitude;
     const longitude = currentLocation?.longitude;
@@ -80,6 +86,7 @@ const MapScreen = ({route}) => {
       setPreviousLocation({latitude, longitude});
     }
   }, [currentLocation, previousLocation]);
+
   const getCurrentLocation = () => {
     Geolocation.getCurrentPosition(
       position => {
@@ -90,6 +97,7 @@ const MapScreen = ({route}) => {
       {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
     );
   };
+
   const HandleSearchPlaces = (data, detail) => {
     const {geometry} = detail;
     const {location} = geometry;
@@ -121,6 +129,7 @@ const MapScreen = ({route}) => {
     };
     mapRef.current.animateToRegion(region, 500);
   };
+
   const handleMarkerPress = () => {
     if (mapRef.current && currentLocation) {
       const region = {
@@ -133,6 +142,27 @@ const MapScreen = ({route}) => {
       mapRef.current.animateToRegion(region, 500);
     }
   };
+
+  const onPressMap = event => {
+    const {latitude, longitude} = event.nativeEvent.coordinate;
+
+    console.log('======== MapView: OnPressEvent ========');
+    console.log(event.nativeEvent.coordinate);
+
+    getAddress(latitude, longitude);
+  };
+
+  const getAddress = async (latitude, longitude) => {
+    const address = await getAddressFromLatLng(latitude, longitude);
+    console.log('Location Description:', address);
+
+    setCurrentLocation({
+      latitude: latitude,
+      longitude: longitude,
+    });
+    setTextInputValue(address);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBr />
@@ -150,14 +180,7 @@ const MapScreen = ({route}) => {
               }
             : null
         }
-        onPress={event => {
-          const {latitude, longitude} = event.nativeEvent.coordinate;
-          setCurrentLocation({
-            latitude: latitude,
-            longitude: longitude,
-          });
-          setTextInputValue(locationDescription);
-        }}
+        onPress={onPressMap}
         showsUserLocation={true}
         showsMyLocationButton={true}
         followsUserLocation={true}
@@ -187,7 +210,7 @@ const MapScreen = ({route}) => {
         GooglePlacesDetailsQuery={{fields: 'geometry'}}
         fetchDetails={true}
         styles={{
-          textInputContainer: styles.textInputContainer,
+          // textInputContainer: styles.textInputContainer,
           textInput: styles.textInput,
         }}
         placeholder={
