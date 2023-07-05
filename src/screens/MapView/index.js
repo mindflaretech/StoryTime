@@ -36,6 +36,12 @@ const MapScreen = ({route}) => {
     latitude: currentLatitude,
     longitude: currentLongitude,
   });
+  const [region, setRegion] = useState({
+    latitude: currentLatitude,
+    longitude: currentLongitude,
+    latitudeDelta: 0.0922,
+    longitudeDelta: 0.0421,
+  });
   const [previousLocation, setPreviousLocation] = useState({});
   const isEdit = route?.params?.edit;
   const getLocationData = useSelector(getLocation);
@@ -45,10 +51,11 @@ const MapScreen = ({route}) => {
   const mapRef = useRef(null);
 
   useEffect(() => {
-    console.log(
-      locationDescription,
-      '===================== getCurrentLocation2.0 =================',
-    );
+    // console.log(
+    //   markerPosition,
+    //   '===================== markerPosition.0 =================',
+    // );
+    console.log(region, '===================== region.0 =================');
 
     if (mapRef.current) {
       const region = {
@@ -62,9 +69,7 @@ const MapScreen = ({route}) => {
     handleMarkerPress();
     fetchAddress();
   }, [currentLocation]);
-
   Geocoder.init('AIzaSyDnXL-HCi6BSVMWCtKk8Bl3TiPfX9H57sU');
-
   const getAddressFromLatLng = async (latitude, longitude) => {
     try {
       const response = await Geocoder.from(latitude, longitude);
@@ -75,7 +80,6 @@ const MapScreen = ({route}) => {
       console.error('Error:', error);
     }
   };
-
   const fetchAddress = useCallback(async () => {
     const latitude = currentLatitude;
     const longitude = currentLongitude;
@@ -91,7 +95,6 @@ const MapScreen = ({route}) => {
       setTextInputValue(address);
     }
   }, [currentLocation, previousLocation]);
-
   const HandleSearchPlaces = (data, detail) => {
     const {geometry} = detail;
     const {location} = geometry;
@@ -124,7 +127,6 @@ const MapScreen = ({route}) => {
     };
     mapRef.current.animateToRegion(region, 500);
   };
-
   const handleMarkerPress = () => {
     if (mapRef.current && currentLocation) {
       const region = {
@@ -137,7 +139,6 @@ const MapScreen = ({route}) => {
       mapRef.current.animateToRegion(region, 500);
     }
   };
-
   const onPressMap = event => {
     const {latitude, longitude} = event.nativeEvent.coordinate;
     console.log('======== MapView: OnPressEvent ========');
@@ -146,7 +147,6 @@ const MapScreen = ({route}) => {
     setMarkerPosition({latitude, longitude});
     getAddress(latitude, longitude);
   };
-
   const onDragEnd = event => {
     const {latitude, longitude} = event.nativeEvent.coordinate;
     console.log('======== Marker: OnDrag Marker ========');
@@ -155,7 +155,6 @@ const MapScreen = ({route}) => {
     setMarkerPosition({latitude, longitude});
     getAddress(latitude, longitude);
   };
-
   const getAddress = async (latitude, longitude) => {
     const address = await getAddressFromLatLng(latitude, longitude);
     console.log('Location Description:', address);
@@ -166,9 +165,23 @@ const MapScreen = ({route}) => {
     });
     setTextInputValue(address);
   };
-  const handleRegionChangeComplete = region => {
-    const {latitude, longitude} = region;
-    setMarkerPosition({latitude, longitude});
+  const getNewRegionAddress = async (latitude, longitude) => {
+    const address = await getAddressFromLatLng(latitude, longitude);
+    console.log('New Region Description:', address);
+
+    setCurrentLocation({
+      latitude: latitude,
+      longitude: longitude,
+    });
+    setTextInputValue(address);
+  };
+  const handleRegionChangeComplete = newRegion => {
+    const {latitude, longitude} = newRegion;
+    // setMarkerPosition(region);
+    console.log('New region:', newRegion);
+    setRegion(newRegion);
+    // setTextInputValue(newRegion);
+    getNewRegionAddress(latitude, longitude);
   };
   const onChangeText = text => {
     setTextInputValue(text);
@@ -176,70 +189,64 @@ const MapScreen = ({route}) => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBr />
-      <View style={{flex: 1}}>
-        <MapView
-          ref={mapRef}
-          provider={PROVIDER_GOOGLE}
-          style={styles.map}
-          initialRegion={{
-            latitude: currentLocation?.latitude,
-            longitude: currentLocation?.longitude,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          }}
-          onPress={onPressMap}
-          showsUserLocation={false}
-          showsMyLocationButton={true}
-          followsUserLocation={true}
-          showsCompass={true}
-          scrollEnabled={true}
-          zoomEnabled={true}
-          pitchEnabled={true}
-          rotateEnabled={true}
-          onRegionChangeComplete={handleRegionChangeComplete}></MapView>
-        <Marker
-          coordinate={{
-            latitude: markerPosition?.latitude,
-            longitude: markerPosition?.longitude,
-          }}
-          draggable
-          onDragEnd={onDragEnd}
-          onPress={handleMarkerPress}
-          pinColor="red">
-          <TouchableOpacity activeOpacity={0.85} style={styles.markerContainer}>
-            <Image
-              style={styles.markerImage}
-              source={images.iLocReminderLogo}
-            />
-          </TouchableOpacity>
-        </Marker>
-      </View>
-        <GooglePlacesAutocomplete
-          GooglePlacesDetailsQuery={{fields: 'geometry'}}
-          fetchDetails={true}
-          styles={{
-            textInputContainer: styles.textInputContainer,
-            textInput: styles.textInput,
-            
-          }}
-          placeholder="Search your location here"
-          textInputProps={{
-            placeholderTextColor: Colors.teal,
-            value: textInputValue,
-            onChangeText: onChangeText,
-          }}
-          onPress={HandleSearchPlaces}
-          query={{
-            key: 'AIzaSyDnXL-HCi6BSVMWCtKk8Bl3TiPfX9H57sU',
-            language: 'en',
-            type: 'geocode',
-            components: 'country:pk',
-          }}
-          currentLocation={true}
-          currentLocationLabel="Current Location"
-          enableHighAccuracyLocation={true}
-        />
-
+      <MapView
+        ref={mapRef}
+        provider={PROVIDER_GOOGLE}
+        style={styles.map}
+        region={region}
+        // initialRegion={{
+        //   latitude: currentLocation?.latitude,
+        //   longitude: currentLocation?.longitude,
+        //   latitudeDelta: 0.0922,
+        //   longitudeDelta: 0.0421,
+        // }}
+        onRegionChangeComplete={handleRegionChangeComplete}
+        onPress={onPressMap}
+        showsUserLocation={false}
+        showsMyLocationButton={true}
+        followsUserLocation={true}
+        showsCompass={true}
+        scrollEnabled={true}
+        zoomEnabled={true}
+        pitchEnabled={true}
+        rotateEnabled={true}
+      />
+      <Marker
+        coordinate={{
+          latitude: markerPosition?.latitude,
+          longitude: markerPosition?.longitude,
+        }}
+        draggable
+        onDragEnd={onDragEnd}
+        onPress={handleMarkerPress}>
+        <TouchableOpacity activeOpacity={0.85} style={styles.markerContainer}>
+          <Image style={styles.markerImage} source={images.iLocReminderLogo} />
+        </TouchableOpacity>
+      </Marker>
+      <GooglePlacesAutocomplete
+        GooglePlacesDetailsQuery={{fields: 'geometry'}}
+        fetchDetails={true}
+        styles={{
+          // textInputContainer: styles.textInputContainer,
+          textInput: styles.textInput,
+        }}
+        placeholder="Search your location here"
+        textInputProps={{
+          placeholderTextColor: Colors.teal,
+          value: textInputValue,
+          onChangeText: onChangeText,
+        }}
+        onPress={HandleSearchPlaces}
+        query={{
+          key: 'AIzaSyDnXL-HCi6BSVMWCtKk8Bl3TiPfX9H57sU',
+          language: 'en',
+          type: 'geocode',
+          components: 'country:pk',
+        }}
+        currentLocation={true}
+        currentLocationLabel="Current Location"
+        enableHighAccuracyLocation={true}
+      />
       <TouchableOpacity
         style={styles.button}
         activeOpacity={0.85}

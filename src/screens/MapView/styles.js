@@ -9,11 +9,7 @@ export default StyleSheet.create({
     backgroundColor: Colors.powderBlue,
   },
   map: {
-    // ...StyleSheet.absoluteFillObject,
-    width:width,
-    height:height,
-    justifyContent: 'center',
-    alignItems: 'center',
+    ...StyleSheet.absoluteFillObject,
   },
   markerContainer: {
     position: 'absolute',
@@ -30,6 +26,14 @@ export default StyleSheet.create({
   },
   textInputContainer: {
     backgroundColor: '#FFFFFF',
+    borderTopWidth: 0,
+    borderBottomWidth: 0,
+    paddingHorizontal: 8,
+    marginHorizontal: 8,
+    marginVertical: 8,
+    // paddingVertical: 0,
+    borderRadius: 20,
+    backgroundColor: 'red',
   },
   textInput: {
     // height: 'auto',
