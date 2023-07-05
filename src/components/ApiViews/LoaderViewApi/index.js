@@ -1,4 +1,4 @@
-import { ActivityIndicator, View, ViewPropTypes, Image } from "react-native";
+import { ActivityIndicator, View, Image } from "react-native";
 import PropTypes from "prop-types";
 import React from "react";
 
@@ -12,7 +12,7 @@ const LoaderViewApi = ({ style, size, animating }) => (
 );
 
 LoaderViewApi.propTypes = {
-  style: ViewPropTypes.style,
+  // style: ViewPropTypes.style,
   size: PropTypes.oneOf(["small", "large"]),
   animating: PropTypes.bool,
 };

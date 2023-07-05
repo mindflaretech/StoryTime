@@ -1,7 +1,7 @@
 import _ from "lodash";
 import {
   FlatList,
-  ViewPropTypes,
+  // ViewPropTypes,
   RefreshControl,
   View,
   Image,
@@ -155,8 +155,8 @@ class FlatListApi extends React.Component {
     showOnly: PropTypes.bool,
     showScrollIndicator: PropTypes.bool,
     url: PropTypes.object,
-    contentContainerStyle: ViewPropTypes.style,
-    listStyle: ViewPropTypes.style,
+    // contentContainerStyle: ViewPropTypes.style,
+    // listStyle: ViewPropTypes.style,
     filters: PropTypes.object,
     disableLoadMore: PropTypes.bool,
     actionType: PropTypes.string.isRequired,

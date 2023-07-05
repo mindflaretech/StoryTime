@@ -1,4 +1,4 @@
-import { View, StyleSheet, ViewPropTypes, Text, Image } from "react-native";
+import { View, StyleSheet, Text, Image } from "react-native";
 import PropTypes from "prop-types";
 import React from "react";
 
@@ -31,7 +31,7 @@ const ErrorViewApi = (props) => {
 ErrorViewApi.propTypes = {
   errorMessage: PropTypes.string.isRequired,
   onPressRetry: PropTypes.func.isRequired,
-  containerStyle: ViewPropTypes.style,
+  // containerStyle: ViewPropTypes.style,
 };
 
 ErrorViewApi.defaultProps = { containerStyle: {} };

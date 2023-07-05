@@ -2,11 +2,10 @@ import {View, Text, TouchableOpacity, Image, Alert} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {
+  getLocation,
   getReminder,
-  getTest,
-  info,
   reminders,
-  test,
+  currentLoc,
 } from '../../ducks/testPost';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {FlatList} from 'react-native-gesture-handler';
@@ -23,23 +22,76 @@ import {images} from '../../utils/Images/images';
 import CustomHeader from '../../components/Header/customHeader';
 import PushNotification from 'react-native-push-notification';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
+import Geolocation from '@react-native-community/geolocation';
+import {check, PERMISSIONS, request} from 'react-native-permissions';
+
 const Index = ({route}) => {
   //===================== useState ============================//
   const [data, setData] = useState();
   const [swipeRow, setSwipeRow] = useState({});
   const [backgroundColor, setBackgroundColor] = useState();
+  const [currentLocation, setCurrentLocation] = useState();
   const viewref = useRef(null);
   const navigation = useNavigation();
   const SavedData = route?.params?.myName;
   const showLocation = route?.params?.showLocation;
   const dispatch = useDispatch();
   const getRemindersData = useSelector(getReminder);
+  const getLocationData = useSelector(getLocation);
   const openRowRef = useRef(null);
   useEffect(() => {
-    // console.log(getRemindersData, '============== get complete reminders data');
+    // console.log(getRemindersData, '============== get complete location data');
+    console.log(
+      currentLocation,
+      '============== Current Location ==============',
+    );
+    checkPermission();
+    requestLocationPermission();
+    getCurrentLocation();
     configurePushNotification();
     createChannel();
+    dispatch(currentLoc(currentLocation));
   }, []);
+
+  const requestLocationPermission = async () => {
+    try {
+      const result = await request(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION);
+      if (result === 'granted') {
+        getCurrentLocation();
+      } else {
+        console.log('Location permission denied');
+      }
+    } catch (error) {
+      console.log('Permission request error:', error);
+    }
+  };
+  const checkPermission = async () => {
+    try {
+      const result = await check(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION);
+      if (result === 'granted') {
+        getCurrentLocation();
+      }
+    } catch (error) {
+      console.log('Permission check error:', error);
+    }
+  };
+  const getCurrentLocation = () => {
+    Geolocation.getCurrentPosition(
+      position => {
+        const {latitude, longitude} = position.coords;
+        setCurrentLocation({latitude, longitude});
+      },
+      error => {
+        console.log('Error getting location:', error);
+        if (error.code === 2) {
+          // No location provider available error
+          // Handle the error condition here, such as showing an error message to the user
+        }
+      },
+      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+    );
+  };
+
   const removeItem = itemToRemove => {
     const updatedData = getRemindersData.filter(item => item !== itemToRemove);
     dispatch(reminders(updatedData));

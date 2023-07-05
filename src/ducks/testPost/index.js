@@ -9,6 +9,7 @@ export const testList = makeRequesActions('TEST_LIST');
 export const getList = makeRequesActions('GET_LIST');
 export const locations = makeAction('LOCATIONS');
 export const reminders = makeAction('REMINDERS');
+export const currentLoc = makeAction('CURRENTLOCATION');
 
 // init state
 const initalState = {
@@ -88,12 +89,16 @@ export default createReducer(initalState, builder => {
   });
 
   builder.addCase(locations, (state, action) => {
-    console.log(action, 'locations action ..........');
+    // console.log(action, 'locations action ..........');
     state.locations = action.payload;
   });
   builder.addCase(reminders, (state, action) => {
     console.log(action, 'reminders action  ..........');
     state.reminders = action.payload;
+  });
+  builder.addCase(currentLoc, (state, action) => {
+    console.log(action, 'currentLoc action  ..........');
+    state.currentLoc = action.payload;
   });
 });
 
@@ -113,3 +118,5 @@ export const getScrollDataIdentifer = identifier => state =>
 
 export const getLocation = state => state.testPost?.locations ?? defaultData;
 export const getReminder = state => state.testPost?.reminders ?? defaultData;
+export const getCurrentLoc= state =>
+  state.testPost?.currentLoc ?? defaultData;

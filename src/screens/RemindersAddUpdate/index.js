@@ -47,7 +47,7 @@ const Index = ({route}) => {
   const location = route?.params?.location;
 
   useEffect(() => {
-    // console.log(getLocationData, ' getLocationData on add/update screen ');
+    console.log(getLocationData, ' getLocationData on add/update screen ');
     // console.log(text, '================ text');
     // console.log(edit, '================ edit');
     console.log(locationDescription, '================ locationDescription');
@@ -60,8 +60,7 @@ const Index = ({route}) => {
       setMyLocationObj(itemLocation);
     } else if (locationTrue) {
       setMyLocationObj(savedLocation);
-    } else if (locationTrue) {
-      setMyLocationObj(locationDescription);
+      setMyLocationObj(locationDescription)
     }
   }, [
     isEdit,
@@ -193,7 +192,7 @@ const Index = ({route}) => {
       </View>
       <RBSheet
         ref={rbSheetRef}
-        height={300}
+        height={550}
         openDuration={100}
         closeOnDragDown={true}
         closeOnPressMask={true}
