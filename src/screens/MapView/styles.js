@@ -2,6 +2,7 @@ import {Dimensions, StyleSheet} from 'react-native';
 import {Colors} from '../../theme';
 
 const {width, height} = Dimensions.get('window');
+const markerSize = Math.min(width, height) * 0.1;
 
 export default StyleSheet.create({
   container: {
@@ -13,15 +14,11 @@ export default StyleSheet.create({
   },
   markerContainer: {
     position: 'absolute',
-    justifyContent: 'center',
-    alignItems: 'center',
-    left: width/2,
-    top: height/2,
-    zIndex:999
+    left: width / 2.3,
+    top: height / 2.3,
   },
   markerImage: {
-    width: 50,
-    height: 50,
+
     resizeMode: 'contain',
   },
   textInputContainer: {
@@ -31,12 +28,10 @@ export default StyleSheet.create({
     paddingHorizontal: 8,
     marginHorizontal: 8,
     marginVertical: 8,
-    // paddingVertical: 0,
     borderRadius: 20,
     backgroundColor: 'red',
   },
   textInput: {
-    // height: 'auto',
     color: '#5d5d5d',
     fontSize: 14,
   },

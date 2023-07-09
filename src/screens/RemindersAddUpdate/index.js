@@ -50,7 +50,7 @@ const Index = ({route}) => {
     console.log(getLocationData, ' getLocationData on add/update screen ');
     // console.log(text, '================ text');
     // console.log(edit, '================ edit');
-    console.log(locationDescription, '================ locationDescription');
+    // console.log(locationDescription, '================ locationDescription');
     navigation.setOptions({
       title: isEdit || edit ? 'Edit Reminder' : 'Add Reminder',
     });
@@ -60,7 +60,13 @@ const Index = ({route}) => {
       setMyLocationObj(itemLocation);
     } else if (locationTrue) {
       setMyLocationObj(savedLocation);
-      setMyLocationObj(locationDescription)
+      setMyLocationObj(locationDescription);
+    }
+    const recentLocation = getLocationData[getLocationData.length - 1];
+    if (recentLocation) {
+      const recentAddress = recentLocation.address;
+      console.log(recentAddress);
+      setMyLocationObj(recentAddress);
     }
   }, [
     isEdit,
@@ -84,6 +90,11 @@ const Index = ({route}) => {
       counter += 1;
     }
     return result;
+  };
+  const fetchAddresses = () => {
+    const addresses = getLocationData.map(location => location.address);
+    console.log(addresses);
+    setMyLocationObj(addresses);
   };
   const updatedData = () => {
     const updatedIndex = getRemindersData.findIndex(obj => obj.id === itemId);
@@ -133,7 +144,7 @@ const Index = ({route}) => {
           // handleNotification(item.description);
           rbSheetRef.current.close();
         }}>
-        <Text style={styles.flatListTxt}>{item.description}</Text>
+        <Text style={styles.flatListTxt}>{item.address}</Text>
       </TouchableOpacity>
     );
   };
@@ -163,7 +174,11 @@ const Index = ({route}) => {
               styles.locationTxt,
               {color: myLocationObj ? Colors.black : 'gray'},
             ]}>
-            {myLocationObj ? myLocationObj : 'Location'}
+            {myLocationObj
+              ? myLocationObj.length > 20
+                ? `${myLocationObj.slice(0, 20)}...`
+                : myLocationObj
+              : 'Location'}{' '}
           </Text>
         </TouchableOpacity>
         <TextInput
