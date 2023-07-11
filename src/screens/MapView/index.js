@@ -59,7 +59,7 @@ const MapScreen = ({route}) => {
   const mapRef = useRef(null);
   const {width, height} = Dimensions.get('window');
   const initialMarkerSize = Math.min(width, height) * 0.1;
-  const newMarkerSize = Math.min(width, height) * 0.15;
+  const newMarkerSize = Math.min(width, height) * 0.12;
 
   useEffect(() => {
     // console.log(
@@ -230,7 +230,7 @@ const MapScreen = ({route}) => {
         onRegionChange={handleRegionChange}
         onRegionChangeComplete={handleRegionChangeComplete}
         // onPress={onPressMap}
-        showsUserLocation={false}
+        showsUserLocation={true}
         showsMyLocationButton={true}
         followsUserLocation={true}
         showsCompass={true}
