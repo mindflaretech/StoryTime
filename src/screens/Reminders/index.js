@@ -31,6 +31,7 @@ const Index = ({route}) => {
   const [swipeRow, setSwipeRow] = useState({});
   const [backgroundColor, setBackgroundColor] = useState();
   const [currentLocation, setCurrentLocation] = useState();
+  const [newReminder, setNewReminder] = useState();
   const viewref = useRef(null);
   const navigation = useNavigation();
   const SavedData = route?.params?.myName;
@@ -141,16 +142,10 @@ const Index = ({route}) => {
   };
 
   const handleNotification = () => {
-    // PushNotification.localNotification({
-    //   channelId: 'test-channel',
-    //   title: 'you clicked on me' + item.description,
-    //   message: 'New Reminder Added',
-    // });
-
     PushNotification.localNotificationSchedule({
       channelId: 'test-channel',
       date: new Date(Date.now() + 5 * 1000),
-      title: 'Test Notification',
+      title: 'Reminder Added Successfully',
       message: 'This is test notification from reminde me.',
       playSound: true,
       soundName: 'default',
@@ -217,7 +212,7 @@ const Index = ({route}) => {
             {rowData.item.name}
           </Text>
           <Text style={[styles.frontRowDestxt, {color: Colors.black}]}>
-          {rowData.item.location.substring(0, 15)}
+            {rowData.item.location.substring(0, 15)}
           </Text>
         </View>
         <View style={styles.radiusView}>

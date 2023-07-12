@@ -17,8 +17,10 @@ import {useNavigation} from '@react-navigation/native';
 import {Colors} from '../../theme';
 import {locationData} from '../../utils/Data/LocationData';
 import {RemindersData} from '../../utils/Data/RemindersData';
+import PushNotification from 'react-native-push-notification';
 import StatusBar from '../../components/StatusBar';
 import CustomHeader from '../../components/Header/customHeader';
+import PushNotificationIOS from '@react-native-community/push-notification-ios';
 
 const Index = ({route}) => {
   // ================ useState =====================//
@@ -51,6 +53,8 @@ const Index = ({route}) => {
     // console.log(text, '================ text');
     // console.log(edit, '================ edit');
     // console.log(locationDescription, '================ locationDescription');
+    console.log(myLocationObj, '================ myLocationObj');
+
     navigation.setOptions({
       title: isEdit || edit ? 'Edit Reminder' : 'Add Reminder',
     });
@@ -91,6 +95,17 @@ const Index = ({route}) => {
     }
     return result;
   };
+  const handleNotification = myLocationObj => {
+    PushNotification.localNotificationSchedule({
+      channelId: 'test-channel',
+      date: new Date(Date.now() + 5 * 1000),
+      title: 'Reminder Added Successfully',
+      message: myLocationObj,
+      playSound: true,
+      soundName: 'default',
+      allowWhileIdle: true,
+    });
+  };
   const fetchAddresses = () => {
     const addresses = getLocationData.map(location => location.address);
     console.log(addresses);
@@ -124,6 +139,7 @@ const Index = ({route}) => {
     };
     const updatedData = [...getRemindersData, newData];
     dispatch(reminders(updatedData));
+    handleNotification(myLocationObj);
   };
   const handleNameChange = value => {
     setName(value);
@@ -131,7 +147,6 @@ const Index = ({route}) => {
   const handleRadiusChange = value => {
     setRadius(value);
   };
-
   const renderItem = ({item}) => {
     return (
       <TouchableOpacity
