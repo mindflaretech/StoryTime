@@ -21,10 +21,17 @@ export default {
   },
   splash: {
     iLocReminderLogo: require('../assets/images/iLocReminderLogo.png'),
+    background: require('../assets/images/background.jpg'),
+    logo: require('../assets/images/logo.png'),
+    
   },
   general: {
     topArrow: require('../assets/icon/topArrowCricle.png'),
     addIcon: require('../assets/images/addIcon.png'),
     reminderIcon: require('../assets/images/reminderIcon.png'),
+    back: require('../assets/images/icons8-back-100.png'),
+    locationPlaceholder: require('../assets/images/locationPlaceholder.png'),
+    plus: require('../assets/images/icons8-plus-90.png'),
+    
   },
 };

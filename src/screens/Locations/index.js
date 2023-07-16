@@ -27,7 +27,7 @@ import Geolocation from '@react-native-community/geolocation';
 import {check, PERMISSIONS, request} from 'react-native-permissions';
 import {log} from 'react-native-reanimated';
 
-const Index = ({route}) => {
+const Locations = ({route}) => {
   //===================== useState ============================//
   const [data, setData] = useState();
   const [swipeRow, setSwipeRow] = useState({});
@@ -49,10 +49,10 @@ const Index = ({route}) => {
     // console.log(savedCurrentLocation, '========== Current Location ==========');
     // checkPermission();
     // requestLocationPermission();
-    getCurrentLocation();
-
-    configurePushNotification();
-    createChannel();
+    // getCurrentLocation();
+    
+    // configurePushNotification();
+    // createChannel();
   }, []);
 
   const requestLocationPermission = async () => {
@@ -277,8 +277,8 @@ const Index = ({route}) => {
   };
   const ListEmptyComponent = () => (
     <View style={styles.emptytxtView}>
-      <Image style={styles.reminderIcon} source={Images.splash.logo} />
-      <Text style={styles.emptyTxt}>Reminders will appear here</Text>
+      <Image style={styles.reminderIcon} source={Images.general.locationPlaceholder} />
+      <Text style={styles.emptyTxt}>Locations will appear here</Text>
     </View>
   );
   const onRowDidOpen = (rowKey, rowMap) => {
@@ -287,22 +287,11 @@ const Index = ({route}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* <StatusBar /> */}
-      <CustomHeader text="Reminder" />
-      <View
-        style={{
-          flex: 1,
-          // backgroundColor: Colors.errorInput,
-          // justifyContent: 'center',
-          // alignItems:'center'
-        }}>
+      <StatusBar />
+      <CustomHeader text="Locations" />
+      <View style={{flex: 1}}>
         <SwipeListView
-          contentContainerStyle={{
-            // flex: 1,
-            // justifyContent: 'center',
-            // marginTop: -100,
-          }}
-          // style={{flex: 1}}
+          style={{marginTop: 20}}
           data={getRemindersData}
           keyExtractor={(item, index) => item.id}
           renderItem={renderItem}
@@ -319,8 +308,8 @@ const Index = ({route}) => {
         activeOpacity={0.85}
         style={styles.addIconViewStyles}
         onPress={() => {
-          navigation.navigate(ScreeNames.RemindersAddUpdate, {
-            text: 'Add Reminder',
+          navigation.navigate(ScreeNames.AddLocation, {
+            text: 'Add Location',
           });
           // handleNotification();
         }}>
@@ -330,4 +319,4 @@ const Index = ({route}) => {
   );
 };
 
-export default Index;
+export default Locations;

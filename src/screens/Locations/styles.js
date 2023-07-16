@@ -1,6 +1,6 @@
 /** @format */
 
-import {Dimensions, StyleSheet} from 'react-native';
+import {StyleSheet} from 'react-native';
 import {Colors, Fonts, Metrics} from '../../theme';
 
 export default StyleSheet.create({
@@ -52,7 +52,7 @@ export default StyleSheet.create({
     justifyContent: 'space-between',
     marginVertical: 5,
     marginHorizontal: 20,
-    height: 100,
+    height:100
   },
   backRowEditView: {
     backgroundColor: 'blue',
@@ -109,24 +109,22 @@ export default StyleSheet.create({
     height: 65,
   },
   emptytxtView: {
-    // flex: 1,
-    // backgroundColor: Colors.teal,
-    // justifyContent: 'center',
+    backgroundColor: Colors.background,
+    justifyContent: 'center',
     alignItems: 'center',
-    // marginTop: 200,
+    marginTop: 200,
   },
   reminderIcon: {
     resizeMode: 'contain',
-    width: Dimensions.get('window').width,
-    height: Dimensions.get('window').width,
-    opacity: 0.3,
+    width: 90,
+    height: 90,
+    opacity:0.5,
     tintColor: Colors.teal,
   },
   emptyTxt: {
-    fontSize: 24,
-    color: Colors.teal,
-    // marginVertical: 10,
-    opacity: 0.5,
+    fontSize: 18,
+    color: Colors.black,
+    marginVertical: 10,
   },
   shadowStyle: {
     width: 200,

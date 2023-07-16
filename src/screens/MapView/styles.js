@@ -4,6 +4,8 @@ import {Colors} from '../../theme';
 const {width, height} = Dimensions.get('window');
 const markerSize = Math.min(width, height) * 0.1;
 
+const markerSizeX = 60;
+
 export default StyleSheet.create({
   container: {
     flex: 1,
@@ -14,12 +16,13 @@ export default StyleSheet.create({
   },
   markerContainer: {
     position: 'absolute',
-    left: width / 2.3,
-    top: height / 2.3,
+    left: width / 2 - (markerSizeX/3),
+    top: height / 2 - (markerSizeX/2),
   },
   markerImage: {
-
     resizeMode: 'contain',
+    width: markerSizeX,
+    height: markerSizeX,
   },
   textInputContainer: {
     backgroundColor: '#FFFFFF',

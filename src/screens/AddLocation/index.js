@@ -22,7 +22,7 @@ import StatusBar from '../../components/StatusBar';
 import CustomHeader from '../../components/Header/customHeader';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 
-const Index = ({route}) => {
+const AddLocation = ({route}) => {
   // ================ useState =====================//
   const [name, setName] = useState('');
   const [radius, setRadius] = useState('');
@@ -180,14 +180,14 @@ const Index = ({route}) => {
           style={styles.textInputStyle}
           onChangeText={handleNameChange}
           value={name}
-          placeholder="Name"
+          placeholder="Landmark"
           placeholderTextColor="gray"
         />
         <TouchableOpacity
           activeOpacity={0.85}
           style={styles.locationFieldButton}
           onPress={() => {
-            navigation.navigate(ScreeNames.Locations);
+            navigation.navigate(ScreeNames.MapScreen);
             // if (getLocationData?.length > 0) {
             //   rbSheetRef.current.open();
             // } else {
@@ -206,14 +206,6 @@ const Index = ({route}) => {
               : 'Location'}{' '}
           </Text>
         </TouchableOpacity>
-        <TextInput
-          style={styles.textInputStyle}
-          onChangeText={handleRadiusChange}
-          value={radius}
-          placeholder="Radius"
-          keyboardType="numeric"
-          placeholderTextColor="gray"
-        />
       </View>
       <View style={styles.saveButtoncontainer}>
         <TouchableOpacity
@@ -265,4 +257,4 @@ const Index = ({route}) => {
   );
 };
 
-export default Index;
+export default AddLocation;

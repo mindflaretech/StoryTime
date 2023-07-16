@@ -118,5 +118,4 @@ export const getScrollDataIdentifer = identifier => state =>
 
 export const getLocation = state => state.testPost?.locations ?? defaultData;
 export const getReminder = state => state.testPost?.reminders ?? defaultData;
-export const getCurrentLoc= state =>
-  state.testPost?.currentLoc ?? defaultData;
+export const getCurrentLoc= state => state.testPost?.currentLoc ?? defaultData;
