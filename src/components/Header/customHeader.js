@@ -33,8 +33,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   headerTxt: {
-    fontSize: 22,
-    color: Colors.black,
+    fontSize: 28,
+    color: Colors.teal,
     marginVertical: 20,
+    fontWeight: '600',
   },
 });

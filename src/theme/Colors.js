@@ -10,4 +10,5 @@ export default {
   teal: '#008080',
   powderBlue: '#b0e0e6',
   background: '#EAF2FA',
+  screenBackground: '#EAF2FA',
 };

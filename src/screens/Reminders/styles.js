@@ -5,7 +5,7 @@ import {Colors, Fonts, Metrics} from '../../theme';
 
 export default StyleSheet.create({
   container: {
-    backgroundColor: Colors.background,
+    backgroundColor: Colors.screenBackground,
     flex: 1,
   },
   swipeListView: {
@@ -98,7 +98,7 @@ export default StyleSheet.create({
     borderRadius: 60,
     backgroundColor: Colors.powderBlue,
     position: 'absolute',
-    bottom: 15,
+    bottom: 25,
     // right: 15,
     alignSelf: 'center',
   },

@@ -5,7 +5,7 @@ import {Colors, Fonts, Metrics} from '../../theme';
 
 export default StyleSheet.create({
   container: {
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.screenBackground,
     flex: 1,
   },
   textInputStyle: {
@@ -18,7 +18,7 @@ export default StyleSheet.create({
     borderRadius: 10,
     elevation: 3,
     shadowColor: Colors.teal,
-    backgroundColor: Colors.white,
+    // backgroundColor: Colors.screenBackground,
   },
   locationFieldButton: {
     height: 40,
@@ -31,7 +31,7 @@ export default StyleSheet.create({
     borderRadius: 10,
     elevation: 3,
     shadowColor: Colors.teal,
-    backgroundColor: Colors.white,
+    // backgroundColor: Colors.white,
     justifyContent: 'center',
   },
   locationTxt: {

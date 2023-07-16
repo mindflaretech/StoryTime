@@ -287,7 +287,7 @@ const Locations = ({route}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar />
+      {/* <StatusBar /> */}
       <CustomHeader text="Locations" />
       <View style={{flex: 1}}>
         <SwipeListView
