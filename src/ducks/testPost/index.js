@@ -89,7 +89,7 @@ export default createReducer(initalState, builder => {
   });
 
   builder.addCase(locations, (state, action) => {
-    // console.log(action, 'locations action ..........');
+    console.log(action, 'locations action ..........');
     state.locations = action.payload;
   });
   builder.addCase(reminders, (state, action) => {

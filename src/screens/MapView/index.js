@@ -46,6 +46,7 @@ const MapScreen = ({route}) => {
   const getCurrentLocation = useSelector(getCurrentLoc);
   const [previousLocation, setPreviousLocation] = useState({});
   const [markerSize, setMarkerSize] = useState(initialMarkerSize);
+  const [coordinates, setCoordinates] = useState();
   const currentLatitude = getCurrentLocation.latitude;
   const currentLongitude = getCurrentLocation.longitude;
   const [currentLocation, setCurrentLocation] = useState({
@@ -73,34 +74,18 @@ const MapScreen = ({route}) => {
   const newMarkerSize = Math.min(width, height) * 0.12;
 
   useEffect(() => {
-    // console.log(
-    //   markerPosition,
-    //   '===================== markerPosition.0 =================',
-    // );
-    // console.log(region, '===================== region.0 =================');
-
-    // if (mapRef.current) {
-    //   const region = {
-    //     latitude: currentLocation.latitude,
-    //     longitude: currentLocation.longitude,
-    //     latitudeDelta: 0.01,
-    //     longitudeDelta: 0.01,
-    //   };
-    //   mapRef.current.animateToRegion(region, 1000);
-    // }
-    // handleMarkerPress();
-    // fetchAddress();
-
-    // console.log(getCurrentLocation);
-
+    console.log(textInputValue, '============ getlocation ======');
     let coordinates = {
       latitude: getCurrentLocation.latitude,
       longitude: getCurrentLocation.longitude,
     };
-
     getAddressFromCoordinates(coordinates);
   }, []);
-
+  useEffect(() => {
+    // if (region !== null) {
+    //   setMarkerSize(newMarkerSize);
+    // }
+  }, []);
   const getAddressFromCoordinates = async coordinates => {
     const address = await getAddressFromLatLng(
       coordinates.latitude,
@@ -108,13 +93,6 @@ const MapScreen = ({route}) => {
     );
     setTextInputValue(address);
   };
-
-  useEffect(() => {
-    // if (region !== null) {
-    //   setMarkerSize(newMarkerSize);
-    // }
-  }, []);
-
   const getAddressFromLatLng = async (latitude, longitude) => {
     try {
       const response = await Geocoder.from(latitude, longitude);
@@ -166,20 +144,6 @@ const MapScreen = ({route}) => {
       longitudeDelta: longitudeDelta,
     };
     mapRef.current.animateToRegion(region, 500);
-  };
-  const locationIsSelected = () => {
-    navigation.navigate(ScreeNames.RemindersAddUpdate, {
-      locationDescription: locationDescription,
-      locationIsTrue: true,
-      edit: isEdit,
-    });
-    const arr = [...getLocationData];
-    const obj = {
-      address: textInputValue,
-      currentLocation: getCurrentLocation,
-    };
-    arr.push(obj);
-    dispatch(locations(arr));
   };
   const handleMarkerPress = () => {
     if (mapRef.current && currentLocation) {
@@ -247,6 +211,17 @@ const MapScreen = ({route}) => {
       longitude: longitude,
     };
     getAddressFromCoordinates(coordinates);
+    setCoordinates(coordinates);
+  };
+  const locationIsSelected = () => {
+    const obj = {
+      address: textInputValue,
+      coordinates: coordinates,
+    };
+    navigation.navigate(ScreeNames.AddLocation, {
+      locationObj: obj,
+      locationSelected: true,
+    });
   };
   const handleRegionChange = newRegion => {
     setRegion(null);
@@ -258,7 +233,6 @@ const MapScreen = ({route}) => {
   return (
     <SafeAreaView style={styles.container}>
       {/* <StatusBr /> */}
-
       <MapView
         ref={mapRef}
         provider={PROVIDER_GOOGLE}
@@ -276,7 +250,6 @@ const MapScreen = ({route}) => {
         pitchEnabled={true}
         rotateEnabled={true}
       />
-
       <Marker
         coordinate={{
           latitude: currentLatitude,
@@ -301,67 +274,21 @@ const MapScreen = ({route}) => {
           />
         </View>
       </Marker>
-
-      <View
-        style={{
-          flexDirection: 'row',
-          // backgroundColor: 'red',
-          // height: 50,
-          width: '100%',
-          justifyContent: 'space-between',
-          marginBottom: 16,
-          // marginHorizontal: 16
-        }}>
+      <View style={styles.topView}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
-          style={{
-            marginLeft: 16,
-            backgroundColor: Colors.teal,
-            width: 40,
-            height: 40,
-            justifyContent: 'center',
-            alignItems: 'center',
-            borderRadius: 5,
-          }}>
-          <Image
-            style={{
-              width: 20,
-              height: 20,
-              tintColor: 'white',
-            }}
-            source={Images.general.back}
-          />
+          style={styles.goBackButton}>
+          <Image style={styles.goBackImage} source={Images.general.back} />
         </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={{
-            marginRight: 16,
-            backgroundColor: Colors.teal,
-            width: 40,
-            height: 40,
-            justifyContent: 'center',
-            alignItems: 'center',
-            borderRadius: 5,
-          }}>
-          <Image
-            style={{
-              width: 20,
-              height: 20,
-              tintColor: 'white',
-            }}
-            source={Images.general.plus}
-          />
+        <TouchableOpacity onPress={locationIsSelected} style={styles.addButton}>
+          <Image style={styles.addButtonImage} source={Images.general.plus} />
         </TouchableOpacity>
       </View>
       <GooglePlacesAutocomplete
         GooglePlacesDetailsQuery={{fields: 'geometry'}}
         fetchDetails={true}
         styles={{
-          // textInputContainer: styles.textInputContainer,
-          textInputContainer: {
-            // marginHorizontal: 16,
-            // backgroundColor: 'red',
-          },
+          textInputContainer: {},
           textInput: styles.textInput,
         }}
         minLength={10}
@@ -375,8 +302,6 @@ const MapScreen = ({route}) => {
         query={{
           key: 'AIzaSyDnXL-HCi6BSVMWCtKk8Bl3TiPfX9H57sU',
           language: 'en',
-          // type: 'geocode',
-          // components: 'country:pk',
         }}
         currentLocation={true}
         currentLocationLabel="Current Location"

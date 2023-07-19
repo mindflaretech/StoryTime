@@ -16,8 +16,8 @@ export default StyleSheet.create({
   },
   markerContainer: {
     position: 'absolute',
-    left: width / 2 - (markerSizeX/3),
-    top: height / 2 - (markerSizeX/2),
+    left: width / 2 - markerSizeX / 3,
+    top: height / 2 - markerSizeX / 2,
   },
   markerImage: {
     resizeMode: 'contain',
@@ -54,5 +54,42 @@ export default StyleSheet.create({
     color: Colors.white,
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  topView: {
+    flexDirection: 'row',
+    // backgroundColor: 'red',
+    // height: 50,
+    width: '100%',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+    // marginHorizontal: 16
+  },
+  goBackButton: {
+    marginLeft: 16,
+    backgroundColor: Colors.teal,
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 5,
+  },
+  goBackImage: {
+    width: 20,
+    height: 20,
+    tintColor: 'white',
+  },
+  addButton: {
+    marginRight: 16,
+    backgroundColor: Colors.teal,
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 5,
+  },
+  addButtonImage: {
+    width: 20,
+    height: 20,
+    tintColor: 'white',
   },
 });

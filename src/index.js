@@ -1,20 +1,19 @@
-import configureStore from "./store";
-import React, { useEffect, useState } from "react";
-import { View } from "react-native";
-import DataHandler from "./utils/DataHandler";
-import NetworkInfo from "./utils/NetworkInfo";
-import AppNavigator from "./naviagtor";
-import { Provider } from "react-redux";
-import { CustomSplashScreen } from "./screens";
-
-
+import configureStore from './store';
+import React, {useEffect, useState} from 'react';
+import {View} from 'react-native';
+import DataHandler from './utils/DataHandler';
+import NetworkInfo from './utils/NetworkInfo';
+import AppNavigator from './naviagtor';
+import {Provider} from 'react-redux';
+import {CustomSplashScreen} from './screens';
+import FlashMessage from 'react-native-flash-message';
 
 const App = () => {
   // set store state
   const [storeState, setStore] = useState(null);
 
   // when store is configured
-  const onStoreConfigure = (store) => {
+  const onStoreConfigure = store => {
     //init things
 
     DataHandler.setStore(store);
@@ -44,10 +43,11 @@ const App = () => {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: "white" }}>
+    <View style={{flex: 1, backgroundColor: 'white'}}>
       <Provider store={storeState}>
         <AppNavigator />
       </Provider>
+      <FlashMessage position="top" />
     </View>
   );
 };

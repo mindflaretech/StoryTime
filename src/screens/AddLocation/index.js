@@ -11,7 +11,12 @@ import styles from '../RemindersAddUpdate/styles';
 import SaveUpdateButton from '../../components/SaveUpdateButton';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import {useDispatch, useSelector} from 'react-redux';
-import {getLocation, getReminder, reminders} from '../../ducks/testPost';
+import {
+  getLocation,
+  getReminder,
+  locations,
+  reminders,
+} from '../../ducks/testPost';
 import {ScreeNames} from '../../naviagtor';
 import {useNavigation} from '@react-navigation/native';
 import {Colors} from '../../theme';
@@ -21,6 +26,7 @@ import PushNotification from 'react-native-push-notification';
 import StatusBar from '../../components/StatusBar';
 import CustomHeader from '../../components/Header/customHeader';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
+import {showMessage} from 'react-native-flash-message';
 
 const AddLocation = ({route}) => {
   // ================ useState =====================//
@@ -46,18 +52,10 @@ const AddLocation = ({route}) => {
   const itemLocation = route?.params?.items?.location;
   const savedLocation = route?.params?.savedLocation;
   const locationDescription = route?.params?.locationDescription;
-  const location = route?.params?.location;
-
+  const location = route?.params?.locationObj?.address;
+  const locationIsSelected = route?.params?.locationSelected;
   useEffect(() => {
-    console.log(
-      getLocationData?.length,
-      ' getLocationData on add/update screen ',
-    );
-    // console.log(text, '================ text');
-    // console.log(edit, '================ edit');
-    // console.log(locationDescription, '================ locationDescription');
-    console.log(myLocationObj, '================ myLocationObj');
-
+    console.log(name, '================ getLocationData');
     navigation.setOptions({
       title: isEdit || edit ? 'Edit Reminder' : 'Add Reminder',
     });
@@ -68,6 +66,8 @@ const AddLocation = ({route}) => {
     } else if (locationTrue) {
       setMyLocationObj(savedLocation);
       setMyLocationObj(locationDescription);
+    } else if (locationIsSelected) {
+      setMyLocationObj(location);
     }
     const recentLocation = getLocationData[getLocationData.length - 1];
     if (recentLocation) {
@@ -76,6 +76,8 @@ const AddLocation = ({route}) => {
       setMyLocationObj(recentAddress);
     }
   }, [
+    locationIsSelected,
+    location,
     isEdit,
     edit,
     itemName,
@@ -132,17 +134,24 @@ const AddLocation = ({route}) => {
       dispatch(reminders(updatedData));
     }
   };
-  const savedData = () => {
+  const savedLocations = () => {
+    let loc = [...getLocationData];
     const newData = {
       id: generateString(8),
-      name: name,
-      radius: radius,
-      location: myLocationObj,
-      activate: false,
+      landMark: name,
+      location: location,
     };
-    const updatedData = [...getRemindersData, newData];
-    dispatch(reminders(updatedData));
-    handleNotification(myLocationObj);
+    loc.push(newData);
+    dispatch(locations(loc));
+    showSavedLocationMessage();
+  };
+  const showSavedLocationMessage = () => {
+    showMessage({
+      message: 'Location has been saved successfully',
+      type: 'success',
+      duration: 2000,
+      backgroundColor: Colors.teal,
+    });
   };
   const handleNameChange = value => {
     setName(value);
@@ -182,28 +191,25 @@ const AddLocation = ({route}) => {
           value={name}
           placeholder="Landmark"
           placeholderTextColor="gray"
+          maxLength={30}
         />
         <TouchableOpacity
           activeOpacity={0.85}
           style={styles.locationFieldButton}
           onPress={() => {
             navigation.navigate(ScreeNames.MapScreen);
-            // if (getLocationData?.length > 0) {
-            //   rbSheetRef.current.open();
-            // } else {
-            //   navigation.navigate(ScreeNames.MapScreen);
-            // }
           }}>
           <Text
             style={[
               styles.locationTxt,
               {color: myLocationObj ? Colors.black : 'gray'},
             ]}>
-            {myLocationObj
-              ? myLocationObj.length > 20
-                ? `${myLocationObj.slice(0, 20)}...`
+            {/* {myLocationObj
+              ? myLocationObj.length > 30
+                ? `${myLocationObj.slice(0, 30)}...`
                 : myLocationObj
-              : 'Location'}{' '}
+              : 'Location'}{' '} */}
+            {locationIsSelected ? location : 'Location'}
           </Text>
         </TouchableOpacity>
       </View>
@@ -215,14 +221,14 @@ const AddLocation = ({route}) => {
             navigation.navigate(ScreeNames.Reminders, {
               showLocation: showLocation,
             });
-            isEdit || edit ? updatedData() : savedData();
+            isEdit || edit ? updatedData() : savedLocations();
           }}>
           <Text style={styles.buttonTxt}>
             {isEdit || edit ? 'Update' : 'Save'}
           </Text>
         </TouchableOpacity>
       </View>
-      <RBSheet
+      {/* <RBSheet
         ref={rbSheetRef}
         height={550}
         openDuration={100}
@@ -252,7 +258,7 @@ const AddLocation = ({route}) => {
             keyExtractor={(item, index) => index.toString()}
           />
         </View>
-      </RBSheet>
+      </RBSheet> */}
     </SafeAreaView>
   );
 };

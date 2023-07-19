@@ -45,7 +45,7 @@ const Index = ({route}) => {
   // const savedCurrentLocation = useSelector(getCurrentLoc);
 
   useEffect(() => {
-    // console.log(getRemindersData, '============== get complete location data');
+    console.log(getLocationData, '============== getLocationData2.0');
     // console.log(savedCurrentLocation, '========== Current Location ==========');
     // checkPermission();
     // requestLocationPermission();
@@ -221,7 +221,7 @@ const Index = ({route}) => {
             {rowData.item.name}
           </Text>
           <Text style={[styles.frontRowDestxt, {color: Colors.black}]}>
-            {rowData.item.location.substring(0, 15)}
+            {rowData.item.location}
           </Text>
         </View>
         <View style={styles.radiusView}>

@@ -21,6 +21,7 @@ import PushNotification from 'react-native-push-notification';
 import StatusBar from '../../components/StatusBar';
 import CustomHeader from '../../components/Header/customHeader';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
+import {showMessage, hideMessage} from 'react-native-flash-message';
 
 const Index = ({route}) => {
   // ================ useState =====================//
@@ -130,6 +131,7 @@ const Index = ({route}) => {
         return obj;
       });
       dispatch(reminders(updatedData));
+      showUpdatedMessage();
     }
   };
   const savedData = () => {
@@ -143,6 +145,23 @@ const Index = ({route}) => {
     const updatedData = [...getRemindersData, newData];
     dispatch(reminders(updatedData));
     handleNotification(myLocationObj);
+    showSavedMessage();
+  };
+  const showSavedMessage = () => {
+    showMessage({
+      message: 'Reminder has been saved successfully',
+      type: 'success',
+      duration: 2000,
+      backgroundColor: Colors.teal,
+    });
+  };
+  const showUpdatedMessage = () => {
+    showMessage({
+      message: 'Reminder has been updated successfully',
+      type: 'success',
+      duration: 2000,
+      backgroundColor: Colors.teal,
+    });
   };
   const handleNameChange = value => {
     setName(value);
@@ -182,17 +201,13 @@ const Index = ({route}) => {
           value={name}
           placeholder="Name"
           placeholderTextColor="gray"
+          maxLength={30}
         />
         <TouchableOpacity
           activeOpacity={0.85}
           style={styles.locationFieldButton}
           onPress={() => {
             navigation.navigate(ScreeNames.Locations);
-            // if (getLocationData?.length > 0) {
-            //   rbSheetRef.current.open();
-            // } else {
-            //   navigation.navigate(ScreeNames.MapScreen);
-            // }
           }}>
           <Text
             style={[
@@ -200,8 +215,8 @@ const Index = ({route}) => {
               {color: myLocationObj ? Colors.black : 'gray'},
             ]}>
             {myLocationObj
-              ? myLocationObj.length > 20
-                ? `${myLocationObj.slice(0, 20)}...`
+              ? myLocationObj.length > 30
+                ? `${myLocationObj.slice(0, 30)}...`
                 : myLocationObj
               : 'Location'}{' '}
           </Text>
@@ -213,6 +228,7 @@ const Index = ({route}) => {
           placeholder="Radius"
           keyboardType="numeric"
           placeholderTextColor="gray"
+          maxLength={3}
         />
       </View>
       <View style={styles.saveButtoncontainer}>
@@ -230,7 +246,7 @@ const Index = ({route}) => {
           </Text>
         </TouchableOpacity>
       </View>
-      <RBSheet
+      {/* <RBSheet
         ref={rbSheetRef}
         height={550}
         openDuration={100}
@@ -260,7 +276,7 @@ const Index = ({route}) => {
             keyExtractor={(item, index) => index.toString()}
           />
         </View>
-      </RBSheet>
+      </RBSheet> */}
     </SafeAreaView>
   );
 };

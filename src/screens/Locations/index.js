@@ -50,7 +50,6 @@ const Locations = ({route}) => {
     // checkPermission();
     // requestLocationPermission();
     // getCurrentLocation();
-    
     // configurePushNotification();
     // createChannel();
   }, []);
@@ -221,7 +220,7 @@ const Locations = ({route}) => {
             {rowData.item.name}
           </Text>
           <Text style={[styles.frontRowDestxt, {color: Colors.black}]}>
-            {rowData.item.location.substring(0, 15)}
+            {rowData.item.location}
           </Text>
         </View>
         <View style={styles.radiusView}>
@@ -277,7 +276,10 @@ const Locations = ({route}) => {
   };
   const ListEmptyComponent = () => (
     <View style={styles.emptytxtView}>
-      <Image style={styles.reminderIcon} source={Images.general.locationPlaceholder} />
+      <Image
+        style={styles.reminderIcon}
+        source={Images.general.locationPlaceholder}
+      />
       <Text style={styles.emptyTxt}>Locations will appear here</Text>
     </View>
   );
