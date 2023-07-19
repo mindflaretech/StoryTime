@@ -70,3 +70,8 @@ target 'Remindme' do
     __apply_Xcode_12_5_M1_post_install_workaround(installer)
   end
 end
+
+# Notes
+# you need something to be noted. after setup all the things you must need to run this 
+# "npx react-native setup-ios-permissions" in your terminal
+# followed by "pod install"
