@@ -51,16 +51,12 @@ const AddLocation = ({route}) => {
   const text = route?.params?.text; // screen title
   const locationTrue = route?.params?.locationIsTrue;
   // const item = route?.params?.items;
-  const isEdit = route?.params?.isEditlocation;
   const itemLocation = route?.params?.items?.location;
   const itemObject = route?.params?.item;
-  const itemLandmark = route?.params?.items?.landMark;
-  const itemCoordinates = route?.params?.items?.coordinates;
-  const savedLocation = route?.params?.savedLocation;
-  const locationDescription = route?.params?.locationDescription;
-  const location = route?.params?.locationObj?.address;
-  const locationCoords = route?.params?.locationObj?.coordinates;
-  const locationIsSelected = route?.params?.locationSelected;
+  const isEdit = itemObject?.isEditable;
+
+
+  
   useEffect(() => {
     console.log(itemObject, '================ locationCoords');
     navigation.setOptions({
@@ -114,6 +110,13 @@ const AddLocation = ({route}) => {
     const itemId = route?.params?.items?.id;
     const itemName = route?.params?.items?.name;
     const itemRadius = route?.params?.items?.radius;
+    const itemLandmark = route?.params?.items?.landMark;
+    const itemCoordinates = route?.params?.items?.coordinates;
+    const savedLocation = route?.params?.savedLocation;
+    const locationDescription = route?.params?.locationDescription;
+    const location = route?.params?.locationObj?.address;
+    const locationCoords = route?.params?.locationObj?.coordinates;
+    const locationIsSelected = route?.params?.locationSelected;
   };
   const handleNotification = myLocationObj => {
     PushNotification.localNotificationSchedule({
