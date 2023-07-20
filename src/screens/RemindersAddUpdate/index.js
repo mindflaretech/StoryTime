@@ -27,7 +27,7 @@ const Index = ({route}) => {
   // ================ useState =====================//
   const [name, setName] = useState('');
   const [radius, setRadius] = useState('');
-  const [myLocationObj, setMyLocationObj] = useState();
+  const [myLocationObj, setMyLocationObj] = useState('');
   const [locationData, setLocationData] = useState([]);
   const [showLocation, setShowLocation] = useState();
   const [SelectedLoc, setSelectedLoc] = useState();
@@ -58,7 +58,6 @@ const Index = ({route}) => {
     // console.log(edit, '================ edit');
     // console.log(locationDescription, '================ locationDescription');
     console.log(myLocationObj, '================ myLocationObj');
-
     navigation.setOptions({
       title: isEdit || edit ? 'Edit Reminder' : 'Add Reminder',
     });
@@ -116,36 +115,60 @@ const Index = ({route}) => {
     setMyLocationObj(addresses);
   };
   const updatedData = () => {
-    const updatedIndex = getRemindersData.findIndex(obj => obj.id === itemId);
-    if (updatedIndex !== -1) {
-      const updatedData = getRemindersData.map(obj => {
-        if (obj.id === itemId) {
-          return {
-            id: generateString(8),
-            name: name,
-            radius: radius,
-            location: myLocationObj,
-            activate: false,
-          };
-        }
-        return obj;
+    if (name === '' || myLocationObj === '' || radius === '') {
+      showMessage({
+        message: 'Fields cannot be empty',
+        type: 'success',
+        duration: 2000,
+        backgroundColor: Colors.teal,
       });
-      dispatch(reminders(updatedData));
-      showUpdatedMessage();
+    } else {
+      navigation.navigate(ScreeNames.Reminders, {
+        showLocation: showLocation,
+      });
+      const updatedIndex = getRemindersData.findIndex(obj => obj.id === itemId);
+      if (updatedIndex !== -1) {
+        const updatedData = getRemindersData.map(obj => {
+          if (obj.id === itemId) {
+            return {
+              id: generateString(8),
+              name: name,
+              radius: radius,
+              location: myLocationObj,
+              activate: false,
+            };
+          }
+          return obj;
+        });
+        dispatch(reminders(updatedData));
+        showUpdatedMessage();
+      }
     }
   };
   const savedData = () => {
-    const newData = {
-      id: generateString(8),
-      name: name,
-      radius: radius,
-      location: myLocationObj,
-      activate: false,
-    };
-    const updatedData = [...getRemindersData, newData];
-    dispatch(reminders(updatedData));
-    handleNotification(myLocationObj);
-    showSavedMessage();
+    if (name === '' || myLocationObj === '' || radius === '') {
+      showMessage({
+        message: 'Fields cannot be empty',
+        type: 'success',
+        duration: 2000,
+        backgroundColor: Colors.teal,
+      });
+    } else {
+      navigation.navigate(ScreeNames.Reminders, {
+        showLocation: showLocation,
+      });
+      const newData = {
+        id: generateString(8),
+        name: name,
+        radius: radius,
+        location: myLocationObj,
+        activate: false,
+      };
+      const updatedData = [...getRemindersData, newData];
+      dispatch(reminders(updatedData));
+      handleNotification(myLocationObj);
+      showSavedMessage();
+    }
   };
   const showSavedMessage = () => {
     showMessage({
@@ -236,9 +259,6 @@ const Index = ({route}) => {
           activeOpacity={0.85}
           style={styles.button}
           onPress={() => {
-            navigation.navigate(ScreeNames.Reminders, {
-              showLocation: showLocation,
-            });
             isEdit || edit ? updatedData() : savedData();
           }}>
           <Text style={styles.buttonTxt}>

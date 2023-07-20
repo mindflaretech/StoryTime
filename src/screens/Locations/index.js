@@ -7,6 +7,7 @@ import {
   reminders,
   currentLoc,
   getCurrentLoc,
+  locations,
 } from '../../ducks/testPost';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {FlatList} from 'react-native-gesture-handler';
@@ -45,7 +46,7 @@ const Locations = ({route}) => {
   // const savedCurrentLocation = useSelector(getCurrentLoc);
 
   useEffect(() => {
-    // console.log(getRemindersData, '============== get complete location data');
+    console.log(getLocationData, '============== get complete location data');
     // console.log(savedCurrentLocation, '========== Current Location ==========');
     // checkPermission();
     // requestLocationPermission();
@@ -99,8 +100,8 @@ const Locations = ({route}) => {
   };
 
   const removeItem = itemToRemove => {
-    const updatedData = getRemindersData.filter(item => item !== itemToRemove);
-    dispatch(reminders(updatedData));
+    const updatedData = getLocationData.filter(item => item !== itemToRemove);
+    dispatch(locations(updatedData));
   };
 
   const configurePushNotification = () => {
@@ -217,18 +218,18 @@ const Locations = ({route}) => {
               styles.frontRowtxt,
               {color: itemIsActivated ? Colors.background : Colors.teal},
             ]}>
-            {rowData.item.name}
+            {rowData.item.landMark}
           </Text>
           <Text style={[styles.frontRowDestxt, {color: Colors.black}]}>
             {rowData.item.location}
           </Text>
         </View>
-        <View style={styles.radiusView}>
+        {/* <View style={styles.radiusView}>
           <Image style={styles.icon} source={Images.general.reminderIcon} />
           <Text style={[styles.frontRowtxt, {color: Colors.black}]}>
             {rowData.item.radius} km
           </Text>
-        </View>
+        </View> */}
       </TouchableOpacity>
     );
   };
@@ -240,9 +241,12 @@ const Locations = ({route}) => {
           style={styles.backRowEditView}
           onPress={() => {
             rowMap[rowData.item.id].closeRow();
-            navigation.navigate(ScreeNames.RemindersAddUpdate, {
-              items: rowData.item,
-              isEdit: true,
+            const obj = {
+              item: rowData.item,
+              isEditable: true,
+            };
+            navigation.navigate(ScreeNames.AddLocation, {
+              item: obj,
             });
           }}>
           <Text style={styles.backRowEditTxt}>Edit</Text>
@@ -294,7 +298,7 @@ const Locations = ({route}) => {
       <View style={{flex: 1}}>
         <SwipeListView
           style={{marginTop: 20}}
-          data={getRemindersData}
+          data={getLocationData}
           keyExtractor={(item, index) => item.id}
           renderItem={renderItem}
           renderHiddenItem={renderHiddenItem}

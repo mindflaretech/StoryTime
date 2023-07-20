@@ -47,6 +47,7 @@ const MapScreen = ({route}) => {
   const [previousLocation, setPreviousLocation] = useState({});
   const [markerSize, setMarkerSize] = useState(initialMarkerSize);
   const [coordinates, setCoordinates] = useState();
+  const [updateCoordinates, setupdatedCoordinates] = useState();
   const currentLatitude = getCurrentLocation.latitude;
   const currentLongitude = getCurrentLocation.longitude;
   const [currentLocation, setCurrentLocation] = useState({
@@ -66,7 +67,8 @@ const MapScreen = ({route}) => {
   const getLocationData = useSelector(getLocation);
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  const isEdit = route?.params?.edit;
+  const isEdit = route?.params?.isEdit;
+  const previousLoc = route?.params?.previousLocation;
   const searchData = true;
   const mapRef = useRef(null);
   const {width, height} = Dimensions.get('window');
@@ -74,18 +76,50 @@ const MapScreen = ({route}) => {
   const newMarkerSize = Math.min(width, height) * 0.12;
 
   useEffect(() => {
-    console.log(textInputValue, '============ getlocation ======');
+    console.log(previousLoc, '============ getlocation ');
     let coordinates = {
       latitude: getCurrentLocation.latitude,
       longitude: getCurrentLocation.longitude,
     };
+    // let updateCoordinates = {
+    //   latitude: previousLoc.latitude,
+    //   longitude: previousLoc.longitude,
+    // };
+    // console.log(updateCoordinates, '==============updatescoordinates');
+    // setRegion({
+    //   latitude: updateCoordinates.latitude,
+    //   longitude: updateCoordinates.longitude,
+    //   latitudeDelta: latitudeDelta,
+    //   longitudeDelta: longitudeDelta,
+    // });
+    // let updatedCoordinates = {
+    //   latitude: previousLoc?.latitude,
+    //   longitude: previousLoc?.longitude,
+    //   latitudeDelta: latitudeDelta,
+    //   longitudeDelta: longitudeDelta,
+    // };
+    // if (isEdit) {
+    //   setRegion(updateCoordinates);
+    // }
+
+    setupdatedCoordinates();
     getAddressFromCoordinates(coordinates);
-  }, []);
+  }, [isEdit, previousLoc]);
   useEffect(() => {
     // if (region !== null) {
     //   setMarkerSize(newMarkerSize);
     // }
   }, []);
+  // const updateCoordinates = previousLoc => {
+  //   const {longitude, latitude} = previousLoc;
+  //   console.log(longitude);
+  //   setRegion({
+  //     latitude: latitude,
+  //     longitude: longitude,
+  //     latitudeDelta: latitudeDelta,
+  //     longitudeDelta: longitudeDelta,
+  //   });
+  // };
   const getAddressFromCoordinates = async coordinates => {
     const address = await getAddressFromLatLng(
       coordinates.latitude,

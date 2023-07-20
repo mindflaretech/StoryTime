@@ -33,36 +33,44 @@ const AddLocation = ({route}) => {
   const [name, setName] = useState('');
   const [radius, setRadius] = useState('');
   const [myLocationObj, setMyLocationObj] = useState();
-  const [locationData, setLocationData] = useState([]);
+  const [locationData, setLocationData] = useState();
   const [showLocation, setShowLocation] = useState();
   const [SelectedLoc, setSelectedLoc] = useState();
+  const [previousLocationCoords, setPreviousLocationCoords] = useState();
+  // ================ useRef =====================//
   const rbSheetRef = useRef(null);
+  // ================ useSelector =====================//
   const getLocationData = useSelector(getLocation);
   const getRemindersData = useSelector(getReminder);
+  // ================ useNavigation =====================//
   const navigation = useNavigation();
+  // ================ useDispatch =====================//
   const dispatch = useDispatch();
+  // ================ params =====================//
   const edit = route?.params?.edit;
-  const text = route?.params?.text;
+  const text = route?.params?.text; // screen title
   const locationTrue = route?.params?.locationIsTrue;
-  const item = route?.params?.items;
-  const itemId = route?.params?.items?.id;
-  const itemName = route?.params?.items?.name;
-  const itemRadius = route?.params?.items?.radius;
-  const isEdit = route?.params?.isEdit;
+  // const item = route?.params?.items;
+  const isEdit = route?.params?.isEditlocation;
   const itemLocation = route?.params?.items?.location;
+  const itemObject = route?.params?.item;
+  const itemLandmark = route?.params?.items?.landMark;
+  const itemCoordinates = route?.params?.items?.coordinates;
   const savedLocation = route?.params?.savedLocation;
   const locationDescription = route?.params?.locationDescription;
   const location = route?.params?.locationObj?.address;
+  const locationCoords = route?.params?.locationObj?.coordinates;
   const locationIsSelected = route?.params?.locationSelected;
   useEffect(() => {
-    console.log(name, '================ getLocationData');
+    console.log(itemObject, '================ locationCoords');
     navigation.setOptions({
-      title: isEdit || edit ? 'Edit Reminder' : 'Add Reminder',
+      title: isEdit ? 'Edit Location' : 'Add Location',
     });
+    setLocationData(location);
+    setPreviousLocationCoords(locationCoords);
     if (isEdit) {
-      setName(itemName);
-      setRadius(itemRadius);
-      setMyLocationObj(itemLocation);
+      setLocationData(itemLocation);
+      setName(itemLandmark);
     } else if (locationTrue) {
       setMyLocationObj(savedLocation);
       setMyLocationObj(locationDescription);
@@ -79,12 +87,14 @@ const AddLocation = ({route}) => {
     locationIsSelected,
     location,
     isEdit,
-    edit,
+    // edit,
     itemName,
     itemRadius,
     itemLocation,
     savedLocation,
     locationDescription,
+    itemLandmark,
+    itemCoordinates,
   ]);
 
   //================== creating random ID =====================//
@@ -99,6 +109,11 @@ const AddLocation = ({route}) => {
       counter += 1;
     }
     return result;
+  };
+  const setData = () => {
+    const itemId = route?.params?.items?.id;
+    const itemName = route?.params?.items?.name;
+    const itemRadius = route?.params?.items?.radius;
   };
   const handleNotification = myLocationObj => {
     PushNotification.localNotificationSchedule({
@@ -116,34 +131,57 @@ const AddLocation = ({route}) => {
     console.log(addresses);
     setMyLocationObj(addresses);
   };
-  const updatedData = () => {
-    const updatedIndex = getRemindersData.findIndex(obj => obj.id === itemId);
-    if (updatedIndex !== -1) {
-      const updatedData = getRemindersData.map(obj => {
-        if (obj.id === itemId) {
-          return {
-            id: generateString(8),
-            name: name,
-            radius: radius,
-            location: myLocationObj,
-            activate: false,
-          };
-        }
-        return obj;
+  const updatedLocation = () => {
+    if (name === '' || locationData === '') {
+      showMessage({
+        message: 'Field cannot be empty',
+        type: 'success',
+        duration: 2000,
+        backgroundColor: Colors.teal,
       });
-      dispatch(reminders(updatedData));
+    } else {
+      navigation.navigate(ScreeNames.Locations, {
+        showLocation: showLocation,
+      });
+      const updatedIndex = getLocationData.findIndex(obj => obj.id === itemId);
+      if (updatedIndex !== -1) {
+        const updatedLoc = getLocationData.map(obj => {
+          if (obj.id === itemId) {
+            return {
+              id: generateString(8),
+              landMark: name,
+              location: locationData,
+            };
+          }
+          return obj;
+        });
+        dispatch(locations(updatedLoc));
+      }
     }
   };
   const savedLocations = () => {
-    let loc = [...getLocationData];
-    const newData = {
-      id: generateString(8),
-      landMark: name,
-      location: location,
-    };
-    loc.push(newData);
-    dispatch(locations(loc));
-    showSavedLocationMessage();
+    if (name === '' || locationData === '') {
+      showMessage({
+        message: 'Field cannot be empty',
+        type: 'success',
+        duration: 2000,
+        backgroundColor: Colors.teal,
+      });
+    } else {
+      navigation.navigate(ScreeNames.Locations, {
+        showLocation: showLocation,
+      });
+      let loc = [...getLocationData];
+      const newData = {
+        id: generateString(8),
+        landMark: name,
+        location: location,
+        coordinates: previousLocationCoords,
+      };
+      loc.push(newData);
+      dispatch(locations(loc));
+      showSavedLocationMessage();
+    }
   };
   const showSavedLocationMessage = () => {
     showMessage({
@@ -179,7 +217,7 @@ const AddLocation = ({route}) => {
     <SafeAreaView style={styles.container}>
       {/* <StatusBar /> */}
       <CustomHeader
-        text={text}
+        text={isEdit || locationIsSelected ? 'Edit Location' : text}
         edit={edit}
         isEdit={isEdit}
         locationIsTrue={locationTrue}
@@ -197,19 +235,21 @@ const AddLocation = ({route}) => {
           activeOpacity={0.85}
           style={styles.locationFieldButton}
           onPress={() => {
-            navigation.navigate(ScreeNames.MapScreen);
+            if (isEdit) {
+              navigation.navigate(ScreeNames.MapScreen, {
+                isEdit: isEdit,
+                previousLocation: itemCoordinates,
+              });
+            } else {
+              navigation.navigate(ScreeNames.MapScreen);
+            }
           }}>
           <Text
             style={[
               styles.locationTxt,
               {color: myLocationObj ? Colors.black : 'gray'},
             ]}>
-            {/* {myLocationObj
-              ? myLocationObj.length > 30
-                ? `${myLocationObj.slice(0, 30)}...`
-                : myLocationObj
-              : 'Location'}{' '} */}
-            {locationIsSelected ? location : 'Location'}
+            {locationIsSelected || isEdit ? locationData : 'Location'}
           </Text>
         </TouchableOpacity>
       </View>
@@ -218,14 +258,9 @@ const AddLocation = ({route}) => {
           activeOpacity={0.85}
           style={styles.button}
           onPress={() => {
-            navigation.navigate(ScreeNames.Reminders, {
-              showLocation: showLocation,
-            });
-            isEdit || edit ? updatedData() : savedLocations();
+            isEdit ? updatedLocation() : savedLocations();
           }}>
-          <Text style={styles.buttonTxt}>
-            {isEdit || edit ? 'Update' : 'Save'}
-          </Text>
+          <Text style={styles.buttonTxt}>{isEdit ? 'Update' : 'Save'}</Text>
         </TouchableOpacity>
       </View>
       {/* <RBSheet
