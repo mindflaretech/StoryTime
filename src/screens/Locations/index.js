@@ -27,140 +27,24 @@ import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import Geolocation from '@react-native-community/geolocation';
 import {check, PERMISSIONS, request} from 'react-native-permissions';
 import {log} from 'react-native-reanimated';
+import {Util} from '../../utils';
 
 const Locations = ({route}) => {
   //===================== useState ============================//
-  const [data, setData] = useState();
-  const [swipeRow, setSwipeRow] = useState({});
   const [backgroundColor, setBackgroundColor] = useState();
-  const [currentLocation, setCurrentLocation] = useState();
-  const [newReminder, setNewReminder] = useState();
   const viewref = useRef(null);
   const navigation = useNavigation();
-  const SavedData = route?.params?.myName;
-  const showLocation = route?.params?.showLocation;
   const dispatch = useDispatch();
-  const getRemindersData = useSelector(getReminder);
   const getLocationData = useSelector(getLocation);
   const openRowRef = useRef(null);
-  // const savedCurrentLocation = useSelector(getCurrentLoc);
 
-  useEffect(() => {
-    console.log(getLocationData, '============== get complete location data');
-    // console.log(savedCurrentLocation, '========== Current Location ==========');
-    // checkPermission();
-    // requestLocationPermission();
-    // getCurrentLocation();
-    // configurePushNotification();
-    // createChannel();
-  }, []);
-
-  const requestLocationPermission = async () => {
-    try {
-      const result = await request(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION);
-      if (result === 'granted') {
-        getCurrentLocation();
-      } else {
-        console.log('Location permission denied');
-      }
-    } catch (error) {
-      console.log('Permission request error:', error);
-    }
-  };
-
-  const checkPermission = async () => {
-    try {
-      const result = await check(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION);
-      if (result === 'granted') {
-        getCurrentLocation();
-      }
-    } catch (error) {
-      console.log('Permission check error:', error);
-    }
-  };
-
-  const getCurrentLocation = () => {
-    Geolocation.getCurrentPosition(
-      position => {
-        const {latitude, longitude} = position.coords;
-        let location = {latitude, longitude};
-        console.log(location);
-        setCurrentLocation(location);
-        dispatch(currentLoc(location));
-      },
-      error => {
-        console.log('Error getting location:', error);
-        if (error.code === 2) {
-          // No location provider available error
-          // Handle the error condition here, such as showing an error message to the user
-        }
-      },
-      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
-    );
-  };
+  useEffect(() => {}, []);
 
   const removeItem = itemToRemove => {
     const updatedData = getLocationData.filter(item => item !== itemToRemove);
     dispatch(locations(updatedData));
   };
 
-  const configurePushNotification = () => {
-    PushNotification.configure({
-      onRegister: function (token) {},
-      onNotification: function (notification) {
-        notification.finish(PushNotificationIOS.FetchResult.NoData);
-      },
-      onAction: function (notification) {},
-      onRegistrationError: function (err) {},
-      permissions: {
-        alert: true,
-        badge: true,
-        sound: true,
-      },
-      popInitialNotification: true,
-      requestPermissions: true,
-    });
-  };
-
-  const activeReminder = itemActivate => {
-    setBackgroundColor(true);
-    const updatedReminders = getRemindersData.map(item => {
-      if (item === itemActivate) {
-        return {...item, activate: true};
-      }
-      return item;
-    });
-    dispatch(reminders(updatedReminders));
-  };
-  const deActivateReminder = itemDeactivate => {
-    setBackgroundColor(false);
-    const updatedReminders = getRemindersData.map(item => {
-      if (item === itemDeactivate) {
-        return {...item, activate: false};
-      }
-      return item;
-    });
-    dispatch(reminders(updatedReminders));
-  };
-
-  const createChannel = () => {
-    PushNotification.createChannel({
-      channelId: 'test-channel',
-      channelName: 'Test Channel',
-    });
-  };
-
-  const handleNotification = () => {
-    PushNotification.localNotificationSchedule({
-      channelId: 'test-channel',
-      date: new Date(Date.now() + 5 * 1000),
-      title: 'Reminder Added Successfully',
-      message: 'This is test notification from reminde me.',
-      playSound: true,
-      soundName: 'default',
-      allowWhileIdle: true,
-    });
-  };
   const renderItem = rowData => {
     const itemIsActivated = rowData.item.activate === true;
     return (
@@ -172,45 +56,6 @@ const Locations = ({route}) => {
             backgroundColor: itemIsActivated ? Colors.teal : Colors.powderBlue,
           },
         ]}
-        onLongPress={() => {
-          backgroundColor
-            ? Alert.alert(
-                'Deactivate Reminder',
-                'Are you sure you want to deactivate this reminder ?',
-                [
-                  {
-                    text: 'No',
-                    style: 'default',
-                  },
-                  {
-                    text: 'Yes',
-                    onPress: () => {
-                      deActivateReminder(rowData.item);
-                    },
-                    style: 'cancel',
-                  },
-                ],
-                {cancelable: false},
-              )
-            : Alert.alert(
-                'Activate Reminder',
-                'Are you sure you want to activate this reminder ?',
-                [
-                  {
-                    text: 'No',
-                    style: 'default',
-                  },
-                  {
-                    text: 'Yes',
-                    onPress: () => {
-                      activeReminder(rowData.item);
-                    },
-                    style: 'cancel',
-                  },
-                ],
-                {cancelable: false},
-              );
-        }}
         activeOpacity={1}>
         <View style={styles.nameLocationView}>
           <Text
@@ -218,21 +63,31 @@ const Locations = ({route}) => {
               styles.frontRowtxt,
               {color: itemIsActivated ? Colors.background : Colors.teal},
             ]}>
-            {rowData.item.landMark}
+            {rowData?.item?.landMark}
           </Text>
           <Text style={[styles.frontRowDestxt, {color: Colors.black}]}>
-            {rowData.item.location}
+            {rowData?.item?.location?.address}
           </Text>
         </View>
-        {/* <View style={styles.radiusView}>
-          <Image style={styles.icon} source={Images.general.reminderIcon} />
-          <Text style={[styles.frontRowtxt, {color: Colors.black}]}>
-            {rowData.item.radius} km
-          </Text>
-        </View> */}
       </TouchableOpacity>
     );
   };
+
+  const onPressDelete = (rowMap, rowData) => {
+    Util.showAlertConfirm(
+      'Delete Reminder',
+      'Are you sure you want to delete this location ?',
+      'Yes',
+      () => {
+        removeItem(rowData.item);
+      },
+      'No',
+      () => {
+        rowMap[rowData.item.id].closeRow();
+      },
+    );
+  };
+
   const renderHiddenItem = (rowData, rowMap, item) => {
     return (
       <View key={rowData.item.id} ref={viewref} style={styles.backRowView}>
@@ -254,25 +109,7 @@ const Locations = ({route}) => {
         <TouchableOpacity
           activeOpacity={0.85}
           style={styles.backRowDeleteView}
-          onPress={() => {
-            Alert.alert(
-              'Delete Reminder',
-              'Are you sure you want to delete this reminder ?',
-              [
-                {
-                  text: 'No',
-                  onPress: () => rowMap[rowData.item.id].closeRow(),
-                  style: 'default',
-                },
-                {
-                  text: 'Yes',
-                  onPress: () => removeItem(rowData.item),
-                  style: 'cancel',
-                },
-              ],
-              {cancelable: false},
-            );
-          }}>
+          onPress={() => onPressDelete(rowMap, rowData)}>
           <Text style={styles.backRowDeleteTxt}>Delete</Text>
         </TouchableOpacity>
       </View>
@@ -317,7 +154,6 @@ const Locations = ({route}) => {
           navigation.navigate(ScreeNames.AddLocation, {
             text: 'Add Location',
           });
-          // handleNotification();
         }}>
         <Image style={styles.addIconStyles} source={Images.general.addIcon} />
       </TouchableOpacity>

@@ -27,200 +27,146 @@ import StatusBar from '../../components/StatusBar';
 import CustomHeader from '../../components/Header/customHeader';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import {showMessage} from 'react-native-flash-message';
+import {Util} from '../../utils';
+import EventEmitter from '../../utils/EventEmitter';
+import {log} from 'react-native-reanimated';
 
 const AddLocation = ({route}) => {
   // ================ useState =====================//
-  const [name, setName] = useState('');
-  const [radius, setRadius] = useState('');
-  const [myLocationObj, setMyLocationObj] = useState();
-  const [locationData, setLocationData] = useState();
-  const [showLocation, setShowLocation] = useState();
-  const [SelectedLoc, setSelectedLoc] = useState();
-  const [previousLocationCoords, setPreviousLocationCoords] = useState();
-  // ================ useRef =====================//
-  const rbSheetRef = useRef(null);
+  const [landmark, setLandmark] = useState(null);
+  const [locationData, setLocationData] = useState(null);
   // ================ useSelector =====================//
   const getLocationData = useSelector(getLocation);
-  const getRemindersData = useSelector(getReminder);
   // ================ useNavigation =====================//
   const navigation = useNavigation();
   // ================ useDispatch =====================//
   const dispatch = useDispatch();
   // ================ params =====================//
   const edit = route?.params?.edit;
-  const text = route?.params?.text; // screen title
   const locationTrue = route?.params?.locationIsTrue;
-  // const item = route?.params?.items;
-  const itemLocation = route?.params?.items?.location;
   const itemObject = route?.params?.item;
   const isEdit = itemObject?.isEditable;
+  const itemCoordinates = route?.params?.items?.coordinates;
 
-
-  
   useEffect(() => {
-    console.log(itemObject, '================ locationCoords');
-    navigation.setOptions({
-      title: isEdit ? 'Edit Location' : 'Add Location',
-    });
-    setLocationData(location);
-    setPreviousLocationCoords(locationCoords);
-    if (isEdit) {
-      setLocationData(itemLocation);
-      setName(itemLandmark);
-    } else if (locationTrue) {
-      setMyLocationObj(savedLocation);
-      setMyLocationObj(locationDescription);
-    } else if (locationIsSelected) {
-      setMyLocationObj(location);
-    }
-    const recentLocation = getLocationData[getLocationData.length - 1];
-    if (recentLocation) {
-      const recentAddress = recentLocation.address;
-      console.log(recentAddress);
-      setMyLocationObj(recentAddress);
-    }
-  }, [
-    locationIsSelected,
-    location,
-    isEdit,
-    // edit,
-    itemName,
-    itemRadius,
-    itemLocation,
-    savedLocation,
-    locationDescription,
-    itemLandmark,
-    itemCoordinates,
-  ]);
+    EventEmitter.addListener('onLocationSelected', handleLocationSelected);
+    return () => {
+      EventEmitter.removeListener('onLocationSelected', handleLocationSelected);
+    };
+  }, []);
 
-  //================== creating random ID =====================//
-  const generateString = length => {
-    let result = '';
-    const characters =
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    const charactersLength = characters.length;
-    let counter = 0;
-    while (counter < length) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
-      counter += 1;
-    }
-    return result;
-  };
+  useEffect(() => {
+    setData();
+  }, []);
+
   const setData = () => {
-    const itemId = route?.params?.items?.id;
-    const itemName = route?.params?.items?.name;
-    const itemRadius = route?.params?.items?.radius;
-    const itemLandmark = route?.params?.items?.landMark;
-    const itemCoordinates = route?.params?.items?.coordinates;
-    const savedLocation = route?.params?.savedLocation;
-    const locationDescription = route?.params?.locationDescription;
-    const location = route?.params?.locationObj?.address;
-    const locationCoords = route?.params?.locationObj?.coordinates;
-    const locationIsSelected = route?.params?.locationSelected;
+    console.log('route?.params', route?.params?.item?.item?.id);
+
+    const lm = route?.params?.item?.item?.landMark;
+    const loc = route?.params?.item?.item?.location;
+
+    console.log('lm', lm);
+    console.log('loc', loc);
+
+    setLandmark(lm);
+    setLocationData(loc);
   };
-  const handleNotification = myLocationObj => {
-    PushNotification.localNotificationSchedule({
-      channelId: 'test-channel',
-      date: new Date(Date.now() + 5 * 1000),
-      title: 'Reminder Added Successfully',
-      message: myLocationObj,
-      playSound: true,
-      soundName: 'default',
-      allowWhileIdle: true,
-    });
+
+  const handleLocationSelected = location => {
+    console.log('Add Location screen > location: ', location);
+    setLocationData(location);
   };
-  const fetchAddresses = () => {
-    const addresses = getLocationData.map(location => location.address);
-    console.log(addresses);
-    setMyLocationObj(addresses);
-  };
-  const updatedLocation = () => {
-    if (name === '' || locationData === '') {
-      showMessage({
-        message: 'Field cannot be empty',
-        type: 'success',
-        duration: 2000,
-        backgroundColor: Colors.teal,
-      });
-    } else {
-      navigation.navigate(ScreeNames.Locations, {
-        showLocation: showLocation,
-      });
-      const updatedIndex = getLocationData.findIndex(obj => obj.id === itemId);
-      if (updatedIndex !== -1) {
-        const updatedLoc = getLocationData.map(obj => {
-          if (obj.id === itemId) {
-            return {
-              id: generateString(8),
-              landMark: name,
-              location: locationData,
-            };
-          }
-          return obj;
-        });
-        dispatch(locations(updatedLoc));
-      }
-    }
-  };
-  const savedLocations = () => {
-    if (name === '' || locationData === '') {
-      showMessage({
-        message: 'Field cannot be empty',
-        type: 'success',
-        duration: 2000,
-        backgroundColor: Colors.teal,
-      });
-    } else {
-      navigation.navigate(ScreeNames.Locations, {
-        showLocation: showLocation,
-      });
-      let loc = [...getLocationData];
-      const newData = {
-        id: generateString(8),
-        landMark: name,
-        location: location,
-        coordinates: previousLocationCoords,
-      };
-      loc.push(newData);
-      dispatch(locations(loc));
-      showSavedLocationMessage();
-    }
-  };
-  const showSavedLocationMessage = () => {
+
+  const saveLocation = () => {
+    let locationsPayload = [...getLocationData];
+    const newData = {
+      id: Util.makeRandomString(8),
+      landMark: landmark,
+      location: locationData,
+    };
+    locationsPayload.push(newData);
+    dispatch(locations(locationsPayload));
     showMessage({
       message: 'Location has been saved successfully',
       type: 'success',
       duration: 2000,
       backgroundColor: Colors.teal,
     });
+
+    navigation.goBack();
   };
-  const handleNameChange = value => {
-    setName(value);
+
+  const updateLocation = () => {
+    const itemId = route?.params?.item?.item?.id;
+    const updatedIndex = getLocationData.findIndex(obj => obj.id === itemId);
+    if (updatedIndex !== -1) {
+      const updatedLocations = getLocationData.map(obj => {
+        if (obj.id === itemId) {
+          return {
+            id: Util.makeRandomString(8),
+            landMark: landmark,
+            location: locationData,
+          };
+        }
+        return obj;
+      });
+      dispatch(locations(updatedLocations));
+      showMessage({
+        message: 'Location has been updated successfully',
+        type: 'success',
+        duration: 2000,
+        backgroundColor: Colors.teal,
+      });
+      navigation.goBack();
+    }
   };
-  const handleRadiusChange = value => {
-    setRadius(value);
+
+  const onPressCheckValidation = () => {
+    if (!landmark) {
+      showMessage({
+        message: 'Landmark field must not be empty',
+        type: 'danger',
+        duration: 2000,
+      });
+      return;
+    }
+
+    if (!locationData) {
+      showMessage({
+        message: 'Location field must not be empty',
+        type: 'danger',
+        duration: 2000,
+      });
+      return;
+    }
+
+    // Validation Success
+    console.log(landmark);
+    console.log(locationData);
+
+    if (isEdit) {
+      updateLocation();
+    } else {
+      saveLocation();
+    }
+
   };
-  const renderItem = ({item}) => {
-    return (
-      <TouchableOpacity
-        style={[styles.renderItemFlatlist]}
-        activeOpacity={0.85}
-        onPress={() => {
-          // setShowLocation(item.description);
-          // setSelectedLoc(true);
-          setMyLocationObj(item.description);
-          // handleNotification(item.description);
-          rbSheetRef.current.close();
-        }}>
-        <Text style={styles.flatListTxt}>{item.address}</Text>
-      </TouchableOpacity>
-    );
+
+  const onPressLocationField = () => {
+    if (isEdit) {
+      navigation.navigate(ScreeNames.MapScreen, {
+        isEdit: isEdit,
+        location: locationData,
+      });
+    } else {
+      navigation.navigate(ScreeNames.MapScreen);
+    }
   };
+
   return (
     <SafeAreaView style={styles.container}>
-      {/* <StatusBar /> */}
       <CustomHeader
-        text={isEdit || locationIsSelected ? 'Edit Location' : text}
+        text={isEdit ? 'Edit Location' : 'Add Location'}
         edit={edit}
         isEdit={isEdit}
         locationIsTrue={locationTrue}
@@ -228,8 +174,10 @@ const AddLocation = ({route}) => {
       <View style={styles.textInputsView}>
         <TextInput
           style={styles.textInputStyle}
-          onChangeText={handleNameChange}
-          value={name}
+          onChangeText={value => {
+            setLandmark(value);
+          }}
+          value={landmark}
           placeholder="Landmark"
           placeholderTextColor="gray"
           maxLength={30}
@@ -237,22 +185,13 @@ const AddLocation = ({route}) => {
         <TouchableOpacity
           activeOpacity={0.85}
           style={styles.locationFieldButton}
-          onPress={() => {
-            if (isEdit) {
-              navigation.navigate(ScreeNames.MapScreen, {
-                isEdit: isEdit,
-                previousLocation: itemCoordinates,
-              });
-            } else {
-              navigation.navigate(ScreeNames.MapScreen);
-            }
-          }}>
+          onPress={onPressLocationField}>
           <Text
             style={[
               styles.locationTxt,
-              {color: myLocationObj ? Colors.black : 'gray'},
+              {color: locationData?.address ? Colors.black : 'gray'},
             ]}>
-            {locationIsSelected || isEdit ? locationData : 'Location'}
+            {locationData?.address ?? 'Location'}
           </Text>
         </TouchableOpacity>
       </View>
@@ -260,43 +199,10 @@ const AddLocation = ({route}) => {
         <TouchableOpacity
           activeOpacity={0.85}
           style={styles.button}
-          onPress={() => {
-            isEdit ? updatedLocation() : savedLocations();
-          }}>
+          onPress={onPressCheckValidation}>
           <Text style={styles.buttonTxt}>{isEdit ? 'Update' : 'Save'}</Text>
         </TouchableOpacity>
       </View>
-      {/* <RBSheet
-        ref={rbSheetRef}
-        height={550}
-        openDuration={100}
-        closeOnDragDown={true}
-        closeOnPressMask={true}
-        animationType="slide"
-        customStyles={styles.rbSheetStyles}>
-        <View style={styles.rbSheetContainer}>
-          <TouchableOpacity
-            activeOpacity={0.85}
-            style={styles.addButton}
-            onPress={() => {
-              const mapScreen = ScreeNames.MapScreen;
-              const mapScreenWithParams = {
-                name: ScreeNames.MapScreen,
-                key: generateString(8),
-              };
-              const screenSelection = isEdit ? mapScreen : mapScreenWithParams;
-              navigation.navigate(screenSelection, {edit: true});
-              rbSheetRef.current.close();
-            }}>
-            <Text style={styles.addtxt}>Add</Text>
-          </TouchableOpacity>
-          <FlatList
-            data={getLocationData}
-            renderItem={renderItem}
-            keyExtractor={(item, index) => index.toString()}
-          />
-        </View>
-      </RBSheet> */}
     </SafeAreaView>
   );
 };

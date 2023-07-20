@@ -31,6 +31,8 @@ import Geolocation from '@react-native-community/geolocation';
 import {check, PERMISSIONS, request} from 'react-native-permissions';
 import Geocoder from 'react-native-geocoding';
 import {images} from '../../utils/Images/images';
+import EventEmitter from '../../utils/EventEmitter';
+import {log} from 'react-native-reanimated';
 
 navigator.geolocation = require('@react-native-community/geolocation');
 
@@ -41,85 +43,44 @@ const longitudeDelta = 0.006866;
 
 const MapScreen = ({route}) => {
   // ======================== useState ========================= //
+  const isEdit = route?.params?.isEdit;
+  const editableCoordinates = route?.params?.location?.coordinates;
+  const editableLat = editableCoordinates?.latitude;
+  const editableLng = editableCoordinates?.longitude;
   const [textInputValue, setTextInputValue] = useState('');
-  const [locationDescription, setLocationDescription] = useState();
   const getCurrentLocation = useSelector(getCurrentLoc);
-  const [previousLocation, setPreviousLocation] = useState({});
-  const [markerSize, setMarkerSize] = useState(initialMarkerSize);
   const [coordinates, setCoordinates] = useState();
-  const [updateCoordinates, setupdatedCoordinates] = useState();
-  const currentLatitude = getCurrentLocation.latitude;
-  const currentLongitude = getCurrentLocation.longitude;
+
+  const currentLatitude = isEdit ? editableLat : getCurrentLocation.latitude;
+  const currentLongitude = isEdit ? editableLng : getCurrentLocation.longitude;
   const [currentLocation, setCurrentLocation] = useState({
     latitude: currentLatitude,
     longitude: currentLongitude,
   });
-  const [markerPosition, setMarkerPosition] = useState({
-    latitude: currentLatitude,
-    longitude: currentLongitude,
-  });
+
   const [region, setRegion] = useState({
     latitude: currentLatitude,
     longitude: currentLongitude,
     latitudeDelta: latitudeDelta,
     longitudeDelta: longitudeDelta,
   });
-  const getLocationData = useSelector(getLocation);
-  const dispatch = useDispatch();
+
   const navigation = useNavigation();
-  const isEdit = route?.params?.isEdit;
-  const previousLoc = route?.params?.previousLocation;
-  const searchData = true;
+
   const mapRef = useRef(null);
-  const {width, height} = Dimensions.get('window');
-  const initialMarkerSize = Math.min(width, height) * 0.1;
-  const newMarkerSize = Math.min(width, height) * 0.12;
 
   useEffect(() => {
-    console.log(previousLoc, '============ getlocation ');
     let coordinates = {
-      latitude: getCurrentLocation.latitude,
-      longitude: getCurrentLocation.longitude,
+      latitude: currentLatitude,
+      longitude: currentLongitude,
     };
-    // let updateCoordinates = {
-    //   latitude: previousLoc.latitude,
-    //   longitude: previousLoc.longitude,
-    // };
-    // console.log(updateCoordinates, '==============updatescoordinates');
-    // setRegion({
-    //   latitude: updateCoordinates.latitude,
-    //   longitude: updateCoordinates.longitude,
-    //   latitudeDelta: latitudeDelta,
-    //   longitudeDelta: longitudeDelta,
-    // });
-    // let updatedCoordinates = {
-    //   latitude: previousLoc?.latitude,
-    //   longitude: previousLoc?.longitude,
-    //   latitudeDelta: latitudeDelta,
-    //   longitudeDelta: longitudeDelta,
-    // };
-    // if (isEdit) {
-    //   setRegion(updateCoordinates);
-    // }
 
-    setupdatedCoordinates();
+    console.log('coordinates', coordinates);
     getAddressFromCoordinates(coordinates);
-  }, [isEdit, previousLoc]);
-  useEffect(() => {
-    // if (region !== null) {
-    //   setMarkerSize(newMarkerSize);
-    // }
   }, []);
-  // const updateCoordinates = previousLoc => {
-  //   const {longitude, latitude} = previousLoc;
-  //   console.log(longitude);
-  //   setRegion({
-  //     latitude: latitude,
-  //     longitude: longitude,
-  //     latitudeDelta: latitudeDelta,
-  //     longitudeDelta: longitudeDelta,
-  //   });
-  // };
+
+  useEffect(() => {}, []);
+
   const getAddressFromCoordinates = async coordinates => {
     const address = await getAddressFromLatLng(
       coordinates.latitude,
@@ -127,31 +88,18 @@ const MapScreen = ({route}) => {
     );
     setTextInputValue(address);
   };
+
   const getAddressFromLatLng = async (latitude, longitude) => {
     try {
       const response = await Geocoder.from(latitude, longitude);
       const address = response.results[0].formatted_address;
-      // console.log('Address:', address);
+
       return address;
     } catch (error) {
       console.error('Error:', error);
     }
   };
-  const fetchAddress = useCallback(async () => {
-    const latitude = currentLatitude;
-    const longitude = currentLongitude;
 
-    if (
-      latitude !== previousLocation.latitude ||
-      longitude !== previousLocation.longitude
-    ) {
-      const address = await getAddressFromLatLng(latitude, longitude);
-      // console.log('Location Description:', address);
-      setLocationDescription(address);
-      setPreviousLocation({latitude, longitude});
-      setTextInputValue(address);
-    }
-  }, [currentLocation, previousLocation]);
   const HandleSearchPlaces = (data, detail) => {
     const {geometry} = detail;
     const {location} = geometry;
@@ -159,18 +107,6 @@ const MapScreen = ({route}) => {
     const longitude = location.lng;
     const description = data.description;
     const placeId = data.place_id;
-    // setCurrentLocation({latitude, longitude});
-    // const arr = [...getLocationData];
-    // const obj = {
-    //   placeId: placeId,
-    //   description: description,
-    //   latitude: latitude,
-    //   longitude: longitude,
-    //   address: textInputValue,
-    //   currentLocation: getCurrentLocation,
-    // };
-    // arr.push(obj);
-    // dispatch(locations(arr));
     const region = {
       latitude: latitude,
       longitude: longitude,
@@ -191,55 +127,11 @@ const MapScreen = ({route}) => {
       mapRef.current.animateToRegion(region, 500);
     }
   };
-  const onPressMap = event => {
-    const {latitude, longitude} = event.nativeEvent.coordinate;
-    console.log('======== MapView: OnPressEvent ========');
-    console.log(event.nativeEvent.coordinate);
 
-    setMarkerPosition({latitude, longitude});
-    getAddress(latitude, longitude);
-  };
-  const onDragEnd = event => {
-    const {latitude, longitude} = event.nativeEvent.coordinate;
-    console.log('======== Marker: OnDrag Marker ========');
-    console.log(event.nativeEvent.coordinate);
-
-    setMarkerPosition({latitude, longitude});
-    getAddress(latitude, longitude);
-  };
-  const getAddress = async (latitude, longitude) => {
-    const address = await getAddressFromLatLng(latitude, longitude);
-    // console.log('Location Description:', address);
-
-    setCurrentLocation({
-      latitude: latitude,
-      longitude: longitude,
-    });
-    setTextInputValue(address);
-  };
-  const getNewRegionAddress = async (latitude, longitude) => {
-    const address = await getAddressFromLatLng(latitude, longitude);
-    // console.log('New Region Description:', address);
-
-    setCurrentLocation({
-      latitude: latitude,
-      longitude: longitude,
-    });
-
-    const characterLimit = 50;
-    const limitedAddress = address.slice(0, characterLimit);
-    setTextInputValue(limitedAddress);
-  };
   const handleRegionChangeComplete = newRegion => {
     console.log(newRegion);
     const {latitude, longitude} = newRegion;
-    // const currentMarkerSize = region === null ? initialMarkerSize : markerSize;
-    //   // console.log('New region:', newRegion);
-    // setRegion(newRegion);
-    // getNewRegionAddress(latitude, longitude);
-    // if (currentMarkerSize !== newMarkerSize) {
-    // setMarkerSize(newMarkerSize);
-    // }
+
     let coordinates = {
       latitude: latitude,
       longitude: longitude,
@@ -247,19 +139,16 @@ const MapScreen = ({route}) => {
     getAddressFromCoordinates(coordinates);
     setCoordinates(coordinates);
   };
-  const locationIsSelected = () => {
+  const onPressAdd = () => {
     const obj = {
       address: textInputValue,
       coordinates: coordinates,
     };
-    navigation.navigate(ScreeNames.AddLocation, {
-      locationObj: obj,
-      locationSelected: true,
-    });
+
+    EventEmitter.notify('onLocationSelected', obj);
+    navigation.goBack();
   };
-  const handleRegionChange = newRegion => {
-    setRegion(null);
-  };
+
   const onChangeText = text => {
     setTextInputValue(text);
   };
@@ -290,7 +179,7 @@ const MapScreen = ({route}) => {
           longitude: currentLongitude,
         }}
         draggable
-        onDragEnd={onDragEnd}
+        // onDragEnd={onDragEnd}
         onPress={handleMarkerPress}
         anchor={{x: 0.5, y: 0.5}}
         centerOffset={{x: 0.5, y: 0.5}}>
@@ -314,7 +203,7 @@ const MapScreen = ({route}) => {
           style={styles.goBackButton}>
           <Image style={styles.goBackImage} source={Images.general.back} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={locationIsSelected} style={styles.addButton}>
+        <TouchableOpacity onPress={onPressAdd} style={styles.addButton}>
           <Image style={styles.addButtonImage} source={Images.general.plus} />
         </TouchableOpacity>
       </View>
@@ -341,12 +230,6 @@ const MapScreen = ({route}) => {
         currentLocationLabel="Current Location"
         enableHighAccuracyLocation={true}
       />
-      {/* <TouchableOpacity
-        style={styles.button}
-        activeOpacity={0.85}
-        onPress={locationIsSelected}>
-        <Text style={styles.buttontxt}>Location is Selected</Text>
-      </TouchableOpacity> */}
     </SafeAreaView>
   );
 };

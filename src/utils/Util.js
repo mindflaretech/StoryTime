@@ -1,17 +1,17 @@
-import { showMessage as flashMessageShow } from "react-native-flash-message";
-import { Platform, StatusBar, Alert } from "react-native";
-import moment from "moment";
-import _ from "lodash";
-import checkVersion from "react-native-store-version";
-import VersionInfo from "react-native-version-info";
-import { ANDROID_STORE_URL, IOS_STORE_URL } from "../config/Constants";
+import {showMessage as flashMessageShow} from 'react-native-flash-message';
+import {Platform, StatusBar, Alert} from 'react-native';
+import moment from 'moment';
+import _ from 'lodash';
+import checkVersion from 'react-native-store-version';
+import VersionInfo from 'react-native-version-info';
+import {ANDROID_STORE_URL, IOS_STORE_URL} from '../config/Constants';
 
 function isPlatformAndroid() {
-  return Platform.OS === "android";
+  return Platform.OS === 'android';
 }
 
 function isPlatformIOS() {
-  return Platform.OS === "ios";
+  return Platform.OS === 'ios';
 }
 
 function getPlatform() {
@@ -22,8 +22,8 @@ function convert24HrTo12(time24) {
   var ts = time24;
   var H = +ts.substr(0, 2);
   var h = H % 12 || 12;
-  h = h < 10 ? "0" + h : h; // leading 0 at the left for 1 digit hours
-  var ampm = H < 12 ? " AM" : " PM";
+  h = h < 10 ? '0' + h : h; // leading 0 at the left for 1 digit hours
+  var ampm = H < 12 ? ' AM' : ' PM';
   ts = h + ts.substr(2, 3) + ampm;
   return ts;
 }
@@ -38,15 +38,15 @@ function getFormattedTime(time) {
 
 function translucentApp() {
   StatusBar.setTranslucent(true);
-  StatusBar.setBarStyle("light-content");
+  StatusBar.setBarStyle('light-content');
 }
 
 function setStatusBarLight() {
-  StatusBar.setBarStyle("light-content", true);
+  StatusBar.setBarStyle('light-content', true);
 }
 
 function setStatusBarDark() {
-  StatusBar.setBarStyle("dark-content", true);
+  StatusBar.setBarStyle('dark-content', true);
 }
 
 function isNotEmpty(data) {
@@ -74,22 +74,22 @@ function compareDeep(previous, next) {
 }
 
 function getDateFromNow(date) {
-  return date ? moment(date).fromNow() : "";
+  return date ? moment(date).fromNow() : '';
 }
 
 function formatDate(dateString, formattedDateFormat) {
-  return dateString ? moment(dateString).format(formattedDateFormat) : "";
+  return dateString ? moment(dateString).format(formattedDateFormat) : '';
 }
 
 function formatDate2(dateString, currentDateFormat, formattedDateFormat) {
   return dateString
     ? moment(dateString, currentDateFormat).format(formattedDateFormat)
-    : "";
+    : '';
 }
 
 function compareDates(date1, date2) {
   if (date1 && date2) {
-    return moment(date1).isSame(date2, "day");
+    return moment(date1).isSame(date2, 'day');
   }
   return false;
 }
@@ -103,7 +103,8 @@ function showAlertConfirm(
   message,
   doneText,
   onDonePress,
-  cancelText = "cancel"
+  cancelText = 'cancel',
+  onCancelPress,
 ) {
   Alert.alert(
     title,
@@ -111,17 +112,17 @@ function showAlertConfirm(
     [
       {
         text: cancelText,
-        onPress: () => {},
-        style: "cancel",
+        onPress: () => onCancelPress(),
+        style: 'cancel',
       },
-      { text: doneText, onPress: () => onDonePress() },
+      {text: doneText, onPress: () => onDonePress()},
     ],
-    { cancelable: true }
+    {cancelable: true},
   );
 }
 
 function removeFormatLocalNumber(x) {
-  return x.toString().replace(/[^\d.-]/g, "");
+  return x.toString().replace(/[^\d.-]/g, '');
 }
 
 function toFixedIfNecessary(value, dp = 1) {
@@ -131,7 +132,7 @@ function toFixedIfNecessary(value, dp = 1) {
 /*
 type : 'danger' , 'success' , 'info'
 */
-function showMessage(message, type = "danger", duration = 2000) {
+function showMessage(message, type = 'danger', duration = 2000) {
   flashMessageShow({
     message,
     type,
@@ -139,8 +140,8 @@ function showMessage(message, type = "danger", duration = 2000) {
   });
 }
 
-function concatDataArray(state, action, dataKey = "data") {
-  const { data, reset } = action.payload;
+function concatDataArray(state, action, dataKey = 'data') {
+  const {data, reset} = action.payload;
   const newData = reset ? data : _.concat(state?.[dataKey] ?? [], data);
 
   state[dataKey] = newData;
@@ -154,9 +155,9 @@ function stringToDateObject(date, format) {
 }
 
 function makeRandomString(length = 20) {
-  var result = "";
+  var result = '';
   var characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   var charactersLength = characters.length;
   for (var i = 0; i < length; i++) {
     result += characters.charAt(Math.floor(Math.random() * charactersLength));
@@ -165,15 +166,13 @@ function makeRandomString(length = 20) {
 }
 
 function checkAppStoreVersion() {
-
-
   const init = async () => {
     try {
       const check = await checkVersion({
         version: VersionInfo.appVersion, // app local version
         androidStoreURL: ANDROID_STORE_URL,
         iosStoreURL: IOS_STORE_URL,
-        country: "jp", // default value is 'jp'
+        country: 'jp', // default value is 'jp'
       });
 
       // console.log("=========== Check App Version =======");
@@ -181,9 +180,9 @@ function checkAppStoreVersion() {
       // console.log(getPlatform());
 
       // console.log(check);
-      if (check.result === "new") {
+      if (check.result === 'new') {
         // if app store version is new
-        Alert.alert("Update App", "New version available on store");
+        Alert.alert('Update App', 'New version available on store');
       }
 
       // setAndroidVersion(check.result);
