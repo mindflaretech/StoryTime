@@ -1,38 +1,16 @@
-// 1. Get Current location coordinates
-// 2. Get address from coordinates into textfield
-// 3. Get location from movement of map
-// 4. Get address from moved coordinates
-
-import {
-  View,
-  Text,
-  Button,
-  TouchableOpacity,
-  Image,
-  Dimensions,
-} from 'react-native';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
-import StatusBr from '../../components/StatusBar';
+import {View, TouchableOpacity, Image} from 'react-native';
+import React, {useEffect, useRef, useState} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import styles from './styles';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete';
 import {Colors, Images} from '../../theme';
-import {useDispatch, useSelector} from 'react-redux';
-import {
-  getCurrentLoc,
-  getCurrentLocation,
-  getLocation,
-  locations,
-} from '../../ducks/testPost';
+import {useSelector} from 'react-redux';
+import {getCurrentLoc} from '../../ducks/testPost';
 import {useNavigation} from '@react-navigation/native';
-import {ScreeNames} from '../../naviagtor';
-import Geolocation from '@react-native-community/geolocation';
-import {check, PERMISSIONS, request} from 'react-native-permissions';
 import Geocoder from 'react-native-geocoding';
-import {images} from '../../utils/Images/images';
 import EventEmitter from '../../utils/EventEmitter';
-import {log} from 'react-native-reanimated';
+import StatusBr from '../../components/StatusBar';
 
 navigator.geolocation = require('@react-native-community/geolocation');
 
@@ -42,32 +20,31 @@ const latitudeDelta = 0.004757;
 const longitudeDelta = 0.006866;
 
 const MapScreen = ({route}) => {
-  // ======================== useState ========================= //
+  // ======================== useRef ========================= //
+  const mapRef = useRef(null);
+  // ======================== useNavigation ========================= //
+  const navigation = useNavigation();
+  // ======================== params ========================= //
   const isEdit = route?.params?.isEdit;
   const editableCoordinates = route?.params?.location?.coordinates;
   const editableLat = editableCoordinates?.latitude;
   const editableLng = editableCoordinates?.longitude;
+  // ======================== useState ========================= //
   const [textInputValue, setTextInputValue] = useState('');
   const getCurrentLocation = useSelector(getCurrentLoc);
   const [coordinates, setCoordinates] = useState();
-
   const currentLatitude = isEdit ? editableLat : getCurrentLocation.latitude;
   const currentLongitude = isEdit ? editableLng : getCurrentLocation.longitude;
   const [currentLocation, setCurrentLocation] = useState({
     latitude: currentLatitude,
     longitude: currentLongitude,
   });
-
   const [region, setRegion] = useState({
     latitude: currentLatitude,
     longitude: currentLongitude,
     latitudeDelta: latitudeDelta,
     longitudeDelta: longitudeDelta,
   });
-
-  const navigation = useNavigation();
-
-  const mapRef = useRef(null);
 
   useEffect(() => {
     let coordinates = {
@@ -78,8 +55,6 @@ const MapScreen = ({route}) => {
     console.log('coordinates', coordinates);
     getAddressFromCoordinates(coordinates);
   }, []);
-
-  useEffect(() => {}, []);
 
   const getAddressFromCoordinates = async coordinates => {
     const address = await getAddressFromLatLng(
@@ -115,6 +90,7 @@ const MapScreen = ({route}) => {
     };
     mapRef.current.animateToRegion(region, 500);
   };
+
   const handleMarkerPress = () => {
     if (mapRef.current && currentLocation) {
       const region = {
@@ -139,6 +115,7 @@ const MapScreen = ({route}) => {
     getAddressFromCoordinates(coordinates);
     setCoordinates(coordinates);
   };
+
   const onPressAdd = () => {
     const obj = {
       address: textInputValue,
@@ -155,15 +132,13 @@ const MapScreen = ({route}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* <StatusBr /> */}
+      <StatusBr />
       <MapView
         ref={mapRef}
         provider={PROVIDER_GOOGLE}
         style={styles.map}
         region={region}
-        // onRegionChange={handleRegionChange}
         onRegionChangeComplete={handleRegionChangeComplete}
-        // onPress={onPressMap}
         showsUserLocation={true}
         showsMyLocationButton={true}
         followsUserLocation={true}
@@ -179,7 +154,6 @@ const MapScreen = ({route}) => {
           longitude: currentLongitude,
         }}
         draggable
-        // onDragEnd={onDragEnd}
         onPress={handleMarkerPress}
         anchor={{x: 0.5, y: 0.5}}
         centerOffset={{x: 0.5, y: 0.5}}>
@@ -188,8 +162,6 @@ const MapScreen = ({route}) => {
             style={[
               styles.markerImage,
               {
-                // width: 100,
-                // height: 100,
                 tintColor: Colors.teal,
               },
             ]}

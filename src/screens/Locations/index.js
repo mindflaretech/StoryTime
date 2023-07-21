@@ -1,47 +1,32 @@
 import {View, Text, TouchableOpacity, Image, Alert} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {
-  getLocation,
-  getReminder,
-  reminders,
-  currentLoc,
-  getCurrentLoc,
-  locations,
-} from '../../ducks/testPost';
+import {getLocation, locations} from '../../ducks/testPost';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {FlatList} from 'react-native-gesture-handler';
 import styles from '../Reminders/styles';
 import {SwipeListView} from 'react-native-swipe-list-view';
-import {Shadow} from 'react-native-shadow';
 import {Colors, Images} from '../../theme';
 import {useNavigation} from '@react-navigation/native';
 import {ScreeNames} from '../../naviagtor';
-import {transform} from 'lodash';
-import {RemindersData} from '../../utils/Data/RemindersData';
 import StatusBar from '../../components/StatusBar';
-import {images} from '../../utils/Images/images';
 import CustomHeader from '../../components/Header/customHeader';
-import PushNotification from 'react-native-push-notification';
-import PushNotificationIOS from '@react-native-community/push-notification-ios';
-import Geolocation from '@react-native-community/geolocation';
-import {check, PERMISSIONS, request} from 'react-native-permissions';
-import {log} from 'react-native-reanimated';
 import {Util} from '../../utils';
 
 const Locations = ({route}) => {
-  //===================== useState ============================//
-  const [backgroundColor, setBackgroundColor] = useState();
+  //===================== useRef ============================//
   const viewref = useRef(null);
+  const openRowRef = useRef(null);
+  //===================== useNavigation ============================//
   const navigation = useNavigation();
+  //===================== useDispatch ============================//
   const dispatch = useDispatch();
   const getLocationData = useSelector(getLocation);
-  const openRowRef = useRef(null);
 
   const removeItem = itemToRemove => {
     const updatedData = getLocationData.filter(item => item !== itemToRemove);
     dispatch(locations(updatedData));
   };
+
   const onPressLoctionConfirm = itemData => {
     navigation.navigate(ScreeNames.RemindersAddUpdate, {
       isconfirm: true,
@@ -60,7 +45,7 @@ const Locations = ({route}) => {
             backgroundColor: itemIsActivated ? Colors.teal : Colors.powderBlue,
           },
         ]}
-        onPress={() => onPressLoctionConfirm(rowData.item)}
+        onPress={() => onPressLoctionConfirm(rowData?.item)}
         activeOpacity={1}>
         <View style={styles.nameLocationView}>
           <Text
@@ -120,6 +105,7 @@ const Locations = ({route}) => {
       </View>
     );
   };
+
   const ListEmptyComponent = () => (
     <View style={styles.emptytxtView}>
       <Image
@@ -129,6 +115,7 @@ const Locations = ({route}) => {
       <Text style={styles.emptyTxt}>Locations will appear here</Text>
     </View>
   );
+  
   const onRowDidOpen = (rowKey, rowMap) => {
     openRowRef.current = rowMap[rowKey];
   };
@@ -151,7 +138,6 @@ const Locations = ({route}) => {
           onRowDidOpen={onRowDidOpen}
         />
       </View>
-
       <TouchableOpacity
         activeOpacity={0.85}
         style={styles.addIconViewStyles}

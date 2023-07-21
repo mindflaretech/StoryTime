@@ -3,25 +3,19 @@ import {
   Text,
   SafeAreaView,
   TextInput,
-  FlatList,
   TouchableOpacity,
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import styles from '../RemindersAddUpdate/styles';
-import SaveUpdateButton from '../../components/SaveUpdateButton';
-import RBSheet from 'react-native-raw-bottom-sheet';
 import {useDispatch, useSelector} from 'react-redux';
 import {getLocation, getReminder, reminders} from '../../ducks/testPost';
 import {ScreeNames} from '../../naviagtor';
 import {useNavigation} from '@react-navigation/native';
 import {Colors} from '../../theme';
-import {locationData} from '../../utils/Data/LocationData';
-import {RemindersData} from '../../utils/Data/RemindersData';
 import PushNotification from 'react-native-push-notification';
 import StatusBar from '../../components/StatusBar';
 import CustomHeader from '../../components/Header/customHeader';
-import PushNotificationIOS from '@react-native-community/push-notification-ios';
-import {showMessage, hideMessage} from 'react-native-flash-message';
+import {showMessage} from 'react-native-flash-message';
 
 const Index = ({route}) => {
   // ================ useState =====================//
@@ -31,11 +25,15 @@ const Index = ({route}) => {
   const [locationData, setLocationData] = useState([]);
   const [showLocation, setShowLocation] = useState();
   const [SelectedLoc, setSelectedLoc] = useState();
+  // ================ useRef =====================//
   const rbSheetRef = useRef(null);
+  // ================ useNavigation =====================//
+  const navigation = useNavigation();
+  // ================ useDispatch =====================//
+  const dispatch = useDispatch();
   const getLocationData = useSelector(getLocation);
   const getRemindersData = useSelector(getReminder);
-  const navigation = useNavigation();
-  const dispatch = useDispatch();
+  // ================ params =====================//
   const edit = route?.params?.edit;
   const text = route?.params?.text;
   const locationTrue = route?.params?.locationIsTrue;
@@ -51,33 +49,8 @@ const Index = ({route}) => {
   const isConfirmLocation = route?.params?.item;
   const isConfirmAddress = isConfirmLocation?.location?.address;
 
-  // useEffect(() => {
-  //   console.log(myLocationObj,'=======myLocation');
-  //   if (isEdit) {
-  //     setMyLocationObj(isConfirmAddress);
-  //     setName(itemName);
-  //     setRadius(itemRadius);
-  //     setMyLocationObj(itemLocation);
-  //   } else if (locationTrue) {
-  //     setMyLocationObj(savedLocation);
-  //     setMyLocationObj(locationDescription);
-  //   }
-  //   const recentLocation = getLocationData[getLocationData.length - 1];
-  //   if (recentLocation) {
-  //     const recentAddress = recentLocation.address;
-  //     console.log(recentAddress);
-  //     setMyLocationObj(recentAddress);
-  //   }
-  // }, [
-  //   isEdit,
-  //   edit,
-  //   itemName,
-  //   itemRadius,
-  //   itemLocation,
-  //   savedLocation,
-  //   locationDescription,
-  // ]);
   useEffect(() => {
+    console.log(myLocationObj, '---------------------------');
     if (isConfirmTrue) {
       setMyLocationObj(isConfirmAddress);
     } else if (isEdit) {
@@ -85,7 +58,7 @@ const Index = ({route}) => {
       setMyLocationObj(itemLocation);
       setRadius(itemRadius);
     }
-  }, []);
+  }, [isConfirmAddress]);
 
   //================== creating random ID =====================//
   const generateString = length => {
@@ -100,6 +73,7 @@ const Index = ({route}) => {
     }
     return result;
   };
+
   const handleNotification = myLocationObj => {
     PushNotification.localNotificationSchedule({
       channelId: 'test-channel',
@@ -111,16 +85,12 @@ const Index = ({route}) => {
       allowWhileIdle: true,
     });
   };
-  const fetchAddresses = () => {
-    const addresses = getLocationData.map(location => location.address);
-    console.log(addresses);
-    setMyLocationObj(addresses);
-  };
+
   const updatedData = () => {
     if (name === '' || myLocationObj === '' || radius === '') {
       showMessage({
         message: 'Fields cannot be empty',
-        type: 'success',
+        type: 'danger',
         duration: 2000,
         backgroundColor: Colors.teal,
       });
@@ -147,6 +117,7 @@ const Index = ({route}) => {
       }
     }
   };
+
   const savedData = () => {
     if (name === '' || myLocationObj === '' || radius === '') {
       showMessage({
@@ -172,6 +143,7 @@ const Index = ({route}) => {
       showSavedMessage();
     }
   };
+
   const showSavedMessage = () => {
     showMessage({
       message: 'Reminder has been saved successfully',
@@ -180,6 +152,7 @@ const Index = ({route}) => {
       backgroundColor: Colors.teal,
     });
   };
+
   const showUpdatedMessage = () => {
     showMessage({
       message: 'Reminder has been updated successfully',
@@ -188,31 +161,18 @@ const Index = ({route}) => {
       backgroundColor: Colors.teal,
     });
   };
+
   const handleNameChange = value => {
     setName(value);
   };
+
   const handleRadiusChange = value => {
     setRadius(value);
   };
-  const renderItem = ({item}) => {
-    return (
-      <TouchableOpacity
-        style={[styles.renderItemFlatlist]}
-        activeOpacity={0.85}
-        onPress={() => {
-          // setShowLocation(item.description);
-          // setSelectedLoc(true);
-          setMyLocationObj(item.description);
-          // handleNotification(item.description);
-          rbSheetRef.current.close();
-        }}>
-        <Text style={styles.flatListTxt}>{item.address}</Text>
-      </TouchableOpacity>
-    );
-  };
+
   return (
     <SafeAreaView style={styles.container}>
-      {/* <StatusBar /> */}
+      <StatusBar />
       <CustomHeader
         text={text}
         edit={edit}
@@ -265,41 +225,10 @@ const Index = ({route}) => {
             isEdit || edit ? updatedData() : savedData();
           }}>
           <Text style={styles.buttonTxt}>
-            {isEdit || edit || isConfirmTrue? 'Update' : 'Save'}
+            {isEdit || edit || isConfirmTrue ? 'Update' : 'Save'}
           </Text>
         </TouchableOpacity>
       </View>
-      {/* <RBSheet
-        ref={rbSheetRef}
-        height={550}
-        openDuration={100}
-        closeOnDragDown={true}
-        closeOnPressMask={true}
-        animationType="slide"
-        customStyles={styles.rbSheetStyles}>
-        <View style={styles.rbSheetContainer}>
-          <TouchableOpacity
-            activeOpacity={0.85}
-            style={styles.addButton}
-            onPress={() => {
-              const mapScreen = ScreeNames.MapScreen;
-              const mapScreenWithParams = {
-                name: ScreeNames.MapScreen,
-                key: generateString(8),
-              };
-              const screenSelection = isEdit ? mapScreen : mapScreenWithParams;
-              navigation.navigate(screenSelection, {edit: true});
-              rbSheetRef.current.close();
-            }}>
-            <Text style={styles.addtxt}>Add</Text>
-          </TouchableOpacity>
-          <FlatList
-            data={getLocationData}
-            renderItem={renderItem}
-            keyExtractor={(item, index) => index.toString()}
-          />
-        </View>
-      </RBSheet> */}
     </SafeAreaView>
   );
 };

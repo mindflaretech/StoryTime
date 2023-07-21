@@ -3,33 +3,19 @@ import {
   Text,
   SafeAreaView,
   TextInput,
-  FlatList,
   TouchableOpacity,
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import styles from '../RemindersAddUpdate/styles';
-import SaveUpdateButton from '../../components/SaveUpdateButton';
-import RBSheet from 'react-native-raw-bottom-sheet';
 import {useDispatch, useSelector} from 'react-redux';
-import {
-  getLocation,
-  getReminder,
-  locations,
-  reminders,
-} from '../../ducks/testPost';
+import {getLocation, locations} from '../../ducks/testPost';
 import {ScreeNames} from '../../naviagtor';
 import {useNavigation} from '@react-navigation/native';
 import {Colors} from '../../theme';
-import {locationData} from '../../utils/Data/LocationData';
-import {RemindersData} from '../../utils/Data/RemindersData';
-import PushNotification from 'react-native-push-notification';
-import StatusBar from '../../components/StatusBar';
 import CustomHeader from '../../components/Header/customHeader';
-import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import {showMessage} from 'react-native-flash-message';
 import {Util} from '../../utils';
 import EventEmitter from '../../utils/EventEmitter';
-import {log} from 'react-native-reanimated';
 
 const AddLocation = ({route}) => {
   // ================ useState =====================//
@@ -88,7 +74,7 @@ const AddLocation = ({route}) => {
     dispatch(locations(locationsPayload));
     showMessage({
       message: 'Location has been saved successfully',
-      type: 'success',
+      type: 'danger',
       duration: 2000,
       backgroundColor: Colors.teal,
     });
@@ -149,7 +135,6 @@ const AddLocation = ({route}) => {
     } else {
       saveLocation();
     }
-
   };
 
   const onPressLocationField = () => {
