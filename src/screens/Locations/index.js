@@ -38,11 +38,15 @@ const Locations = ({route}) => {
   const getLocationData = useSelector(getLocation);
   const openRowRef = useRef(null);
 
-  useEffect(() => {}, []);
-
   const removeItem = itemToRemove => {
     const updatedData = getLocationData.filter(item => item !== itemToRemove);
     dispatch(locations(updatedData));
+  };
+  const onPressLoctionConfirm = itemData => {
+    navigation.navigate(ScreeNames.RemindersAddUpdate, {
+      isconfirm: true,
+      item: itemData,
+    });
   };
 
   const renderItem = rowData => {
@@ -56,6 +60,7 @@ const Locations = ({route}) => {
             backgroundColor: itemIsActivated ? Colors.teal : Colors.powderBlue,
           },
         ]}
+        onPress={() => onPressLoctionConfirm(rowData.item)}
         activeOpacity={1}>
         <View style={styles.nameLocationView}>
           <Text
@@ -130,7 +135,7 @@ const Locations = ({route}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* <StatusBar /> */}
+      <StatusBar />
       <CustomHeader text="Locations" />
       <View style={{flex: 1}}>
         <SwipeListView

@@ -5,11 +5,11 @@ import {Colors} from '../../theme';
 const CustomHeader = props => {
   const [headerTxt, setHeaderTxt] = useState('');
 
-  const {edit, isEdit, text, locationIsTrue} = props;
+  const {edit, isEdit, text, locationIsTrue, isConfirmTrue} = props;
   useEffect(() => {
     if (text) {
       setHeaderTxt(text);
-    } else if (isEdit || edit || locationIsTrue) {
+    } else if (isEdit || edit || locationIsTrue || isConfirmTrue) {
       setHeaderTxt('Edit Reminder');
     } else if (isEdit) {
       setHeaderTxt('Edit Reminder');

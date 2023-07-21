@@ -47,43 +47,45 @@ const Index = ({route}) => {
   const itemLocation = route?.params?.items?.location;
   const savedLocation = route?.params?.savedLocation;
   const locationDescription = route?.params?.locationDescription;
-  const location = route?.params?.location;
+  const isConfirmTrue = route?.params?.isconfirm;
+  const isConfirmLocation = route?.params?.item;
+  const isConfirmAddress = isConfirmLocation?.location?.address;
 
+  // useEffect(() => {
+  //   console.log(myLocationObj,'=======myLocation');
+  //   if (isEdit) {
+  //     setMyLocationObj(isConfirmAddress);
+  //     setName(itemName);
+  //     setRadius(itemRadius);
+  //     setMyLocationObj(itemLocation);
+  //   } else if (locationTrue) {
+  //     setMyLocationObj(savedLocation);
+  //     setMyLocationObj(locationDescription);
+  //   }
+  //   const recentLocation = getLocationData[getLocationData.length - 1];
+  //   if (recentLocation) {
+  //     const recentAddress = recentLocation.address;
+  //     console.log(recentAddress);
+  //     setMyLocationObj(recentAddress);
+  //   }
+  // }, [
+  //   isEdit,
+  //   edit,
+  //   itemName,
+  //   itemRadius,
+  //   itemLocation,
+  //   savedLocation,
+  //   locationDescription,
+  // ]);
   useEffect(() => {
-    console.log(
-      getLocationData?.length,
-      ' getLocationData on add/update screen ',
-    );
-    // console.log(text, '================ text');
-    // console.log(edit, '================ edit');
-    // console.log(locationDescription, '================ locationDescription');
-    console.log(myLocationObj, '================ myLocationObj');
-    navigation.setOptions({
-      title: isEdit || edit ? 'Edit Reminder' : 'Add Reminder',
-    });
-    if (isEdit) {
+    if (isConfirmTrue) {
+      setMyLocationObj(isConfirmAddress);
+    } else if (isEdit) {
       setName(itemName);
-      setRadius(itemRadius);
       setMyLocationObj(itemLocation);
-    } else if (locationTrue) {
-      setMyLocationObj(savedLocation);
-      setMyLocationObj(locationDescription);
+      setRadius(itemRadius);
     }
-    const recentLocation = getLocationData[getLocationData.length - 1];
-    if (recentLocation) {
-      const recentAddress = recentLocation.address;
-      console.log(recentAddress);
-      setMyLocationObj(recentAddress);
-    }
-  }, [
-    isEdit,
-    edit,
-    itemName,
-    itemRadius,
-    itemLocation,
-    savedLocation,
-    locationDescription,
-  ]);
+  }, []);
 
   //================== creating random ID =====================//
   const generateString = length => {
@@ -216,6 +218,7 @@ const Index = ({route}) => {
         edit={edit}
         isEdit={isEdit}
         locationIsTrue={locationTrue}
+        isConfirmTrue={isConfirmTrue}
       />
       <View style={styles.textInputsView}>
         <TextInput
@@ -262,7 +265,7 @@ const Index = ({route}) => {
             isEdit || edit ? updatedData() : savedData();
           }}>
           <Text style={styles.buttonTxt}>
-            {isEdit || edit ? 'Update' : 'Save'}
+            {isEdit || edit || isConfirmTrue? 'Update' : 'Save'}
           </Text>
         </TouchableOpacity>
       </View>
