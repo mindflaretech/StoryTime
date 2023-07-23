@@ -88,7 +88,7 @@ export default StyleSheet.create({
   flatListTxt: {
     color: Colors.teal,
   },
-  saveButtoncontainer: {
+  bottomButtonContainer: {
     flex: 1,
     justifyContent: 'flex-end',
     marginBottom: 12,

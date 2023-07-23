@@ -22,11 +22,7 @@ const Index = ({route}) => {
   const [name, setName] = useState('');
   const [radius, setRadius] = useState('');
   const [myLocationObj, setMyLocationObj] = useState('');
-  const [locationData, setLocationData] = useState([]);
-  const [showLocation, setShowLocation] = useState();
-  const [SelectedLoc, setSelectedLoc] = useState();
-  // ================ useRef =====================//
-  const rbSheetRef = useRef(null);
+  const [isEditState, setIsEditState] = useState(false);
   // ================ useNavigation =====================//
   const navigation = useNavigation();
   // ================ useDispatch =====================//
@@ -35,29 +31,45 @@ const Index = ({route}) => {
   // ================ params =====================//
   const edit = route?.params?.edit;
   const text = route?.params?.text;
-  const locationTrue = route?.params?.locationIsTrue;
   const itemId = route?.params?.items?.id;
   const itemName = route?.params?.items?.name;
   const itemRadius = route?.params?.items?.radius;
   const isEdit = route?.params?.isEdit;
   const itemLocation = route?.params?.items?.location;
-  const isConfirmTrue = route?.params?.isconfirm;
   const isConfirmLocation = route?.params?.item;
   const isConfirmAddress = isConfirmLocation?.location?.address;
+  const isUpdateAddress = route?.params?.isUpdate;
   const isSelectAddress = route?.params?.isSelect;
-  const isUpadteLocation = route?.params?.isUpdate;
 
+  // ================ useEffect =====================//
   useEffect(() => {
-    console.log(myLocationObj, '---------------------------');
-    if (isConfirmTrue || isSelectAddress || isUpadteLocation) {
+    if (isEdit) {
+      setIsEditState(true);
+    }
+  }, [isEdit]);
+  useEffect(() => {
+    console.log(
+      'isSelectAddress:',
+      isSelectAddress,
+      'isUpdateAddress:',
+      isUpdateAddress,
+      'isEdit:',
+      isEdit,
+    );
+
+    if (isSelectAddress || isUpdateAddress) {
+      console.log(
+        'Setting myLocationObj to isConfirmAddress:',
+        isConfirmAddress,
+      );
       setMyLocationObj(isConfirmAddress);
     } else if (isEdit) {
+      console.log('Setting myLocationObj to itemLocation:', itemLocation);
       setName(itemName);
       setMyLocationObj(itemLocation);
       setRadius(itemRadius);
     }
-  }, [isConfirmAddress, isConfirmTrue, isSelectAddress]);
-
+  }, [isConfirmAddress, isSelectAddress, isUpdateAddress, isEdit]);
   //================== creating random ID =====================//
   const generateString = length => {
     let result = '';
@@ -93,13 +105,15 @@ const Index = ({route}) => {
         backgroundColor: Colors.teal,
       });
     } else {
-      navigation.navigate(ScreeNames.Reminders, {
-        showLocation: showLocation,
-      });
+      navigation.navigate(ScreeNames.Reminders);
       const updatedIndex = getRemindersData.findIndex(obj => obj.id === itemId);
       if (updatedIndex !== -1) {
         const updatedData = getRemindersData.map(obj => {
           if (obj.id === itemId) {
+            console.log(
+              myLocationObj,
+              'myLocationObj ========================================',
+            );
             return {
               id: generateString(8),
               name: name,
@@ -125,9 +139,7 @@ const Index = ({route}) => {
         backgroundColor: Colors.teal,
       });
     } else {
-      navigation.navigate(ScreeNames.Reminders, {
-        showLocation: showLocation,
-      });
+      navigation.navigate(ScreeNames.Reminders);
       const newData = {
         id: generateString(8),
         name: name,
@@ -181,9 +193,7 @@ const Index = ({route}) => {
         text={text}
         edit={edit}
         isEdit={isEdit}
-        locationIsTrue={locationTrue}
-        isConfirmTrue={isConfirmTrue}
-        isSelectAddress={isSelectAddress}
+        isUpdateAddress={isUpdateAddress}
       />
       <View style={styles.textInputsView}>
         <TextInput
@@ -220,15 +230,17 @@ const Index = ({route}) => {
           maxLength={3}
         />
       </View>
-      <View style={styles.saveButtoncontainer}>
+      <View style={styles.bottomButtonContainer}>
         <TouchableOpacity
           activeOpacity={0.85}
           style={styles.button}
           onPress={() => {
-            isEdit || edit || isConfirmTrue ? updatedData() : savedData();
+            isEdit || edit || isUpdateAddress || isEditState
+              ? updatedData()
+              : savedData();
           }}>
           <Text style={styles.buttonTxt}>
-            {isEdit || edit || isConfirmTrue || isUpadteLocation
+            {isEdit || edit || isUpdateAddress || isEditState
               ? 'Update'
               : 'Save'}
           </Text>

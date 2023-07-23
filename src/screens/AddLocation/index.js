@@ -180,7 +180,7 @@ const AddLocation = ({route}) => {
           </Text>
         </TouchableOpacity>
       </View>
-      <View style={styles.saveButtoncontainer}>
+      <View style={styles.bottomButtonContainer}>
         <TouchableOpacity
           activeOpacity={0.85}
           style={styles.button}

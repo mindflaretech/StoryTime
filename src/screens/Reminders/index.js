@@ -21,6 +21,7 @@ import Geolocation from '@react-native-community/geolocation';
 import {check, PERMISSIONS, request} from 'react-native-permissions';
 import {log} from 'react-native-reanimated';
 import {Util} from '../../utils';
+import StatusBr from '../../components/StatusBar';
 
 const Index = ({route}) => {
   //===================== useState ============================//
@@ -33,14 +34,17 @@ const Index = ({route}) => {
   //===================== useDispatch ============================//
   const dispatch = useDispatch();
   const getRemindersData = useSelector(getReminder);
-  const getLocationData = useSelector(getLocation);
+
+  //===================== useEffect ============================//
   useEffect(() => {
     console.log(getRemindersData, 'getReminders');
   });
+
   const removeItem = itemToRemove => {
     const updatedData = getRemindersData.filter(item => item !== itemToRemove);
     dispatch(reminders(updatedData));
   };
+
   const activeReminder = itemActivate => {
     setBackgroundColor(true);
     const updatedReminders = getRemindersData.map(item => {
@@ -51,6 +55,7 @@ const Index = ({route}) => {
     });
     dispatch(reminders(updatedReminders));
   };
+
   const deActivateReminder = itemDeactivate => {
     setBackgroundColor(false);
     const updatedReminders = getRemindersData.map(item => {
@@ -61,6 +66,37 @@ const Index = ({route}) => {
     });
     dispatch(reminders(updatedReminders));
   };
+
+  const onPressDeactive = (rowMap, rowData) => {
+    Util.showAlertConfirm(
+      'Deactivate Reminder',
+      'Are you sure you want to deactivate this reminder ?',
+      'Yes',
+      () => {
+        if (rowData && rowData.item) {
+          deActivateReminder(rowData.item);
+        }
+      },
+      'No',
+      () => {},
+    );
+  };
+
+  const onPressActive = (rowMap, rowData) => {
+    Util.showAlertConfirm(
+      'Activate Reminder',
+      'Are you sure you want to activate this reminder ?',
+      'Yes',
+      () => {
+        if (rowData && rowData.item) {
+          activeReminder(rowData.item);
+        }
+      },
+      'No',
+      () => {},
+    );
+  };
+
   const renderItem = rowData => {
     const itemIsActivated = rowData.item.activate === true;
     return (
@@ -73,43 +109,7 @@ const Index = ({route}) => {
           },
         ]}
         onLongPress={() => {
-          backgroundColor
-            ? Alert.alert(
-                'Deactivate Reminder',
-                'Are you sure you want to deactivate this reminder ?',
-                [
-                  {
-                    text: 'No',
-                    style: 'default',
-                  },
-                  {
-                    text: 'Yes',
-                    onPress: () => {
-                      deActivateReminder(rowData.item);
-                    },
-                    style: 'cancel',
-                  },
-                ],
-                {cancelable: false},
-              )
-            : Alert.alert(
-                'Activate Reminder',
-                'Are you sure you want to activate this reminder ?',
-                [
-                  {
-                    text: 'No',
-                    style: 'default',
-                  },
-                  {
-                    text: 'Yes',
-                    onPress: () => {
-                      activeReminder(rowData.item);
-                    },
-                    style: 'cancel',
-                  },
-                ],
-                {cancelable: false},
-              );
+          backgroundColor ? onPressDeactive(rowData) : onPressActive(rowData);
         }}
         activeOpacity={1}>
         <View style={styles.nameLocationView}>
@@ -168,15 +168,10 @@ const Index = ({route}) => {
             </Text>
           </View>
         </View>
-        {/* <View style={styles.radiusView}>
-          <Image style={styles.icon} source={Images.general.reminderIcon} />
-          <Text style={[styles.frontRowtxt, {color: Colors.black}]}>
-            {rowData.item.radius} km
-          </Text>
-        </View> */}
       </TouchableOpacity>
     );
   };
+
   const onPressDelete = (rowMap, rowData) => {
     Util.showAlertConfirm(
       'Delete Reminder',
@@ -191,6 +186,7 @@ const Index = ({route}) => {
       },
     );
   };
+
   const renderHiddenItem = (rowData, rowMap, item) => {
     return (
       <View key={rowData.item.id} ref={viewref} style={styles.backRowView}>
@@ -215,18 +211,21 @@ const Index = ({route}) => {
       </View>
     );
   };
+
   const ListEmptyComponent = () => (
     <View style={styles.emptytxtView}>
       <Image style={styles.reminderIcon} source={Images.splash.logo} />
       <Text style={styles.emptyTxt}>Reminders will appear here</Text>
     </View>
   );
+
   const onRowDidOpen = (rowKey, rowMap) => {
     openRowRef.current = rowMap[rowKey];
   };
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBr />
       <CustomHeader text="Reminder" />
       <View
         style={{
@@ -260,3 +259,42 @@ const Index = ({route}) => {
 };
 
 export default Index;
+// onLongPress={() => {
+//   backgroundColor
+//     ? Alert.alert(
+//         'Deactivate Reminder',
+//         'Are you sure you want to deactivate this reminder ?',
+//         [
+//           {
+//             text: 'No',
+//             style: 'default',
+//           },
+//           {
+//             text: 'Yes',
+//             onPress: () => {
+//               deActivateReminder(rowData.item);
+//             },
+//             style: 'cancel',
+//           },
+//         ],
+//         {cancelable: false},
+//       )
+//     : Alert.alert(
+//         'Activate Reminder',
+//         'Are you sure you want to activate this reminder ?',
+//         [
+//           {
+//             text: 'No',
+//             style: 'default',
+//           },
+//           {
+//             text: 'Yes',
+//             onPress: () => {
+//               activeReminder(rowData.item);
+//             },
+//             style: 'cancel',
+//           },
+//         ],
+//         {cancelable: false},
+//       );
+// }}

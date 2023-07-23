@@ -38,12 +38,10 @@ const Locations = ({route}) => {
   const onPressLoctionConfirm = itemData => {
     isEdit
       ? navigation.navigate(ScreeNames.RemindersAddUpdate, {
-          isconfirm: isEdit,
+          isUpdate: isEdit,
           item: itemData,
-          isSelect: true,
         })
       : navigation.navigate(ScreeNames.RemindersAddUpdate, {
-          isUpdate: true,
           item: itemData,
           isSelect: true,
         });
