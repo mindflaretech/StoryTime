@@ -164,7 +164,7 @@ const Index = ({route}) => {
                 styles.frontRowtxt,
                 {color: itemIsActivated ? Colors.background : Colors.teal},
               ]}>
-              {rowData.item.radius}
+              {rowData.item.radius}m
             </Text>
           </View>
         </View>
