@@ -38,7 +38,9 @@ const Index = ({route}) => {
   const dispatch = useDispatch();
   const getRemindersData = useSelector(getReminder);
   const getLocationData = useSelector(getLocation);
-
+useEffect(()=>{
+  console.log(getRemindersData,"getReminders");
+})
   const removeItem = itemToRemove => {
     const updatedData = getRemindersData.filter(item => item !== itemToRemove);
     dispatch(reminders(updatedData));

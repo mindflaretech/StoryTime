@@ -21,6 +21,14 @@ const Locations = ({route}) => {
   //===================== useDispatch ============================//
   const dispatch = useDispatch();
   const getLocationData = useSelector(getLocation);
+  //===================== params ============================//
+  const isEdit = route?.params?.isEdit;
+
+  useEffect(() => {
+    console.log(isEdit, '==========isEdit');
+    // setData();
+  }, []);
+  const setData = () => {};
 
   const removeItem = itemToRemove => {
     const updatedData = getLocationData.filter(item => item !== itemToRemove);
@@ -28,10 +36,17 @@ const Locations = ({route}) => {
   };
 
   const onPressLoctionConfirm = itemData => {
-    navigation.navigate(ScreeNames.RemindersAddUpdate, {
-      isconfirm: true,
-      item: itemData,
-    });
+    isEdit
+      ? navigation.navigate(ScreeNames.RemindersAddUpdate, {
+          isconfirm: isEdit,
+          item: itemData,
+          isSelect: true,
+        })
+      : navigation.navigate(ScreeNames.RemindersAddUpdate, {
+          isUpdate: true,
+          item: itemData,
+          isSelect: true,
+        });
   };
 
   const renderItem = rowData => {
@@ -115,7 +130,7 @@ const Locations = ({route}) => {
       <Text style={styles.emptyTxt}>Locations will appear here</Text>
     </View>
   );
-  
+
   const onRowDidOpen = (rowKey, rowMap) => {
     openRowRef.current = rowMap[rowKey];
   };

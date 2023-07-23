@@ -31,34 +31,32 @@ const Index = ({route}) => {
   const navigation = useNavigation();
   // ================ useDispatch =====================//
   const dispatch = useDispatch();
-  const getLocationData = useSelector(getLocation);
   const getRemindersData = useSelector(getReminder);
   // ================ params =====================//
   const edit = route?.params?.edit;
   const text = route?.params?.text;
   const locationTrue = route?.params?.locationIsTrue;
-  const item = route?.params?.items;
   const itemId = route?.params?.items?.id;
   const itemName = route?.params?.items?.name;
   const itemRadius = route?.params?.items?.radius;
   const isEdit = route?.params?.isEdit;
   const itemLocation = route?.params?.items?.location;
-  const savedLocation = route?.params?.savedLocation;
-  const locationDescription = route?.params?.locationDescription;
   const isConfirmTrue = route?.params?.isconfirm;
   const isConfirmLocation = route?.params?.item;
   const isConfirmAddress = isConfirmLocation?.location?.address;
+  const isSelectAddress = route?.params?.isSelect;
+  const isUpadteLocation = route?.params?.isUpdate;
 
   useEffect(() => {
     console.log(myLocationObj, '---------------------------');
-    if (isConfirmTrue) {
+    if (isConfirmTrue || isSelectAddress || isUpadteLocation) {
       setMyLocationObj(isConfirmAddress);
     } else if (isEdit) {
       setName(itemName);
       setMyLocationObj(itemLocation);
       setRadius(itemRadius);
     }
-  }, [isConfirmAddress]);
+  }, [isConfirmAddress, isConfirmTrue, isSelectAddress]);
 
   //================== creating random ID =====================//
   const generateString = length => {
@@ -122,7 +120,7 @@ const Index = ({route}) => {
     if (name === '' || myLocationObj === '' || radius === '') {
       showMessage({
         message: 'Fields cannot be empty',
-        type: 'success',
+        type: 'danger',
         duration: 2000,
         backgroundColor: Colors.teal,
       });
@@ -170,6 +168,12 @@ const Index = ({route}) => {
     setRadius(value);
   };
 
+  const isEditable = () => {
+    isEdit
+      ? navigation.navigate(ScreeNames.Locations, {isEdit: isEdit})
+      : navigation.navigate(ScreeNames.Locations);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar />
@@ -179,6 +183,7 @@ const Index = ({route}) => {
         isEdit={isEdit}
         locationIsTrue={locationTrue}
         isConfirmTrue={isConfirmTrue}
+        isSelectAddress={isSelectAddress}
       />
       <View style={styles.textInputsView}>
         <TextInput
@@ -192,9 +197,7 @@ const Index = ({route}) => {
         <TouchableOpacity
           activeOpacity={0.85}
           style={styles.locationFieldButton}
-          onPress={() => {
-            navigation.navigate(ScreeNames.Locations);
-          }}>
+          onPress={() => isEditable()}>
           <Text
             style={[
               styles.locationTxt,
@@ -222,10 +225,12 @@ const Index = ({route}) => {
           activeOpacity={0.85}
           style={styles.button}
           onPress={() => {
-            isEdit || edit ? updatedData() : savedData();
+            isEdit || edit || isConfirmTrue ? updatedData() : savedData();
           }}>
           <Text style={styles.buttonTxt}>
-            {isEdit || edit || isConfirmTrue ? 'Update' : 'Save'}
+            {isEdit || edit || isConfirmTrue || isUpadteLocation
+              ? 'Update'
+              : 'Save'}
           </Text>
         </TouchableOpacity>
       </View>
