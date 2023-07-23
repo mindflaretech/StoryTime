@@ -63,16 +63,51 @@ const Locations = ({route}) => {
         onPress={() => onPressLoctionConfirm(rowData?.item)}
         activeOpacity={1}>
         <View style={styles.nameLocationView}>
-          <Text
+          <View style={{flexDirection: 'row'}}>
+            <Text
+              style={[
+                styles.frontRowtxt,
+                {color: itemIsActivated ? Colors.background : Colors.teal},
+                {fontWeight: '600'},
+              ]}>
+              Landmark: {`   `}
+            </Text>
+            <Text
+              style={[
+                styles.frontRowtxt,
+                {color: itemIsActivated ? Colors.background : Colors.teal},
+              ]}>
+              {rowData.item.landMark}
+            </Text>
+          </View>
+          {/* <Text
             style={[
               styles.frontRowtxt,
               {color: itemIsActivated ? Colors.background : Colors.teal},
             ]}>
             {rowData?.item?.landMark}
-          </Text>
-          <Text style={[styles.frontRowDestxt, {color: Colors.black}]}>
+          </Text> */}
+          <View style={{flexDirection: 'row'}}>
+            <Text
+              style={[
+                styles.frontRowtxt,
+                {color: itemIsActivated ? Colors.background : Colors.teal},
+                {fontWeight: '600'},
+              ]}>
+              Address: {`      `}
+            </Text>
+            <Text
+              style={[
+                styles.frontRowtxt,
+                {color: itemIsActivated ? Colors.background : Colors.teal},
+                {flex: 1},
+              ]}>
+              {rowData.item.location?.address}
+            </Text>
+          </View>
+          {/* <Text style={[styles.frontRowDestxt, {color: Colors.black}]}>
             {rowData?.item?.location?.address}
-          </Text>
+          </Text> */}
         </View>
       </TouchableOpacity>
     );

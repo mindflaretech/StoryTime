@@ -1,11 +1,7 @@
 import {View, Text, TouchableOpacity, Image, Alert} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {
-  getLocation,
-  getReminder,
-  reminders,
-} from '../../ducks/testPost';
+import {getLocation, getReminder, reminders} from '../../ducks/testPost';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {FlatList} from 'react-native-gesture-handler';
 import styles from '../Reminders/styles';
@@ -38,9 +34,9 @@ const Index = ({route}) => {
   const dispatch = useDispatch();
   const getRemindersData = useSelector(getReminder);
   const getLocationData = useSelector(getLocation);
-useEffect(()=>{
-  console.log(getRemindersData,"getReminders");
-})
+  useEffect(() => {
+    console.log(getRemindersData, 'getReminders');
+  });
   const removeItem = itemToRemove => {
     const updatedData = getRemindersData.filter(item => item !== itemToRemove);
     dispatch(reminders(updatedData));
@@ -117,23 +113,67 @@ useEffect(()=>{
         }}
         activeOpacity={1}>
         <View style={styles.nameLocationView}>
-          <Text
-            style={[
-              styles.frontRowtxt,
-              {color: itemIsActivated ? Colors.background : Colors.teal},
-            ]}>
-            {rowData.item.name}
-          </Text>
-          <Text style={[styles.frontRowDestxt, {color: Colors.black}]}>
-            {rowData.item.location}
-          </Text>
+          <View style={{flexDirection: 'row'}}>
+            <Text
+              style={[
+                styles.frontRowtxt,
+                {color: itemIsActivated ? Colors.background : Colors.teal},
+                {fontWeight: '600'},
+              ]}>
+              Name: {`      `}
+            </Text>
+            <Text
+              style={[
+                styles.frontRowtxt,
+                {color: itemIsActivated ? Colors.background : Colors.teal},
+              ]}>
+              {rowData.item.name}
+            </Text>
+          </View>
+          <View style={{flexDirection: 'row', marginTop: 4}}>
+            <Text
+              style={[
+                styles.frontRowtxt,
+                {color: itemIsActivated ? Colors.background : Colors.teal},
+                {fontWeight: '600'},
+              ]}>
+              Location: {` `}
+            </Text>
+            <Text
+              style={[
+                styles.frontRowtxt,
+                {color: itemIsActivated ? Colors.background : Colors.teal},
+                {
+                  flex: 1,
+                },
+              ]}>
+              {rowData.item.location}
+            </Text>
+          </View>
+          <View style={{flexDirection: 'row', marginTop: 4}}>
+            <Text
+              style={[
+                styles.frontRowtxt,
+                {color: itemIsActivated ? Colors.background : Colors.teal},
+                {fontWeight: '600'},
+              ]}>
+              Radius: {`     `}
+            </Text>
+            <Text
+              style={[
+                styles.frontRowtxt,
+                {color: itemIsActivated ? Colors.background : Colors.teal},
+              ]}>
+              {rowData.item.radius}
+            </Text>
+          </View>
         </View>
-        <View style={styles.radiusView}>
+        {/* <View style={styles.radiusView}>
           <Image style={styles.icon} source={Images.general.reminderIcon} />
           <Text style={[styles.frontRowtxt, {color: Colors.black}]}>
             {rowData.item.radius} km
           </Text>
-        </View>
+        </View> */}
       </TouchableOpacity>
     );
   };
@@ -187,7 +227,6 @@ useEffect(()=>{
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar />
       <CustomHeader text="Reminder" />
       <View
         style={{
