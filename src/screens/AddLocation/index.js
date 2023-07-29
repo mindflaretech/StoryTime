@@ -76,7 +76,6 @@ const AddLocation = ({route}) => {
       message: 'Location has been saved successfully',
       type: 'danger',
       duration: 2000,
-      backgroundColor: Colors.teal,
     });
 
     navigation.goBack();

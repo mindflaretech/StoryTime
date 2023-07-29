@@ -1,31 +1,19 @@
 import {View, Text, TouchableOpacity, Image, Alert} from 'react-native';
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {getLocation, getReminder, reminders} from '../../ducks/testPost';
+import {getReminder, reminders} from '../../ducks/testPost';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {FlatList} from 'react-native-gesture-handler';
 import styles from '../Reminders/styles';
 import {SwipeListView} from 'react-native-swipe-list-view';
-import {Shadow} from 'react-native-shadow';
 import {Colors, Images} from '../../theme';
 import {useNavigation} from '@react-navigation/native';
 import {ScreeNames} from '../../naviagtor';
-import {transform} from 'lodash';
-import {RemindersData} from '../../utils/Data/RemindersData';
-import StatusBar from '../../components/StatusBar';
-import {images} from '../../utils/Images/images';
 import CustomHeader from '../../components/Header/customHeader';
-import PushNotification from 'react-native-push-notification';
-import PushNotificationIOS from '@react-native-community/push-notification-ios';
-import Geolocation from '@react-native-community/geolocation';
-import {check, PERMISSIONS, request} from 'react-native-permissions';
-import {log} from 'react-native-reanimated';
 import {Util} from '../../utils';
 import StatusBr from '../../components/StatusBar';
+import {showMessage} from 'react-native-flash-message';
 
 const Index = ({route}) => {
-  //===================== useState ============================//
-  const [backgroundColor, setBackgroundColor] = useState();
   //===================== useRef ============================//
   const viewref = useRef(null);
   const openRowRef = useRef(null);
@@ -34,7 +22,6 @@ const Index = ({route}) => {
   //===================== useDispatch ============================//
   const dispatch = useDispatch();
   const getRemindersData = useSelector(getReminder);
-
   //===================== useEffect ============================//
   useEffect(() => {
     console.log(getRemindersData, 'getReminders');
@@ -46,20 +33,24 @@ const Index = ({route}) => {
   };
 
   const activeReminder = itemActivate => {
-    setBackgroundColor(true);
     const updatedReminders = getRemindersData.map(item => {
-      if (item === itemActivate) {
+      if (item.id === itemActivate?.item?.id) {
         return {...item, activate: true};
       }
       return item;
     });
     dispatch(reminders(updatedReminders));
+    showMessage({
+      message: `Reminder for ${itemActivate?.item?.name} is activated`,
+      type: 'success',
+      duration: 2500,
+      backgroundColor: Colors.teal,
+    });
   };
 
   const deActivateReminder = itemDeactivate => {
-    setBackgroundColor(false);
     const updatedReminders = getRemindersData.map(item => {
-      if (item === itemDeactivate) {
+      if (item.id === itemDeactivate?.item?.id) {
         return {...item, activate: false};
       }
       return item;
@@ -67,14 +58,14 @@ const Index = ({route}) => {
     dispatch(reminders(updatedReminders));
   };
 
-  const onPressDeactive = (rowMap, rowData) => {
+  const onPressDeactive = rowData => {
     Util.showAlertConfirm(
       'Deactivate Reminder',
       'Are you sure you want to deactivate this reminder ?',
       'Yes',
       () => {
-        if (rowData && rowData.item) {
-          deActivateReminder(rowData.item);
+        if (rowData) {
+          deActivateReminder(rowData);
         }
       },
       'No',
@@ -82,14 +73,14 @@ const Index = ({route}) => {
     );
   };
 
-  const onPressActive = (rowMap, rowData) => {
+  const onPressActive = rowData => {
     Util.showAlertConfirm(
       'Activate Reminder',
       'Are you sure you want to activate this reminder ?',
       'Yes',
       () => {
-        if (rowData && rowData.item) {
-          activeReminder(rowData.item);
+        if (rowData) {
+          activeReminder(rowData);
         }
       },
       'No',
@@ -109,7 +100,8 @@ const Index = ({route}) => {
           },
         ]}
         onLongPress={() => {
-          backgroundColor ? onPressDeactive(rowData) : onPressActive(rowData);
+          console.log('Long Press Triggered');
+          itemIsActivated ? onPressDeactive(rowData) : onPressActive(rowData);
         }}
         activeOpacity={1}>
         <View style={styles.nameLocationView}>
@@ -259,42 +251,3 @@ const Index = ({route}) => {
 };
 
 export default Index;
-// onLongPress={() => {
-//   backgroundColor
-//     ? Alert.alert(
-//         'Deactivate Reminder',
-//         'Are you sure you want to deactivate this reminder ?',
-//         [
-//           {
-//             text: 'No',
-//             style: 'default',
-//           },
-//           {
-//             text: 'Yes',
-//             onPress: () => {
-//               deActivateReminder(rowData.item);
-//             },
-//             style: 'cancel',
-//           },
-//         ],
-//         {cancelable: false},
-//       )
-//     : Alert.alert(
-//         'Activate Reminder',
-//         'Are you sure you want to activate this reminder ?',
-//         [
-//           {
-//             text: 'No',
-//             style: 'default',
-//           },
-//           {
-//             text: 'Yes',
-//             onPress: () => {
-//               activeReminder(rowData.item);
-//             },
-//             style: 'cancel',
-//           },
-//         ],
-//         {cancelable: false},
-//       );
-// }}

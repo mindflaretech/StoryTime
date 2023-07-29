@@ -11,6 +11,7 @@ import {ScreeNames} from '../../naviagtor';
 import StatusBar from '../../components/StatusBar';
 import CustomHeader from '../../components/Header/customHeader';
 import {Util} from '../../utils';
+import EventEmitter from '../../utils/EventEmitter';
 
 const Locations = ({route}) => {
   //===================== useRef ============================//
@@ -23,26 +24,28 @@ const Locations = ({route}) => {
   const getLocationData = useSelector(getLocation);
   //===================== params ============================//
   const isEdit = route?.params?.isEdit;
+  const itemId = route?.params?.itemId;
+  //===================== useEffect ============================//
 
   useEffect(() => {
-    console.log(isEdit, '==========isEdit');
-    // setData();
+    console.log(itemId, 'add reminders to location');
   }, []);
-  const setData = () => {};
-
   const removeItem = itemToRemove => {
     const updatedData = getLocationData.filter(item => item !== itemToRemove);
     dispatch(locations(updatedData));
   };
-
+  
   const onPressLoctionConfirm = itemData => {
+    const obj = {
+      address: itemData?.location?.address,
+    };
+    EventEmitter.notify('onLocationUpdateORselect', obj);
+    EventEmitter.notify('onItemId', itemId);
     isEdit
       ? navigation.navigate(ScreeNames.RemindersAddUpdate, {
           isUpdate: isEdit,
-          item: itemData,
         })
       : navigation.navigate(ScreeNames.RemindersAddUpdate, {
-          item: itemData,
           isSelect: true,
         });
   };

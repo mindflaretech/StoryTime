@@ -16,9 +16,12 @@ import PushNotification from 'react-native-push-notification';
 import StatusBar from '../../components/StatusBar';
 import CustomHeader from '../../components/Header/customHeader';
 import {showMessage} from 'react-native-flash-message';
+import EventEmitter from '../../utils/EventEmitter';
 
 const Index = ({route}) => {
   // ================ useState =====================//
+  const [itemsId, setItemsId] = useState();
+  const [previousId, setPreviousId] = useState(null);
   const [name, setName] = useState('');
   const [radius, setRadius] = useState('');
   const [myLocationObj, setMyLocationObj] = useState('');
@@ -37,40 +40,38 @@ const Index = ({route}) => {
   const isEdit = route?.params?.isEdit;
   const itemLocation = route?.params?.items?.location;
   const isConfirmLocation = route?.params?.item;
-  const isConfirmAddress = isConfirmLocation?.location?.address;
   const isUpdateAddress = route?.params?.isUpdate;
   const isSelectAddress = route?.params?.isSelect;
 
   // ================ useEffect =====================//
   useEffect(() => {
+    console.log(itemId, 'Reminders to add reminders');
+    setItemsId(itemId);
+    console.log(itemsId, 'update in state');
+  }, [itemsId]);
+
+  useEffect(() => {
+    EventEmitter.addListener('onItemId', onIdSelected);
+    EventEmitter.addListener('onLocationUpdateORselect', onLocationSelcted);
+    return () => {
+      EventEmitter.removeListener('onItemId', onIdSelected);
+      EventEmitter.removeListener(
+        'onLocationUpdateORselect',
+        onLocationSelcted,
+      );
+    };
+  }, []);
+
+  useEffect(() => {
     if (isEdit) {
       setIsEditState(true);
     }
   }, [isEdit]);
-  useEffect(() => {
-    console.log(
-      'isSelectAddress:',
-      isSelectAddress,
-      'isUpdateAddress:',
-      isUpdateAddress,
-      'isEdit:',
-      isEdit,
-    );
 
-    if (isSelectAddress || isUpdateAddress) {
-      console.log(
-        'Setting myLocationObj to isConfirmAddress:',
-        isConfirmAddress,
-      );
-      setMyLocationObj(isConfirmAddress);
-    } else if (isEdit) {
-      console.log('Setting myLocationObj to itemLocation:', itemLocation);
-      setName(itemName);
-      setMyLocationObj(itemLocation);
-      setRadius(itemRadius);
-    }
-  }, [isConfirmAddress, isSelectAddress, isUpdateAddress, isEdit]);
-  //================== creating random ID =====================//
+  useEffect(() => {
+    HandleEditChange();
+  }, [isEdit]);
+
   const generateString = length => {
     let result = '';
     const characters =
@@ -82,6 +83,16 @@ const Index = ({route}) => {
       counter += 1;
     }
     return result;
+  };
+
+  const onLocationSelcted = location => {
+    // console.log(location?.address, '===================location');
+    setMyLocationObj(location?.address);
+  };
+
+  const onIdSelected = itemsId => {
+    // console.log(itemsId, 'Location to Add reminders');
+    setItemsId(itemsId);
   };
 
   const handleNotification = myLocationObj => {
@@ -96,36 +107,54 @@ const Index = ({route}) => {
     });
   };
 
+  const HandleEditChange = () => {
+    if (isEdit) {
+      setName(itemName);
+      setMyLocationObj(itemLocation);
+      setRadius(itemRadius);
+    }
+  };
+
   const updatedData = () => {
+    // console.log('A ==================');
     if (name === '' || myLocationObj === '' || radius === '') {
+      // console.log('B ==================');
+
       showMessage({
         message: 'Fields cannot be empty',
         type: 'danger',
         duration: 2000,
-        backgroundColor: Colors.teal,
       });
     } else {
-      navigation.navigate(ScreeNames.Reminders);
-      const updatedIndex = getRemindersData.findIndex(obj => obj.id === itemId);
+      // console.log('C ==================');
+
+      const updatedIndex = getRemindersData.findIndex(
+        obj => obj.id === itemsId,
+      );
+      // console.log(itemsId, 'C ==================');
+
       if (updatedIndex !== -1) {
         const updatedData = getRemindersData.map(obj => {
-          if (obj.id === itemId) {
-            console.log(
-              myLocationObj,
-              'myLocationObj ========================================',
-            );
-            return {
-              id: generateString(8),
+          if (obj.id === itemsId) {
+            const object = {
+              id: itemsId,
               name: name,
               radius: radius,
               location: myLocationObj,
               activate: false,
             };
+            // console.log(object, 'object ==================');
+            return object;
+          } else {
+            // console.log(obj, 'obj ==================');
           }
           return obj;
         });
+        // console.log(updatedData, 'updatedData ==================');
+
         dispatch(reminders(updatedData));
         showUpdatedMessage();
+        navigation.navigate(ScreeNames.Reminders);
       }
     }
   };
@@ -150,17 +179,7 @@ const Index = ({route}) => {
       const updatedData = [...getRemindersData, newData];
       dispatch(reminders(updatedData));
       handleNotification(myLocationObj);
-      showSavedMessage();
     }
-  };
-
-  const showSavedMessage = () => {
-    showMessage({
-      message: 'Reminder has been saved successfully',
-      type: 'success',
-      duration: 2000,
-      backgroundColor: Colors.teal,
-    });
   };
 
   const showUpdatedMessage = () => {
@@ -181,9 +200,11 @@ const Index = ({route}) => {
   };
 
   const isEditable = () => {
-    isEdit
-      ? navigation.navigate(ScreeNames.Locations, {isEdit: isEdit})
-      : navigation.navigate(ScreeNames.Locations);
+    navigation.navigate(ScreeNames.Locations, {
+      isEdit: isEdit,
+      itemId: itemsId,
+      previousId: previousId,
+    });
   };
 
   return (
@@ -213,11 +234,7 @@ const Index = ({route}) => {
               styles.locationTxt,
               {color: myLocationObj ? Colors.black : 'gray'},
             ]}>
-            {myLocationObj
-              ? myLocationObj.length > 30
-                ? `${myLocationObj.slice(0, 30)}...`
-                : myLocationObj
-              : 'Location'}{' '}
+            {myLocationObj ? myLocationObj : 'Location'}
           </Text>
         </TouchableOpacity>
         <TextInput
