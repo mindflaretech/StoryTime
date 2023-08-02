@@ -1,5 +1,5 @@
-import {View, Text, TouchableOpacity, Image, Alert} from 'react-native';
-import React, {useEffect, useRef} from 'react';
+import {View, Text, TouchableOpacity, Image} from 'react-native';
+import React, {useEffect, useRef, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {getReminder, reminders} from '../../ducks/testPost';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -13,7 +13,7 @@ import {Util} from '../../utils';
 import StatusBr from '../../components/StatusBar';
 import {showMessage} from 'react-native-flash-message';
 
-const Index = ({route}) => {
+const Index = () => {
   //===================== useRef ============================//
   const viewref = useRef(null);
   const openRowRef = useRef(null);
@@ -24,7 +24,7 @@ const Index = ({route}) => {
   const getRemindersData = useSelector(getReminder);
   //===================== useEffect ============================//
   useEffect(() => {
-    console.log(getRemindersData, 'getReminders');
+    // console.log(getRemindersData, 'getReminders');
   });
 
   const removeItem = itemToRemove => {

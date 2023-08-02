@@ -1,4 +1,4 @@
-import {View, TouchableOpacity, Image} from 'react-native';
+import {View, TouchableOpacity, Image,AppState} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import styles from './styles';
@@ -11,6 +11,7 @@ import {useNavigation} from '@react-navigation/native';
 import Geocoder from 'react-native-geocoding';
 import EventEmitter from '../../utils/EventEmitter';
 import StatusBr from '../../components/StatusBar';
+import LocationUtil from '../../utils/LocationUtil';
 
 navigator.geolocation = require('@react-native-community/geolocation');
 
@@ -45,7 +46,66 @@ const MapScreen = ({route}) => {
     latitudeDelta: latitudeDelta,
     longitudeDelta: longitudeDelta,
   });
+  const appState = useRef(AppState.currentState);
+  const [appStateVisible, setAppStateVisible] = useState(appState.current);
+  const [initialState, setInitialState] = useState();
+  const [location, setLocation] = useState();
 
+  // ======================== useEffect ========================= //
+  useEffect(() => {
+    LocationUtil.getCurrentPosition(info => {
+      console.log(info?.coords);
+      setLocation(info?.coords);
+      const targetLat = 24.927936826934555;
+      const targetLng = 67.09590960871377;
+      //   const currentLat = info?.coords?.latitude;
+      const currentLat = 24.927923955091366; //24.927905821426876;
+      //   const currentLng = info?.coords?.longitude;
+      const currentLng = 67.09584012728392; //67.09590960871377;
+      const radiusInMeters = 2;
+      // const distance = Util.calculateDistance(
+      //   currentLat,
+      //   currentLng,
+      //   targetLat,
+      //   targetLng,
+      //   radiusInMeters,
+      // );
+      // const withinRadius = Util.isWithinRadius(
+      //   currentLat,
+      //   currentLng,
+      //   targetLat,
+      //   targetLng,
+      //   radiusInMeters,
+      // );
+
+      console.log(
+        'Your current location is within the radius of the target location.',
+        // distance,
+        // withinRadius,
+      );
+      // if (withinRadius) {
+      //   console.log('Your current location is within the radius of the target location.');
+      // } else {
+      //   console.log('Your current location is outside the radius of the target location.');
+      // }
+    });
+  }, []);
+
+  useEffect(() => {
+    //============== HANDELING APPLICATIONS STATES ================//
+    const subscription = AppState.addEventListener('change', nextAppState => {
+      const match = appState.current.match(/inactive|background/);
+      const isActive = nextAppState === 'active';
+      if (match && isActive) {
+        setInitialState(false);
+      }
+      appState.current = nextAppState;
+      setAppStateVisible(appState.current);
+    });
+    return () => {
+      subscription.remove();
+    };
+  }, []);
   useEffect(() => {
     let coordinates = {
       latitude: currentLatitude,
