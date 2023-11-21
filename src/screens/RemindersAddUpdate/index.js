@@ -8,7 +8,7 @@ import {
 import React, {useEffect, useRef, useState} from 'react';
 import styles from '../RemindersAddUpdate/styles';
 import {useDispatch, useSelector} from 'react-redux';
-import {getLocation, getReminder, reminders} from '../../ducks/testPost';
+import {getActiveReminder, getLocation, getReminder, reminders} from '../../ducks/testPost';
 import {ScreeNames} from '../../naviagtor';
 import {useNavigation} from '@react-navigation/native';
 import {Colors} from '../../theme';
@@ -25,12 +25,14 @@ const Index = ({route}) => {
   const [name, setName] = useState('');
   const [radius, setRadius] = useState('');
   const [myLocationObj, setMyLocationObj] = useState('');
+  const [coordinates, setCoordinates] = useState();
   const [isEditState, setIsEditState] = useState(false);
   // ================ useNavigation =====================//
   const navigation = useNavigation();
   // ================ useDispatch =====================//
   const dispatch = useDispatch();
   const getRemindersData = useSelector(getReminder);
+
   // ================ params =====================//
   const edit = route?.params?.edit;
   const text = route?.params?.text;
@@ -45,9 +47,9 @@ const Index = ({route}) => {
 
   // ================ useEffect =====================//
   useEffect(() => {
-    console.log(itemId, 'Reminders to add reminders');
+    // console.log(itemId, 'Reminders to add reminders');
     setItemsId(itemId);
-    console.log(itemsId, 'update in state');
+    // console.log(itemsId, 'update in state');
   }, [itemsId]);
 
   useEffect(() => {
@@ -86,8 +88,9 @@ const Index = ({route}) => {
   };
 
   const onLocationSelcted = location => {
-    // console.log(location?.address, '===================location');
-    setMyLocationObj(location?.address);
+    // console.log(location, '===================location');
+    setCoordinates(location?.location?.coordinates);
+    setMyLocationObj(location?.location?.address);
   };
 
   const onIdSelected = itemsId => {
@@ -141,7 +144,7 @@ const Index = ({route}) => {
               name: name,
               radius: radius,
               location: myLocationObj,
-              activate: false,
+              coordinates: coordinates,
             };
             // console.log(object, 'object ==================');
             return object;
@@ -174,7 +177,7 @@ const Index = ({route}) => {
         name: name,
         radius: radius,
         location: myLocationObj,
-        activate: false,
+        coordinates: coordinates,
       };
       const updatedData = [...getRemindersData, newData];
       dispatch(reminders(updatedData));

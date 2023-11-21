@@ -28,18 +28,15 @@ const Locations = ({route}) => {
   //===================== useEffect ============================//
 
   useEffect(() => {
-    console.log(itemId, 'add reminders to location');
+    // console.log(getLocationData, 'add reminders to location');
   }, []);
   const removeItem = itemToRemove => {
     const updatedData = getLocationData.filter(item => item !== itemToRemove);
     dispatch(locations(updatedData));
   };
-  
+
   const onPressLoctionConfirm = itemData => {
-    const obj = {
-      address: itemData?.location?.address,
-    };
-    EventEmitter.notify('onLocationUpdateORselect', obj);
+    EventEmitter.notify('onLocationUpdateORselect', itemData);
     EventEmitter.notify('onItemId', itemId);
     isEdit
       ? navigation.navigate(ScreeNames.RemindersAddUpdate, {

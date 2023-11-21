@@ -4,7 +4,7 @@ import {Colors} from '../../theme';
 const {width, height} = Dimensions.get('window');
 const markerSize = Math.min(width, height) * 0.1;
 
-const markerSizeX = 60;
+const markerSizeX = 50;
 
 export default StyleSheet.create({
   container: {
@@ -16,8 +16,8 @@ export default StyleSheet.create({
   },
   markerContainer: {
     position: 'absolute',
-    left: width / 2 - markerSizeX / 3,
-    top: height / 2 - markerSizeX / 2,
+    left: width / 2.1 - markerSizeX / 3,
+    top: height / 2.1 - markerSizeX / 2,
   },
   markerImage: {
     resizeMode: 'contain',
@@ -57,14 +57,12 @@ export default StyleSheet.create({
   },
   topView: {
     flexDirection: 'row',
-    // backgroundColor: 'red',
-    // height: 50,
     width: '100%',
     justifyContent: 'space-between',
     marginBottom: 16,
-    // marginHorizontal: 16
   },
   goBackButton: {
+    marginTop: 16,
     marginLeft: 16,
     backgroundColor: Colors.teal,
     width: 40,
@@ -79,6 +77,7 @@ export default StyleSheet.create({
     tintColor: 'white',
   },
   addButton: {
+    marginTop: 16,
     marginRight: 16,
     backgroundColor: Colors.teal,
     width: 40,
@@ -91,5 +90,23 @@ export default StyleSheet.create({
     width: 20,
     height: 20,
     tintColor: 'white',
+  },
+  myLoaction: {
+    backgroundColor: Colors.white,
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 5,
+    elevation: 2,
+    alignSelf: 'flex-end',
+    marginRight: 20,
+    marginBottom: 20,
+  },
+  myLocationImage: {
+    width: 25,
+    height: 25,
+    resizeMode: 'contain',
+    tintColor: Colors.teal,
   },
 });

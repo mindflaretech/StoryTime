@@ -194,6 +194,49 @@ function checkAppStoreVersion() {
   init();
 }
 
+function degreesToRadians(degrees) {
+  return degrees * (Math.PI / 180);
+}
+
+function calculateDistance(lat1, lon1, lat2, lon2) {
+  const earthRadiusMeters = 6371000; // Radius of the Earth in meters
+
+  // Convert latitude and longitude from degrees to radians
+  const lat1Rad = degreesToRadians(lat1);
+  const lon1Rad = degreesToRadians(lon1);
+  const lat2Rad = degreesToRadians(lat2);
+  const lon2Rad = degreesToRadians(lon2);
+
+  // Haversine formula
+  const dLat = lat2Rad - lat1Rad;
+  const dLon = lon2Rad - lon1Rad;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1Rad) *
+      Math.cos(lat2Rad) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const distance = earthRadiusMeters * c;
+
+  return distance;
+}
+function isWithinRadius(
+  currentLat,
+  currentLng,
+  targetLat,
+  targetLng,
+  radiusInMeters,
+) {
+  const distanceInMeters = calculateDistance(
+    currentLat,
+    currentLng,
+    targetLat,
+    targetLng,
+  );
+  return distanceInMeters <= radiusInMeters;
+}
+
 export default {
   checkAppStoreVersion,
   isPlatformAndroid,
@@ -222,4 +265,6 @@ export default {
   showMessage,
   concatDataArray,
   getFormattedTime,
+  isWithinRadius,
+  calculateDistance,
 };

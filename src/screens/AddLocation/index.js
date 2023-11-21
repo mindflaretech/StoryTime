@@ -74,8 +74,9 @@ const AddLocation = ({route}) => {
     dispatch(locations(locationsPayload));
     showMessage({
       message: 'Location has been saved successfully',
-      type: 'danger',
+      type: 'success',
       duration: 2000,
+      backgroundColor: Colors.teal,
     });
 
     navigation.goBack();
@@ -115,7 +116,6 @@ const AddLocation = ({route}) => {
       });
       return;
     }
-
     if (!locationData) {
       showMessage({
         message: 'Location field must not be empty',
@@ -126,8 +126,8 @@ const AddLocation = ({route}) => {
     }
 
     // Validation Success
-    console.log(landmark);
-    console.log(locationData);
+    // console.log(landmark);
+    // console.log(locationData);
 
     if (isEdit) {
       updateLocation();

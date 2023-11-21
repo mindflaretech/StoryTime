@@ -1,7 +1,12 @@
-import {View, Text, TouchableOpacity, Image} from 'react-native';
+import {View, Text, TouchableOpacity, Image, AppState} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {getReminder, reminders} from '../../ducks/testPost';
+import {
+  activteReminder,
+  getActiveReminder,
+  getReminder,
+  reminders,
+} from '../../ducks/testPost';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import styles from '../Reminders/styles';
 import {SwipeListView} from 'react-native-swipe-list-view';
@@ -14,6 +19,11 @@ import StatusBr from '../../components/StatusBar';
 import {showMessage} from 'react-native-flash-message';
 
 const Index = () => {
+  //===================== useState ==========================//
+  // const appState = useRef(AppState.currentState);
+  // const [appStateVisible, setAppStateVisible] = useState(AppState.currentState);
+  // const [initialState, setInitialState] = useState(isEdit);
+  // const [location, setLocation] = useState('');
   //===================== useRef ============================//
   const viewref = useRef(null);
   const openRowRef = useRef(null);
@@ -22,24 +32,133 @@ const Index = () => {
   //===================== useDispatch ============================//
   const dispatch = useDispatch();
   const getRemindersData = useSelector(getReminder);
+  const getActiveReminders = useSelector(getActiveReminder);
+
   //===================== useEffect ============================//
+
   useEffect(() => {
-    // console.log(getRemindersData, 'getReminders');
+    console.log(getActiveReminders, 'getActiveReminders');
   });
+
+  // useEffect(() => {
+  //   configurePushNotifications();
+  // }, []);
+
+  // useEffect(() => {
+  //   //=================== destructuring coordinates =====================//
+  //   const coordinatesList = getRemindersData
+  //     .filter(reminder => reminder.activate && reminder.coordinates)
+  //     .map(reminder => reminder?.coordinates);
+
+  //   const targetLatitude = coordinatesList
+  //     .map(coord => coord?.latitude)
+  //     .filter(Boolean);
+  //   const targetLongitude = coordinatesList
+  //     .map(coord => coord?.longitude)
+  //     .filter(Boolean);
+
+  //   const decimalPlaces = 7;
+
+  //   const roundedTargetLatitude = targetLatitude.map(lat =>
+  //     parseFloat(lat.toFixed(decimalPlaces)),
+  //   );
+  //   const roundedTargetLongitude = targetLongitude.map(lon =>
+  //     parseFloat(lon.toFixed(decimalPlaces)),
+  //   );
+
+  //   LocationUtil.getCurrentPosition(info => {
+  //     setLocation(info?.coords);
+  //     const targetLat = roundedTargetLatitude;
+  //     const targetLng = roundedTargetLongitude;
+  //     const currentLat = currentLatitude; //24.927905821426876;
+  //     const currentLng = currentLongitude; //67.09590960871377;
+  //     const radiusInMeters = 100;
+
+  //     console.log(roundedTargetLatitude, '================= targetLatitudes');
+  //     console.log(roundedTargetLongitude, '================= targetLongitudes');
+  //     console.log(currentLat, '================= currentLatitude =====');
+  //     console.log(currentLng, '================= currentLongitude ======');
+
+  //     const distance = Util.calculateDistance(
+  //       currentLat,
+  //       currentLng,
+  //       targetLat,
+  //       targetLng,
+  //       radiusInMeters,
+  //     );
+
+  //     const withinRadius = Util.isWithinRadius(
+  //       currentLat,
+  //       currentLng,
+  //       targetLat,
+  //       targetLng,
+  //       radiusInMeters,
+  //     );
+
+  //     if (withinRadius) {
+  //       handleNotification();
+  //     } else {
+  //       console.log('============= not matched =============');
+  //     }
+  //   }, []);
+  // });
+
+  // useEffect(() => {
+  //   //============== HANDELING APPLICATIONS STATES ================//
+  //   const subscription = AppState.addEventListener('change', nextAppState => {
+  //     const match = appState.current.match(/inactive|background/);
+  //     const isActive = nextAppState === 'active';
+  //     if (match && isActive) {
+  //       setInitialState(false);
+  //     }
+  //     appState.current = nextAppState;
+  //     setAppStateVisible(appState.current);
+  //   });
+  //   return () => {
+  //     subscription.remove();
+  //   };
+  // }, []);
+
+  const handleNotification = () => {
+    PushNotification.localNotificationSchedule({
+      channelId: 'test-channel',
+      date: new Date(Date.now() + 5 * 1000),
+      title: 'Reminder',
+      message: 'Reached',
+      playSound: true,
+      soundName: 'default',
+      allowWhileIdle: true,
+    });
+  };
+
+  const configurePushNotifications = () => {
+    PushNotification.configure({
+      onNotification: notification => {
+        console.log('Foreground notification:', notification);
+      },
+      popInitialNotification: true,
+      requestPermissions: true,
+    });
+    PushNotification.popInitialNotification(notification => {
+      if (notification) {
+        console.log('Opened from background:', notification);
+      }
+    });
+  };
 
   const removeItem = itemToRemove => {
     const updatedData = getRemindersData.filter(item => item !== itemToRemove);
     dispatch(reminders(updatedData));
   };
 
-  const activeReminder = itemActivate => {
-    const updatedReminders = getRemindersData.map(item => {
+  const activeReminders = itemActivate => {
+    const updatedReminders = getActiveReminders.map(item => {
       if (item.id === itemActivate?.item?.id) {
         return {...item, activate: true};
       }
-      return item;
+      return {...item, activate: false};
     });
-    dispatch(reminders(updatedReminders));
+    dispatch(activteReminder(updatedReminders));
     showMessage({
       message: `Reminder for ${itemActivate?.item?.name} is activated`,
       type: 'success',
@@ -49,13 +168,13 @@ const Index = () => {
   };
 
   const deActivateReminder = itemDeactivate => {
-    const updatedReminders = getRemindersData.map(item => {
+    const updatedReminders = getActiveReminders.map(item => {
       if (item.id === itemDeactivate?.item?.id) {
         return {...item, activate: false};
       }
       return item;
     });
-    dispatch(reminders(updatedReminders));
+    dispatch(activteReminder(updatedReminders));
   };
 
   const onPressDeactive = rowData => {
@@ -80,7 +199,7 @@ const Index = () => {
       'Yes',
       () => {
         if (rowData) {
-          activeReminder(rowData);
+          activeReminders(rowData);
         }
       },
       'No',
@@ -101,7 +220,8 @@ const Index = () => {
         ]}
         onLongPress={() => {
           console.log('Long Press Triggered');
-          itemIsActivated ? onPressDeactive(rowData) : onPressActive(rowData);
+          // itemIsActivated ? onPressDeactive(rowData) : onPressActive(rowData);
+          onPressActive(rowData);
         }}
         activeOpacity={1}>
         <View style={styles.nameLocationView}>

@@ -1,4 +1,4 @@
-import {View, TouchableOpacity, Image,AppState} from 'react-native';
+import {View, TouchableOpacity, Image, AppState} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import styles from './styles';
@@ -6,12 +6,15 @@ import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete';
 import {Colors, Images} from '../../theme';
 import {useSelector} from 'react-redux';
-import {getCurrentLoc} from '../../ducks/testPost';
+import {getCurrentLoc, getReminder} from '../../ducks/testPost';
 import {useNavigation} from '@react-navigation/native';
 import Geocoder from 'react-native-geocoding';
 import EventEmitter from '../../utils/EventEmitter';
 import StatusBr from '../../components/StatusBar';
 import LocationUtil from '../../utils/LocationUtil';
+import {Util} from '../../utils';
+import PushNotification from 'react-native-push-notification';
+import {images} from '../../utils/Images/images';
 
 navigator.geolocation = require('@react-native-community/geolocation');
 
@@ -23,6 +26,8 @@ const longitudeDelta = 0.006866;
 const MapScreen = ({route}) => {
   // ======================== useRef ========================= //
   const mapRef = useRef(null);
+  // ======================== useRef ========================= //
+  const getRemindersData = useSelector(getReminder);
   // ======================== useNavigation ========================= //
   const navigation = useNavigation();
   // ======================== params ========================= //
@@ -32,10 +37,10 @@ const MapScreen = ({route}) => {
   const editableLng = editableCoordinates?.longitude;
   // ======================== useState ========================= //
   const [textInputValue, setTextInputValue] = useState('');
-  const getCurrentLocation = useSelector(getCurrentLoc);
+  // const getCurrentLocation = useSelector(getCurrentLoc);
   const [coordinates, setCoordinates] = useState();
-  const currentLatitude = isEdit ? editableLat : getCurrentLocation.latitude;
-  const currentLongitude = isEdit ? editableLng : getCurrentLocation.longitude;
+  const currentLatitude = isEdit ? editableLat : 24.8607;
+  const currentLongitude = isEdit ? editableLng : 67.0011;
   const [currentLocation, setCurrentLocation] = useState({
     latitude: currentLatitude,
     longitude: currentLongitude,
@@ -46,66 +51,9 @@ const MapScreen = ({route}) => {
     latitudeDelta: latitudeDelta,
     longitudeDelta: longitudeDelta,
   });
-  const appState = useRef(AppState.currentState);
-  const [appStateVisible, setAppStateVisible] = useState(appState.current);
-  const [initialState, setInitialState] = useState();
-  const [location, setLocation] = useState();
 
   // ======================== useEffect ========================= //
-  useEffect(() => {
-    LocationUtil.getCurrentPosition(info => {
-      console.log(info?.coords);
-      setLocation(info?.coords);
-      const targetLat = 24.927936826934555;
-      const targetLng = 67.09590960871377;
-      //   const currentLat = info?.coords?.latitude;
-      const currentLat = 24.927923955091366; //24.927905821426876;
-      //   const currentLng = info?.coords?.longitude;
-      const currentLng = 67.09584012728392; //67.09590960871377;
-      const radiusInMeters = 2;
-      // const distance = Util.calculateDistance(
-      //   currentLat,
-      //   currentLng,
-      //   targetLat,
-      //   targetLng,
-      //   radiusInMeters,
-      // );
-      // const withinRadius = Util.isWithinRadius(
-      //   currentLat,
-      //   currentLng,
-      //   targetLat,
-      //   targetLng,
-      //   radiusInMeters,
-      // );
 
-      console.log(
-        'Your current location is within the radius of the target location.',
-        // distance,
-        // withinRadius,
-      );
-      // if (withinRadius) {
-      //   console.log('Your current location is within the radius of the target location.');
-      // } else {
-      //   console.log('Your current location is outside the radius of the target location.');
-      // }
-    });
-  }, []);
-
-  useEffect(() => {
-    //============== HANDELING APPLICATIONS STATES ================//
-    const subscription = AppState.addEventListener('change', nextAppState => {
-      const match = appState.current.match(/inactive|background/);
-      const isActive = nextAppState === 'active';
-      if (match && isActive) {
-        setInitialState(false);
-      }
-      appState.current = nextAppState;
-      setAppStateVisible(appState.current);
-    });
-    return () => {
-      subscription.remove();
-    };
-  }, []);
   useEffect(() => {
     let coordinates = {
       latitude: currentLatitude,
@@ -190,6 +138,16 @@ const MapScreen = ({route}) => {
     setTextInputValue(text);
   };
 
+  const handleLocationPress = () => {
+    const region = {
+      latitude: currentLatitude,
+      longitude: currentLongitude,
+      latitudeDelta: latitudeDelta,
+      longitudeDelta: longitudeDelta,
+    };
+    mapRef.current.animateToRegion(region, 500);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBr />
@@ -200,7 +158,7 @@ const MapScreen = ({route}) => {
         region={region}
         onRegionChangeComplete={handleRegionChangeComplete}
         showsUserLocation={true}
-        showsMyLocationButton={true}
+        showsMyLocationButton={false}
         followsUserLocation={true}
         showsCompass={true}
         scrollEnabled={true}
@@ -214,7 +172,7 @@ const MapScreen = ({route}) => {
           longitude: currentLongitude,
         }}
         draggable
-        onPress={handleMarkerPress}
+        // onPress={handleMarkerPress}
         anchor={{x: 0.5, y: 0.5}}
         centerOffset={{x: 0.5, y: 0.5}}>
         <View style={styles.markerContainer}>
@@ -239,6 +197,7 @@ const MapScreen = ({route}) => {
           <Image style={styles.addButtonImage} source={Images.general.plus} />
         </TouchableOpacity>
       </View>
+
       <GooglePlacesAutocomplete
         GooglePlacesDetailsQuery={{fields: 'geometry'}}
         fetchDetails={true}
@@ -262,6 +221,12 @@ const MapScreen = ({route}) => {
         currentLocationLabel="Current Location"
         enableHighAccuracyLocation={true}
       />
+      <TouchableOpacity
+        activeOpacity={0.85}
+        onPress={handleLocationPress}
+        style={styles.myLoaction}>
+        <Image style={styles.myLocationImage} source={images.myLocation} />
+      </TouchableOpacity>
     </SafeAreaView>
   );
 };
