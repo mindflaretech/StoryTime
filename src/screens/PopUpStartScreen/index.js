@@ -4,6 +4,7 @@ import {
   Image,
   ImageBackground,
   TouchableOpacity,
+  ScrollView,
 } from 'react-native';
 import React from 'react';
 import styles from './styles';
@@ -16,7 +17,7 @@ const PopUpStart = () => {
   const navigation = useNavigation();
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <StatusBar />
       <ImageBackground
         source={Images.splash.background}
@@ -50,7 +51,7 @@ const PopUpStart = () => {
           </TouchableOpacity>
         </ImageBackground>
       </ImageBackground>
-    </View>
+    </ScrollView>
   );
 };
 

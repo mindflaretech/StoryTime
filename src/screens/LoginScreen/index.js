@@ -5,6 +5,7 @@ import {
   ImageBackground,
   TouchableOpacity,
   TextInput,
+  ScrollView,
 } from 'react-native';
 import React, {useState} from 'react';
 import styles from './styles';
@@ -22,7 +23,9 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   return (
-    <View style={styles.container}>
+    <ScrollView
+      contentContainerStyle={{alignItems: 'center'}}
+      style={styles.container}>
       <StatusBar />
       <Image style={styles.logo2} source={Images.general.logo2} />
       <Image style={styles.logInTxt} source={Images.general.logInTxt} />
@@ -102,7 +105,7 @@ const Login = () => {
           Create one
         </Text>
       </Text>
-    </View>
+    </ScrollView>
   );
 };
 

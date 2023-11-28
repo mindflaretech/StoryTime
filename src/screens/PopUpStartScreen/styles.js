@@ -43,7 +43,7 @@ export default StyleSheet.create({
     borderRadius: 10,
     padding: 12,
     paddingHorizontal: 50,
-    marginVertical: 30,
+    marginVertical: "10%",
     elevation: 2,
   },
   subscribeTxt: {

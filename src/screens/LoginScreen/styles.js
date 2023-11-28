@@ -7,7 +7,7 @@ export default StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.white,
-    alignItems: 'center',
+  
   },
   logo2: {
     height: Dimensions.get('window').width / 3,

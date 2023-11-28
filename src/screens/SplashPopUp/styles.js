@@ -27,8 +27,6 @@ export default StyleSheet.create({
     height: 200,
   },
   appNameTxt: {
-    // backgroundColor: 'red',
-    // marginTop: -30,
     fontSize: 32,
     color: '#E44173',
     fontWeight: '900',
@@ -38,14 +36,13 @@ export default StyleSheet.create({
     height: Dimensions.get('window').width / 1.2,
     width: Dimensions.get('window').width / 1.3,
     resizeMode: 'contain',
-    marginTop: 60,
-    // marginVertical: 15,
+    marginTop: '10%',
   },
   polygon: {
     resizeMode: 'contain',
     height: Dimensions.get('window').width / 4,
     width: Dimensions.get('window').width / 4,
-    marginTop: 140,
+    marginTop: '40%',
   },
   getStarted: {
     resizeMode: 'contain',
