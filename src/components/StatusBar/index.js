@@ -5,7 +5,7 @@ import {Colors} from '../../theme';
 const StatusBr = () => {
   return (
     <>
-      <StatusBar backgroundColor={Colors.teal} barStyle="light-content" />
+      <StatusBar backgroundColor="transparent" barStyle="dark-content" />
     </>
   );
 };

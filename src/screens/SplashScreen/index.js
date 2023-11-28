@@ -42,13 +42,13 @@ export default function CustomSplashScreen() {
         style={{
           height: '100%',
           width: '100%',
-          justifyContent: 'center',
           alignItems: 'center',
           // flex: 1,
           // backgroundColor: 'red',
         }}>
         <Image style={styles.splashLogo} source={Images.splash.logo} />
-        <Text style={styles.appNameTxt}>iReminder</Text>
+        <Image style={styles.polygon} source={Images.general.polygon} />
+        <Text style={styles.appNameTxt}>Get Started</Text>
         <View style={styles.versionContainer}>
           <Text style={styles.version}>v{VersionInfo.appVersion}</Text>
         </View>
@@ -56,3 +56,4 @@ export default function CustomSplashScreen() {
     </View>
   );
 }
+

@@ -93,9 +93,9 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.remindme"
+    namespace "com.StoryTime"
     defaultConfig {
-        applicationId "com.remindme"
+        applicationId "com.StoryTime"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

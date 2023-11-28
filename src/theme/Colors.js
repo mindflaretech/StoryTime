@@ -11,4 +11,10 @@ export default {
   powderBlue: '#b0e0e6',
   background: '#EAF2FA',
   screenBackground: '#EAF2FA',
+  subscribeButton:"#395E66",
+  textInputBackground:"#F3F3F3",
+  placeholderTextColor:"#888",
+  borderColor:"#DEDEDE"
+
+  
 };

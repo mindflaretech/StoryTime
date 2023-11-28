@@ -1,4 +1,4 @@
-package com.remindme;
+package com.StoryTime;
 
 import android.app.Application;
 import com.facebook.react.PackageList;

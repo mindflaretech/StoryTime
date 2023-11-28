@@ -39,7 +39,7 @@ const App = () => {
   }, []);
 
   if (storeState === null) {
-    return <CustomSplashScreen />;
+    return <></>;
   }
 
   return (

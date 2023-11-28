@@ -23,7 +23,7 @@ if linkage != nil
   use_frameworks! :linkage => linkage.to_sym
 end
 
-target 'Remindme' do
+target 'StoryTime' do
   
   rn_maps_path = '../node_modules/react-native-maps'
   pod 'react-native-google-maps', :path => rn_maps_path
@@ -55,7 +55,7 @@ target 'Remindme' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
-  target 'RemindmeTests' do
+  target 'StoryTimeTests' do
     inherit! :complete
     # Pods for testing
   end
